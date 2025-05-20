@@ -1,0 +1,39 @@
+﻿@model IEnumerable<quangcao.Models.BaoGia>
+
+@{
+    ViewData["Title"] = "Danh sách báo giá";
+}
+
+<h1>Danh sách báo giá</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Tạo báo giá mới</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.First().TieuDe)</th>
+            <th>@Html.DisplayNameFor(model => model.First().NoiDung)</th>
+            <th>@Html.DisplayNameFor(model => model.First().NgayTao)</th>
+            <th>Người tạo</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.TieuDe</td>
+                <td>@item.NoiDung</td>
+                <td>@item.NgayTao.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@(item.User != null ? item.User.UserName : "Không có")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.IdBaoGia">Sửa</a> |
+                    <a asp-action="Details" asp-route-id="@item.IdBaoGia">Chi tiết</a> |
+                    <a asp-action="Delete" asp-route-id="@item.IdBaoGia">Xoá</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

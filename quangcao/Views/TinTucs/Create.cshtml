@@ -1,0 +1,223 @@
+﻿@model quangcao.Models.TinTuc
+
+@{
+    ViewBag.Title = "Thêm Tin Tức";
+}
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>Lỗi ModelState:</strong>
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link href="~/css/themtintuc.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<div class="container">
+    <h2 class="page-title">Thêm Tin Tức</h2>
+
+    <div class="content-wrapper">
+        <!-- Phần chính - Form -->
+        <div class="main-content">
+            <div class="form-card">
+                <div class="form-card-header">
+                    <h3 class="card-title">Thông tin bài viết</h3>
+                </div>
+                <div class="form-card-body">
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label asp-for="TieuDe" class="form-label"></label>
+                            <input asp-for="TieuDe" class="form-control" />
+                            <span asp-validation-for="TieuDe" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="HinhAnhFile" class="form-label">Hình ảnh đại diện</label>
+                            <div class="file-upload-wrapper">
+                                <input type="file" name="HinhAnhFile" id="HinhAnhFile" class="file-upload-input" />
+                                <div class="file-upload-text">
+                                    <i class="bi bi-image"></i>
+                                    <span>Chọn hình ảnh...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="NoiDung" class="form-label"></label>
+                            <textarea asp-for="NoiDung" class="form-control"></textarea>
+                            <span asp-validation-for="NoiDung" class="text-danger"></span>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button type="button" class="btn btn-preview" data-bs-toggle="modal" data-bs-target="#previewModal">
+                                <i class="bi bi-eye"></i> Xem trước
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-lg"></i> Lưu bài viết
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar - Tips -->
+        <div class="sidebar">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-lightbulb me-2 text-warning"></i>Mẹo viết bài
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <ul class="tips-list">
+                        <li>
+                            <strong>Tiêu đề hấp dẫn:</strong> Sử dụng tiêu đề ngắn gọn, thu hút người đọc.
+                        </li>
+                        <li>
+                            <strong>Hình ảnh chất lượng:</strong> Sử dụng hình ảnh rõ nét, liên quan đến nội dung.
+                        </li>
+                        <li>
+                            <strong>Đoạn mở đầu:</strong> Tóm tắt nội dung chính trong đoạn đầu tiên.
+                        </li>
+                        <li>
+                            <strong>Cấu trúc rõ ràng:</strong> Chia nội dung thành các đoạn, sử dụng tiêu đề phụ.
+                        </li>
+                        <li>
+                            <strong>Kết luận:</strong> Tổng kết lại những điểm chính của bài viết.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Xem trước -->
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="previewModalLabel">Xem trước bài viết</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="preview-container">
+                        <h1 id="previewTitle" class="preview-title mb-4"></h1>
+                        <div class="preview-image-container mb-4 text-center">
+                            <img id="previewImage" src="/placeholder.svg" alt="Preview" class="img-fluid rounded d-none">
+                            <div id="previewNoImage" class="preview-no-image">
+                                <i class="bi bi-image"></i>
+                                <p>Không có hình ảnh</p>
+                            </div>
+                        </div>
+                        <div id="previewContent" class="preview-content"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="https://cdn.tiny.cloud/1/kitm42agmodaoxk9sigv416a1f4ve93xuzgg7ls7ge4cgwnk/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <script>
+        tinymce.init({
+            selector: 'textarea[name="NoiDung"]',
+            plugins: [
+                'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists',
+                'media', 'searchreplace', 'table', 'visualblocks', 'wordcount', 'checklist', 'mediaembed',
+                'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen',
+                'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'mentions', 'tinycomments',
+                'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss',
+                'markdown', 'importword', 'exportword', 'exportpdf'
+            ],
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+            height: 500,
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Admin',
+            branding: false,
+
+            // ✅ Thêm chức năng chọn ảnh từ máy tính
+            file_picker_types: 'image',
+            file_picker_callback: function (callback, value, meta) {
+                if (meta.filetype === 'image') {
+                    var input = document.createElement('input');
+                    input.setAttribute('type', 'file');
+                    input.setAttribute('accept', 'image/*');
+
+                    input.onchange = function () {
+                        var file = this.files[0];
+                        var reader = new FileReader();
+
+                        reader.onload = function () {
+                            callback(reader.result, {
+                                alt: file.name
+                            });
+                        };
+
+                        reader.readAsDataURL(file); // Upload dạng Base64 vào nội dung
+                    };
+
+                    input.click();
+                }
+            }
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Xử lý xem trước hình ảnh
+            const fileInput = document.getElementById('HinhAnhFile');
+            const fileText = document.querySelector('.file-upload-text span');
+            const previewImage = document.getElementById('previewImage');
+            const previewNoImage = document.getElementById('previewNoImage');
+
+            if (fileInput) {
+                fileInput.addEventListener('change', function() {
+                    if (this.files && this.files[0]) {
+                        const fileName = this.files[0].name;
+                        fileText.textContent = fileName;
+
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewImage.src = e.target.result;
+                            previewImage.classList.remove('d-none');
+                            previewNoImage.classList.add('d-none');
+                        };
+                        reader.readAsDataURL(this.files[0]);
+                    } else {
+                        fileText.textContent = 'Chọn hình ảnh...';
+                        previewImage.classList.add('d-none');
+                        previewNoImage.classList.remove('d-none');
+                    }
+                });
+            }
+
+            // Xử lý xem trước bài viết
+            const previewButton = document.querySelector('.btn-preview');
+            const titleInput = document.getElementById('TieuDe');
+            const previewTitle = document.getElementById('previewTitle');
+
+            if (previewButton && titleInput) {
+                previewButton.addEventListener('click', function() {
+                    // Cập nhật tiêu đề
+                    previewTitle.textContent = titleInput.value || 'Tiêu đề bài viết sẽ hiển thị ở đây';
+
+                    // Cập nhật nội dung từ TinyMCE
+                    if (typeof tinymce !== 'undefined') {
+                        const content = tinymce.get('NoiDung').getContent();
+                        document.getElementById('previewContent').innerHTML = content || 'Nội dung bài viết sẽ hiển thị ở đây...';
+                    }
+                });
+            }
+        });
+    </script>
+}

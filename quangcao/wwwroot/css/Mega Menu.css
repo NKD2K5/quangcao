@@ -1,0 +1,394 @@
+﻿/* Mega Menu Styles */
+.has-mega-menu {
+    position: static; /* Important for full-width mega menu */
+}
+
+/* Add styles for the mega menu trigger */
+.mega-menu-trigger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.5rem 0;
+    color: #2563eb;
+    font-weight: 500;
+}
+
+    /* Add triangle indicator to mega menu trigger */
+    .mega-menu-trigger::after {
+        content: "";
+        display: inline-block;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 5px 5px 0 5px;
+        border-color: #2563eb transparent transparent transparent;
+        margin-left: 8px;
+        transition: transform 0.3s ease;
+    }
+
+/* Rotate triangle on hover */
+.has-mega-menu:hover .mega-menu-trigger::after {
+    transform: rotate(-180deg);
+}
+
+.mega-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.has-mega-menu:hover .mega-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.mega-menu-content {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2rem;
+    padding: 2rem 0;
+}
+
+.mega-menu-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.mega-menu-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #2563eb;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.mega-menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    /* Style the mega menu list items like báo giá list */
+    .mega-menu-list li {
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+        .mega-menu-list li:last-child {
+            border-bottom: none;
+        }
+
+        .mega-menu-list li a {
+            font-size: 0.875rem;
+            color: #4b5563;
+            transition: all 0.2s ease;
+            display: block;
+            padding: 10px 16px;
+            text-decoration: none;
+        }
+
+            .mega-menu-list li a:hover {
+                background-color: #f3f4f6;
+                color: #2563eb;
+                padding-left: 20px;
+            }
+
+            /* Add blue arrow indicator to mega menu list items, similar to báo giá */
+            .mega-menu-list li a::before {
+                content: "";
+                display: inline-block;
+                width: 0;
+                height: 0;
+                border-style: solid;
+                border-width: 4px 0 4px 4px;
+                border-color: transparent transparent transparent #2563eb;
+                opacity: 0;
+                margin-right: 8px;
+                transform: translateX(-8px);
+                transition: all 0.2s ease;
+            }
+
+            .mega-menu-list li a:hover::before {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+/* Mobile Mega Menu */
+.mobile-mega-menu {
+    display: none;
+    padding-left: 1rem;
+}
+
+.mobile-dropdown.open .mobile-mega-menu {
+    display: block;
+}
+
+.mobile-mega-category {
+    margin-bottom: 1rem;
+}
+
+.mobile-mega-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #2563eb;
+    margin-bottom: 0.5rem;
+    padding-top: 0.5rem;
+}
+
+/* Add triangle to mobile dropdown trigger */
+.mobile-dropdown-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #2563eb;
+    cursor: pointer;
+}
+
+    .mobile-dropdown-trigger::after {
+        content: "";
+        display: inline-block;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 5px 5px 0 5px;
+        border-color: #2563eb transparent transparent transparent;
+        transition: transform 0.3s ease;
+    }
+
+.mobile-dropdown.open .mobile-dropdown-trigger::after {
+    transform: rotate(-180deg);
+}
+
+.mobile-mega-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    /* Style mobile list items like báo giá list */
+    .mobile-mega-list li {
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+        .mobile-mega-list li:last-child {
+            border-bottom: none;
+        }
+
+    .mobile-mega-list a {
+        display: block;
+        padding: 10px 16px;
+        color: #4b5563;
+        font-size: 0.875rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+        .mobile-mega-list a:hover {
+            background-color: #f3f4f6;
+            color: #2563eb;
+            padding-left: 20px;
+        }
+
+        /* Add blue arrow indicator to mobile list items */
+        .mobile-mega-list a::before {
+            content: "";
+            display: inline-block;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 4px 0 4px 4px;
+            border-color: transparent transparent transparent #2563eb;
+            opacity: 0;
+            margin-right: 8px;
+            transform: translateX(-8px);
+            transition: all 0.2s ease;
+        }
+
+        .mobile-mega-list a:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+/* Enhanced Mega Menu with Featured Products */
+.mega-menu-featured {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+}
+
+.featured-product {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+}
+
+    .featured-product:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+.featured-product-image {
+    height: 160px;
+    overflow: hidden;
+    position: relative;
+}
+
+    .featured-product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+.featured-product:hover .featured-product-image img {
+    transform: scale(1.05);
+}
+
+.featured-product-content {
+    padding: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.featured-product-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: #111827;
+}
+
+.featured-product-description {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+}
+
+.featured-product-link {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #2563eb;
+    transition: color 0.2s ease;
+}
+
+    .featured-product-link:hover {
+        color: #1d4ed8;
+    }
+
+    .featured-product-link i {
+        margin-left: 0.25rem;
+        font-size: 0.75rem;
+    }
+
+/* Mega Menu Animations */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mega-menu-column {
+    animation: fadeInDown 0.3s ease forwards;
+    opacity: 0;
+}
+
+    .mega-menu-column:nth-child(1) {
+        animation-delay: 0.05s;
+    }
+
+    .mega-menu-column:nth-child(2) {
+        animation-delay: 0.1s;
+    }
+
+    .mega-menu-column:nth-child(3) {
+        animation-delay: 0.15s;
+    }
+
+    .mega-menu-column:nth-child(4) {
+        animation-delay: 0.2s;
+    }
+
+    .mega-menu-column:nth-child(5) {
+        animation-delay: 0.25s;
+    }
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+    .mega-menu-content {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .mega-menu-column:last-child {
+        display: none;
+    }
+}
+
+@media (max-width: 992px) {
+    .mega-menu-content {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .mega-menu-column:nth-child(4) {
+        display: none;
+    }
+}
+
+@media (max-width: 767px) {
+    .mega-menu-trigger::after {
+        position: absolute;
+        right: 0;
+    }
+
+    .mega-menu-list li a:hover {
+        padding-left: 24px;
+    }
+}
+
+/* Animation for the dropdown */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.has-mega-menu:hover .mega-menu {
+    animation: fadeIn 0.2s ease-out forwards;
+}

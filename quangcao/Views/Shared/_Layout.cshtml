@@ -1,0 +1,595 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - In Vinh Phát</title>
+    <meta name="description" content="Công ty TNHH Sản xuất Thương mại in Vinh Phát - Đơn vị tiên phong trong lĩnh vực in nhanh kỹ thuật số tại TP Hải Dương.">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Site CSS -->
+    <link href="~/css/site.css" rel="stylesheet" />
+    <link href="~/css/navbar.css" rel="stylesheet" />
+    <link href="~/css/Mega Menu.css" rel="stylesheet" />
+    <link href="~/css/search.css" rel="stylesheet" />
+    <!-- Styles Section (Optional) -->
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    @using quangcao.Models
+    @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+    @{
+        bool isAuthenticated = HttpContextAccessor.HttpContext.User.Identity.IsAuthenticated;
+        string userName = isAuthenticated ? HttpContextAccessor.HttpContext.User.Identity.Name : "";
+        bool isAdmin = HttpContextAccessor.HttpContext.User.IsInRole("Admin");
+    }
+
+    <!-- Header -->
+    <header class="site-header">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="container">
+                <div class="top-bar-content">
+                    <div class="address">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p>Khu Công Nghiệp Thạch Khôi, Hải Dương, Việt Nam</p>
+                    </div>
+                    <div class="contact-info">
+                        <div class="phone">
+                            <i class="fas fa-phone"></i>
+                            <span>Hotline: 0977 344 567</span>
+                        </div>
+                        <div class="social-links">
+                            <a href="https://facebook.com/profile.php?id=61575271242570" target="_blank" rel="noopener noreferrer" class="social-icon">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="mailto:invinhphat6868@gmail.com" class="social-icon">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Navigation -->
+        <nav class="main-nav">
+            <div class="container">
+                <div class="nav-wrapper">
+                    <div class="logo">
+                        <a asp-controller="Home" asp-action="Index">
+                            <span class="logo-text">IN VINH PHÁT</span>
+                        </a>
+                    </div>
+
+                    <!-- Replace your current dropdown in the nav-links section with this mega menu -->
+                    <div class="nav-links" id="navLinks">
+                        <a asp-controller="Home" asp-action="Index" class="nav-item">Trang Chủ</a>
+                        <a asp-controller="Home" asp-action="Privacy" class="nav-item">Giới Thiệu</a>
+
+                        <!-- Mega Menu -->
+                        <div class="nav-item has-mega-menu">
+                            <a asp-controller="SanPhams" asp-action="Index" class="nav-link">Sản Phẩm</a>
+
+                            <!-- Mega Menu Content -->
+                            <div class="mega-menu">
+                                <div class="container">
+                                    <div class="mega-menu-content">
+                                        <div class="mega-menu-column">
+                                            <h3 class="mega-menu-title">In Ấn Văn Phòng</h3>
+                                            <ul class="mega-menu-list">
+                                                <li><a href="/san-pham/to-roi">Danh Thiếp</a></li>
+                                                <li><a href="/san-pham/catalogue">Giấy Tiêu Đề</a></li>
+                                                <li><a href="/san-pham/poster">Hóa Đơn Bán Lẻ</a></li>
+                                                <li><a href="/san-pham/banner">In Catalogue</a></li>
+                                                <li><a href="/san-pham/folder">In Chứng Chỉ-Giấy Khen</a></li>
+                                                <li><a href="/san-pham/folder">In Kẹp File-Folder</a></li>
+                                                <li><a href="/san-pham/folder">In Phong Bì-Envelope</a></li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="mega-menu-column">
+                                            <h3 class="mega-menu-title">Ấn Phẩm Tiếp Thị</h3>
+                                            <ul class="mega-menu-list">
+                                                <li><a href="/san-pham/thiet-ke-brochure">In Menu-Thực Đơn</a></li>
+                                                <li><a href="/san-pham/thiet-ke-bao-bi">In Tờ Rơi-Tờ Gấp</a></li>
+                                                <li><a href="/san-pham/thiet-ke-banner">Phiếu Quà Tặng</a></li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="mega-menu-column">
+                                            <h3 class="mega-menu-title">In Bao Bì & Nhãn Mác</h3>
+                                            <ul class="mega-menu-list">
+                                                <li><a href="/san-pham/hop-giay">In Hộp Giấy</a></li>
+                                                <li><a href="/san-pham/tui-giay">In Túi Giấy</a></li>
+                                                <li><a href="/san-pham/nhan-mac">In Nhãn Mác Sản Phẩm</a></li>
+                                                <li><a href="/san-pham/tem-nhan">In Tem Nhãn</a></li>
+                                                <li><a href="/san-pham/tem-nhan">In Phiếu Bảo Hành</a></li>
+                                                <li><a href="/san-pham/decal">In Decal</a></li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="mega-menu-column">
+                                            <h3 class="mega-menu-title">Quà Tặng</h3>
+                                            <ul class="mega-menu-list">
+                                                <li><a href="/san-pham/name-card">Bao Lì Xì</a></li>
+                                                <li><a href="/san-pham/phong-bi">In Lịch Tết</a></li>
+                                                <li><a href="/san-pham/hoa-don">Sổ Bìa Da</a></li>
+                                                <li><a href="/san-pham/giay-tieu-de">Sổ Lò Xo</a></li>
+                                                <li><a href="/san-pham/tap-chi">Sổ Note</a></li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="mega-menu-column">
+                                            <h3 class="mega-menu-title">Ấn Phẩm Khác</h3>
+                                            <ul class="mega-menu-list">
+                                                <li><a href="/san-pham/cat-be">Thiệp Chúc Mừng</a></li>
+                                                <li><a href="/san-pham/ep-kim">Thiệp Cưới</a></li>
+                                                <li><a href="/san-pham/dong-sach">Vở Học Sinh</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sidebar">
+                            <div class="bao-gia-hover-container">
+                                <h5 class="hover-title">Báo Giá <i class="fa fa-chevron-down"></i></h5>
+                                <div class="bao-gia-list">
+                                    @await Component.InvokeAsync("BaoGiaList")
+                                </div>
+                            </div>
+                        </div>
+                        <a asp-controller="TinTucs" asp-action="Index" class="nav-item">Tin Tức</a>
+                        <a asp-controller="LienHes" asp-action="Index" class="nav-item">Liên Hệ</a>
+                    </div>
+
+                    <div class="nav-right">
+                        <div class="search-container">
+                            <form asp-controller="Search" asp-action="Index" method="get" class="search-form">
+                                <div class="search-input-wrapper">
+                                    <input type="text" name="keyword" id="searchInput" placeholder="Tìm kiếm..." required>
+                                    <button type="submit" class="search-button">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="account-dropdown" id="accountDropdown">
+                            @if (isAuthenticated)
+                            {
+                                <div class="account-trigger">
+                                    <div class="user-avatar">
+                                        <i class="fas fa-user" id="defaultAvatar"></i>
+                                    </div>
+                                    <div class="account-info">
+                                        <span class="account-label">@userName</span>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                </div>
+                                <div class="account-menu">
+                                    @if (isAdmin)
+                                    {
+                                        <div class="admin-menu">
+                                            <a asp-controller="SanPhams" asp-action="Quan-li-san-pham" class="account-menu-item">
+                                                <i class="fas fa-cogs"></i> Quản lý sản phẩm
+                                            </a>
+                                            <a asp-controller="TinTucs" asp-action="Quan-li-tin-tuc" class="account-menu-item">
+                                                <i class="fas fa-box"></i> Quản Lý Tin Tức
+                                            </a>
+                                            <a asp-controller="LienHes" asp-action="Index" class="account-menu-item">
+                                                <i class="fas fa-users"></i> Quản lý liên hệ
+                                            </a>
+                                        </div>
+                                    }
+                                    <div class="menu-divider"></div>
+                                    <form asp-controller="Account" asp-action="LogOff" method="post" id="logoutForm">
+                                        @Html.AntiForgeryToken()
+                                        <a href="javascript:document.getElementById('logoutForm').submit()" class="account-menu-item logout-item">
+                                            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                        </a>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                        <button class="menu-toggle" id="menuToggle">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Navigation -->
+        <div class="mobile-nav" id="mobileNav">
+                <div class="mobile-links">
+                    <a asp-controller="Home" asp-action="Index">Trang Chủ</a>
+                    <a asp-controller="Home" asp-action="Privacy">Giới Thiệu</a>
+
+                    <div class="mobile-dropdown">
+                        <div class="mobile-dropdown-header">
+                            <a asp-controller="SanPhams" asp-action="Index">Sản Phẩm</a>
+                            <i class="fas fa-chevron-down mobile-dropdown-toggle"></i>
+                        </div>
+                        <div class="mobile-mega-menu">
+                            <div class="mobile-mega-category">
+                                <div class="mobile-mega-title">In Ấn Kỹ Thuật Số</div>
+                                <div class="mobile-mega-list">
+                                    <a href="/san-pham/to-roi">In tờ rơi</a>
+                                    <a href="/san-pham/catalogue">In catalogue</a>
+                                    <a href="/san-pham/poster">In poster</a>
+                                    <a href="/san-pham/banner">In banner, backdrop</a>
+                                </div>
+                            </div>
+
+                            <div class="mobile-mega-category">
+                                <div class="mobile-mega-title">Thiết Kế Đồ Họa</div>
+                                <div class="mobile-mega-list">
+                                    <a href="/san-pham/thiet-ke-logo">Thiết kế logo</a>
+                                    <a href="/san-pham/thiet-ke-brochure">Thiết kế brochure</a>
+                                    <a href="/san-pham/thiet-ke-bao-bi">Thiết kế bao bì</a>
+                                </div>
+                            </div>
+
+                            <div class="mobile-mega-category">
+                                <div class="mobile-mega-title">In Ấn Văn Phòng</div>
+                                <div class="mobile-mega-list">
+                                    <a href="/san-pham/name-card">In name card</a>
+                                    <a href="/san-pham/phong-bi">In phong bì</a>
+                                    <a href="/san-pham/hoa-don">In hóa đơn, biểu mẫu</a>
+                                </div>
+                            </div>
+
+                            <div class="mobile-mega-category">
+                                <div class="mobile-mega-title">In Bao Bì & Nhãn Mác</div>
+                                <div class="mobile-mega-list">
+                                    <a href="/SanPhams/Index?currentCategory=Cốc">In hộp giấy</a>
+                                    <a href="/san-pham/tui-giay">In túi giấy</a>
+                                    <a href="/san-pham/nhan-mac">In nhãn mác sản phẩm</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar">
+                        <h5>Báo giá</h5>
+                        @await Component.InvokeAsync("BaoGiaList")
+                    </div>
+                    <a asp-controller="TinTucs" asp-action="Index">Tin Tức</a>
+                    <a asp-controller="LienHes" asp-action="Index">Liên Hệ</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            @RenderBody()
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-grid">
+                    <div class="footer-about">
+                        <h3>Về chúng tôi</h3>
+                        <p>Công ty TNHH Sản xuất Thương mại in Vinh Phát - Đơn vị tiên phong trong lĩnh vực in nhanh kỹ thuật số tại TP Hải Dương.</p>
+                        <div class="footer-social">
+                            <a href="https://facebook.com/profile.php?id=61575271242570" target="_blank" rel="noopener noreferrer">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" target="_blank" rel="noopener noreferrer">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                            <a href="#" target="_blank" rel="noopener noreferrer">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="footer-services">
+                        <h3>Dịch vụ</h3>
+                        <ul>
+                            <li><a href="/san-pham/to-roi">In tờ rơi</a></li>
+                            <li><a href="/san-pham/name-card">In name card</a></li>
+                            <li><a href="/san-pham/tui-giay">In túi giấy</a></li>
+                            <li><a href="/san-pham/banner">In banner</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-contact">
+                        <h3>Liên hệ</h3>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <p>Khu Công Nghiệp Thạch Khôi, Hải Dương, Việt Nam</p>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <p><a href="mailto:invinhphat6868@gmail.com">invinhphat6868@gmail.com</a></p>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <p><a href="tel:0977344567">Hotline: 0977 344 567</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; <span id="currentYear">2025</span> Công ty TNHH Sản xuất Thương mại in Vinh Phát - Tất cả quyền lợi được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    @RenderSection("Scripts", required: false)
+    <script>
+        // Xử lý header cố định và hiệu ứng cuộn
+        document.addEventListener("DOMContentLoaded", () => {
+            // Các biến cần thiết
+            const header = document.querySelector(".site-header");
+            const mainContent = document.querySelector(".main-content");
+            const menuToggle = document.getElementById("menuToggle");
+            const mobileNav = document.getElementById("mobileNav");
+            const accountDropdown = document.getElementById("accountDropdown");
+            const accountTrigger = accountDropdown?.querySelector(".account-trigger");
+            let lastScrollTop = 0;
+            let isScrolling = false;
+
+            // Điều chỉnh padding-top cho main-content dựa trên chiều cao của header
+            function adjustMainContentPadding() {
+                if (header && mainContent) {
+                    const headerHeight = header.offsetHeight;
+                    mainContent.style.paddingTop = headerHeight + "px";
+                }
+            }
+
+            // Xử lý sự kiện cuộn
+            function handleScroll() {
+                if (!isScrolling) {
+                    isScrolling = true;
+
+                    window.requestAnimationFrame(() => {
+                        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                        // Thu gọn header khi cuộn xuống
+                        if (scrollTop > 100) {
+                            header.classList.add("header-compact");
+
+                            // Thêm hiệu ứng ẩn/hiện header khi cuộn lên/xuống
+                            if (scrollTop > lastScrollTop && scrollTop > 300) {
+                                // Cuộn xuống - ẩn header
+                                header.classList.add("header-hidden");
+                            } else {
+                                // Cuộn lên - hiện header
+                                header.classList.remove("header-hidden");
+                            }
+                        } else {
+                            // Trở lại bình thường khi ở đầu trang
+                            header.classList.remove("header-compact", "header-hidden");
+                        }
+
+                        lastScrollTop = scrollTop;
+
+                        // Cập nhật padding cho main-content sau khi thay đổi header
+                        adjustMainContentPadding();
+
+                        isScrolling = false;
+                    });
+                }
+            }
+
+            // Xử lý nút menu trên mobile
+            if (menuToggle && mobileNav) {
+                menuToggle.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    menuToggle.classList.toggle("active");
+                    mobileNav.classList.toggle("active");
+                });
+            }
+
+            // Xử lý dropdown tài khoản
+            if (accountTrigger && accountDropdown) {
+                accountTrigger.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    accountDropdown.classList.toggle("open");
+                });
+            }
+
+            // Xử lý click bên ngoài để đóng các dropdown
+            document.addEventListener("click", (e) => {
+                // Đóng mobile nav khi click bên ngoài
+                if (mobileNav && mobileNav.classList.contains("active") &&
+                    !e.target.closest("#menuToggle") && !e.target.closest("#mobileNav")) {
+                    menuToggle.classList.remove("active");
+                    mobileNav.classList.remove("active");
+                }
+
+                // Đóng account dropdown khi click bên ngoài
+                if (accountDropdown && accountDropdown.classList.contains("open") &&
+                    !accountDropdown.contains(e.target)) {
+                    accountDropdown.classList.remove("open");
+                }
+            });
+
+            // Thêm nút cuộn lên đầu trang
+            function addScrollToTopButton() {
+                // Kiểm tra xem nút đã tồn tại chưa
+                if (document.querySelector(".scroll-to-top")) return;
+
+                // Tạo nút
+                const scrollButton = document.createElement("button");
+                scrollButton.className = "scroll-to-top";
+                scrollButton.innerHTML = '<i class="fas fa-arrow-up"></i>';
+                scrollButton.setAttribute("aria-label", "Cuộn lên đầu trang");
+                document.body.appendChild(scrollButton);
+
+                // Xử lý hiển thị/ẩn nút
+                function toggleScrollButtonVisibility() {
+                    if (window.pageYOffset > 300) {
+                        scrollButton.classList.add("visible");
+                    } else {
+                        scrollButton.classList.remove("visible");
+                    }
+                }
+
+                window.addEventListener("scroll", toggleScrollButtonVisibility);
+
+                // Xử lý sự kiện click
+                scrollButton.addEventListener("click", () => {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth",
+                    });
+                });
+            }
+
+            // Thêm class active cho link hiện tại
+            function setActiveNavLinks() {
+                const currentLocation = window.location.pathname;
+                const navLinks = document.querySelectorAll('.nav-links a');
+                const mobileLinks = document.querySelectorAll('.mobile-links a');
+
+                function setActive(links) {
+                    links.forEach(link => {
+                        const href = link.getAttribute('href');
+                        if (href === currentLocation || (href !== '/' && currentLocation.includes(href))) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+
+                setActive(navLinks);
+                setActive(mobileLinks);
+            }
+
+            // Xử lý dropdown trên mobile
+            function setupMobileDropdowns() {
+                const mobileDropdownToggles = document.querySelectorAll('.mobile-dropdown-toggle');
+                mobileDropdownToggles.forEach(toggle => {
+                    toggle.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const parent = this.closest('.mobile-dropdown');
+                        parent.classList.toggle('open');
+                    });
+                });
+            }
+
+            // Xử lý hover container (báo giá)
+            function setupHoverContainers() {
+                const hoverContainers = document.querySelectorAll(".bao-gia-hover-container");
+                const isMobile = () => window.matchMedia("(max-width: 767px)").matches;
+
+                hoverContainers.forEach((container) => {
+                    const title = container.querySelector(".hover-title");
+                    const list = container.querySelector(".bao-gia-list");
+
+                    if (!title || !list) return;
+
+                    if (!title.hasAttribute("tabindex")) {
+                        title.setAttribute("tabindex", "0");
+                        title.setAttribute("role", "button");
+                        title.setAttribute("aria-expanded", "false");
+                        title.setAttribute("aria-haspopup", "true");
+                    }
+
+                    const toggleList = (show) => {
+                        if (show === undefined) {
+                            list.classList.toggle("show");
+                            const isExpanded = list.classList.contains("show");
+                            title.setAttribute("aria-expanded", isExpanded.toString());
+
+                            // Toggle icon rotation
+                            const icon = title.querySelector("i");
+                            if (icon) {
+                                icon.style.transform = isExpanded ? "rotate(-180deg)" : "rotate(0)";
+                            }
+                        } else {
+                            if (show) {
+                                list.classList.add("show");
+                                title.setAttribute("aria-expanded", "true");
+                                const icon = title.querySelector("i");
+                                if (icon) icon.style.transform = "rotate(-180deg)";
+                            } else {
+                                list.classList.remove("show");
+                                title.setAttribute("aria-expanded", "false");
+                                const icon = title.querySelector("i");
+                                if (icon) icon.style.transform = "rotate(0)";
+                            }
+                        }
+                    };
+
+                    title.addEventListener("click", (e) => {
+                        if (isMobile()) {
+                            e.preventDefault();
+                            toggleList();
+                        }
+                    });
+
+                    title.addEventListener("keydown", (e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            toggleList();
+                        } else if (e.key === "Escape" && list.classList.contains("show")) {
+                            toggleList(false);
+                        }
+                    });
+
+                    if (!isMobile()) {
+                        container.addEventListener("mouseenter", () => {
+                            if (!isMobile()) toggleList(true);
+                        });
+
+                        container.addEventListener("mouseleave", () => {
+                            if (!isMobile()) toggleList(false);
+                        });
+                    }
+
+                    document.addEventListener("click", (e) => {
+                        if (!container.contains(e.target) && list.classList.contains("show")) {
+                            toggleList(false);
+                        }
+                    });
+
+                    // Add hover effect for the items in the list
+                    const items = container.querySelectorAll('.mega-menu-list li a');
+                    items.forEach(item => {
+                        item.addEventListener('mouseenter', () => {
+                            item.classList.add('hover');
+                        });
+
+                        item.addEventListener('mouseleave', () => {
+                            item.classList.remove('hover');
+                        });
+                    });
+                });
+            }
+
+            // Đặt năm hiện tại cho footer
+            function setCurrentYear() {
+                const currentYear = document.getElementById('currentYear');
+                if (currentYear) {
+                    currentYear.textContent = new Date().getFullYear();
+                }
+            }
+
+            // Khởi tạo tất cả các chức năng
+            adjustMainContentPadding();
+            setActiveNavLinks();
+            setupMobileDropdowns();
+            setupHoverContainers();
+            setCurrentYear();
+            addScrollToTopButton();
+
+            // Thêm các event listener
+            window.addEventListener("resize", adjustMainContentPadding);
+            window.addEventListener("scroll", handleScroll);
+        });
+    </script>
+</body>
+</html>

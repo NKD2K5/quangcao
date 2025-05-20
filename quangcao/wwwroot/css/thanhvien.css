@@ -1,0 +1,155 @@
+﻿/* Team Section Styles */
+.team-section {
+    background-color: #2563eb; /* Blue background */
+    color: white;
+    padding: 80px 0;
+    position: relative;
+}
+
+.team-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 50px;
+    padding-bottom: 15px;
+    position: relative;
+}
+
+    .team-title:after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background-color: white;
+    }
+
+/* Carousel Container */
+.team-carousel {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.team-slides {
+    position: relative;
+    height: 450px; /* Fixed height for the slides container */
+}
+
+/* Individual Slides */
+.team-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+    .team-slide.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+/* Team Member Styling */
+.team-member {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.member-image {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 30px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+}
+
+    .member-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.member-quote {
+    font-size: 1.2rem;
+    text-align: center;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    font-style: italic;
+    max-width: 80%;
+}
+
+.member-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+}
+
+.member-position {
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    opacity: 0.9;
+    margin-bottom: 40px;
+}
+
+/* Carousel Controls */
+.carousel-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.carousel-control {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .carousel-control:hover {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .carousel-control i {
+        font-size: 1rem;
+    }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .team-title {
+        font-size: 1.5rem;
+        margin-bottom: 30px;
+    }
+
+    .member-image {
+        width: 150px;
+        height: 150px;
+    }
+
+    .member-quote {
+        font-size: 1rem;
+        max-width: 95%;
+    }
+
+    .team-slides {
+        height: 500px; /* Increase height for mobile */
+    }
+}

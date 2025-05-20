@@ -1,0 +1,87 @@
+﻿@model quangcao.Models.ViewModel.TinTucEditViewModel
+
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Chỉnh sửa tin tức</h1>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <input type="hidden" asp-for="IdTinTuc" />
+            <input type="hidden" asp-for="HinhAnhCu" />
+
+            <div class="form-group">
+                <label asp-for="TieuDe"></label>
+                <input asp-for="TieuDe" class="form-control" />
+                <span asp-validation-for="TieuDe" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="NoiDung"></label>
+                <textarea asp-for="NoiDung" class="form-control"></textarea>
+                <span asp-validation-for="NoiDung" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Ảnh hiện tại</label><br />
+                @if (!string.IsNullOrEmpty(Model.HinhAnhCu))
+                {
+                    <img src="@Url.Content(Model.HinhAnhCu)" alt="Ảnh hiện tại" style="max-height:150px;" />
+                }
+            </div>
+
+            <div class="form-group">
+                <label asp-for="HinhAnhMoi">Chọn ảnh mới</label>
+                <input asp-for="HinhAnhMoi" type="file" class="form-control" />
+                <span asp-validation-for="HinhAnhMoi" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="NgayDang"></label>
+                <input asp-for="NgayDang" type="date" class="form-control" />
+                <span asp-validation-for="NgayDang" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="UserId">Người đăng</label>
+                <select asp-for="UserId" asp-items="ViewBag.UserId" class="form-control"></select>
+                <span asp-validation-for="UserId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <button type="submit" class="btn btn-primary">Lưu</button>
+                <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- TinyMCE từ CDN với API key của bạn -->
+    <script src="https://cdn.tiny.cloud/1/2o2esmawdbgvtbo8fgavb4c02le2h8d7p9cm0ilv0jwvm0ay/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <script>
+        tinymce.init({
+            selector: 'textarea[name="NoiDung"]',
+            plugins: [
+                'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+                'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable',
+                'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography',
+                'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
+            ],
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+            height: 500,
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Admin',
+            mergetags_list: [
+                { value: 'First.Name', title: 'First Name' },
+                { value: 'Email', title: 'Email' },
+            ],
+            ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+            branding: false
+        });
+    </script>
+}

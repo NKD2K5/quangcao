@@ -1,0 +1,73 @@
+﻿@foreach (var dg in Model.DanhGia)
+{
+    if (!string.IsNullOrEmpty(dg.HinhAnh))
+    {
+        <div class="review-media">
+            @foreach (var img in dg.HinhAnh.Split(';'))
+            {
+                if (!string.IsNullOrWhiteSpace(img))
+                {
+                    <div class="review-media-item">
+                        @if (img.EndsWith(".mp4") || img.EndsWith(".webm") || img.EndsWith(".ogg"))
+                        {
+                            <video src="@Url.Content("~/img/update/danhgia/" + img)" controls preload="metadata"></video>
+                        }
+                        else
+                        {
+                            <img src="@Url.Content("~/img/update/danhgia/" + img)" alt="Hình ảnh đánh giá" loading="lazy" />
+                        }
+                    </div>
+                }
+            }
+        </div>
+    }
+}
+<style>
+     /* Thông báo toast */
+     .toast-notification {
+         position: fixed;
+         bottom: 20px;
+         right: 20px;
+         background-color: #ffffff;
+         border-radius: 8px;
+         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+         padding: 15px;
+         display: flex;
+         align-items: center;
+         justify-content: space-between;
+         gap: 10px;
+         z-index: 1000;
+         transform: translateY(100px);
+         opacity: 0;
+         transition: all 0.3s ease;
+     }
+
+         .toast-notification.show {
+             transform: translateY(0);
+             opacity: 1;
+         }
+
+     .toast-content {
+         display: flex;
+         align-items: center;
+         gap: 10px;
+     }
+
+     .toast-icon {
+         color: #10b981;
+         font-size: 18px;
+     }
+
+     .toast-message {
+         font-weight: 500;
+     }
+
+     .toast-close {
+         background: none;
+         border: none;
+         color: #6b7280;
+         cursor: pointer;
+         font-size: 16px;
+     }
+
+</style>

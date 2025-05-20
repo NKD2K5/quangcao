@@ -1,0 +1,135 @@
+﻿@model quangcao.Models.SanPham
+@{
+    var categories = ViewBag.ExistingCategories as List<string> ?? new List<string>();
+}
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>Lỗi ModelState:</strong>
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+<h2>Thêm sản phẩm</h2>
+
+<form asp-action="Create" enctype="multipart/form-data" method="post">
+    <div class="form-group">
+        <label asp-for="TenSanPham"></label>
+        <input asp-for="TenSanPham" class="form-control" />
+        <span asp-validation-for="TenSanPham" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Gia"></label>
+        <input asp-for="Gia" class="form-control" />
+        <span asp-validation-for="Gia" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MoTa"></label>
+        <textarea asp-for="MoTa" class="form-control"></textarea>
+        <span asp-validation-for="MoTa" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ChiTiet"></label>
+        <textarea asp-for="ChiTiet" class="form-control" rows="5"></textarea>
+        <span asp-validation-for="ChiTiet" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="SoLuongDaBan"></label>
+        <input asp-for="SoLuongDaBan" class="form-control" />
+        <span asp-validation-for="SoLuongDaBan" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="TheLoai">Thể loại</label>
+        <select id="TheLoai" name="TheLoai" class="form-control" onchange="toggleNewCategoryInput(this)">
+            <option value="">-- Chọn thể loại --</option>
+            @foreach (var category in categories)
+            {
+                <option value="@category" selected="@(category == Model?.TheLoai ? "selected" : null)">@category</option>
+            }
+            <option value="Thêm thể loại mới">Thêm thể loại mới</option>
+        </select>
+        <span asp-validation-for="TheLoai" class="text-danger"></span>
+    </div>
+
+    <div class="form-group" id="NewCategoryInput" style="display:none;">
+        <label for="NewCategory">Nhập thể loại mới</label>
+        <input type="text" name="NewCategory" id="NewCategory" class="form-control" />
+        <span class="text-danger">@ViewData.ModelState["NewCategory"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+    </div>
+
+    <div class="form-group">
+        <label>Hình ảnh</label>
+        <input type="file" name="hinhAnhFiles" class="form-control" multiple />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Tạo mới</button>
+</form>
+
+<!-- JavaScript để điều khiển việc hiển thị ô nhập thể loại mới -->
+<script>
+    function toggleNewCategoryInput(selectElement) {
+        var inputField = document.getElementById("NewCategoryInput");
+        if (selectElement.value === "Thêm thể loại mới") {
+            inputField.style.display = "block"; // Hiển thị ô nhập thể loại mới
+        } else {
+            inputField.style.display = "none"; // Ẩn ô nhập thể loại mới
+        }
+    }
+</script>
+
+@section Scripts {
+    <script src="https://cdn.tiny.cloud/1/2o2esmawdbgvtbo8fgavb4c02le2h8d7p9cm0ilv0jwvm0ay/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <script>
+        tinymce.init({
+            selector: 'textarea[name="MoTa"], textarea[name="ChiTiet"]',
+            plugins: [
+                'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists',
+                'media', 'searchreplace', 'table', 'visualblocks', 'wordcount', 'checklist', 'mediaembed',
+                'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen',
+                'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'mentions', 'tinycomments',
+                'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss',
+                'markdown', 'importword', 'exportword', 'exportpdf'
+            ],
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+            height: 500,
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Admin',
+            branding: false,
+
+            // ✅ Thêm chức năng chọn ảnh từ máy tính
+            file_picker_types: 'image',
+            file_picker_callback: function (callback, value, meta) {
+                if (meta.filetype === 'image') {
+                    var input = document.createElement('input');
+                    input.setAttribute('type', 'file');
+                    input.setAttribute('accept', 'image/*');
+
+                    input.onchange = function () {
+                        var file = this.files[0];
+                        var reader = new FileReader();
+
+                        reader.onload = function () {
+                            callback(reader.result, {
+                                alt: file.name
+                            });
+                        };
+
+                        reader.readAsDataURL(file); // Upload dạng Base64 vào nội dung
+                    };
+
+                    input.click();
+                }
+            }
+        });
+    </script>
+}

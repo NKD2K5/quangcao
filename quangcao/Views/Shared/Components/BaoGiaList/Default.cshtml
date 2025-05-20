@@ -1,0 +1,341 @@
+﻿@model List<quangcao.Models.BaoGia>
+
+<ul class="list-group">
+    @foreach (var baoGia in Model)
+    {
+        <li class="list-group-item">
+            <a asp-action="Details" asp-controller="BaoGia" asp-route-id="@baoGia.IdBaoGia">
+                @baoGia.TieuDe
+            </a>
+        </li>
+    }
+</ul>
+
+
+<link href="~/css/baogia.css" rel="stylesheet" />
+<style>
+    .bao-gia-hover-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    .hover-title {
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        color: #0f172a;
+        margin: 0;
+        padding: 0;
+        transition: color 0.2s;
+        font-size: 1rem;
+        font-weight: 500;
+        border-radius: 0;
+        background-color: transparent;
+        white-space: nowrap;
+    }
+
+        .hover-title:hover {
+            color: #2563eb;
+            background-color: transparent;
+        }
+
+        .hover-title i {
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+            margin-left: 6px;
+        }
+
+    .bao-gia-hover-container:hover .hover-title i {
+        transform: rotate(-180deg);
+    }
+
+    /* Thêm pseudo-element để "bắc cầu" giữa title và dropdown */
+    .bao-gia-hover-container::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        height: 10px;
+        background: transparent;
+        z-index: 999;
+    }
+
+    .bao-gia-list {
+        display: none;
+        position: absolute;
+        top: calc(100% + 5px);
+        left: 0;
+        background-color: #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        width: 200px;
+        border-radius: 0;
+        z-index: 1000;
+        padding: 0;
+        overflow: hidden;
+        margin-top: 0;
+        border: 1px solid #e5e7eb;
+    }
+
+        .bao-gia-hover-container:hover .bao-gia-list,
+        .bao-gia-list.show {
+            display: block;
+            animation: fadeIn 0.25s ease-out forwards;
+        }
+
+    keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    /* Thêm tiêu đề cho dropdown */
+    .bao-gia-list-header {
+        padding: 10px 15px;
+        border-bottom: 1px solid #e5e7eb;
+        color: #2563eb;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    .list-group {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .list-group-item {
+        margin: 0;
+        border-radius: 0;
+        overflow: hidden;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-group-item a {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            position: relative;
+            border-radius: 0;
+            background-color: transparent;
+            width: 100%;
+        }
+
+            /* Hiệu ứng hover với màu xám nhạt giống trong hình */
+            .list-group-item a:hover {
+                background-color: #f1f5f9; /* Màu xám nhạt khi hover */
+                color: #2563eb; /* Màu chữ xanh khi hover */
+            }
+
+            /* Tam giác CSS đúng như ban đầu */
+            .list-group-item a::before {
+                content: '';
+                display: inline-block;
+                width: 0;
+                height: 0;
+                border-style: solid;
+                border-width: 4px 0 4px 4px;
+                border-color: transparent transparent transparent #2563eb;
+                opacity: 0;
+                margin-right: 8px;
+                transform: translateX(-8px);
+                transition: all 0.2s ease;
+            }
+
+            .list-group-item a:hover::before {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+    /* Mobile styles */
+    media (max-width: 767px) {
+        .bao-gia-hover-container
+
+    {
+        display: block;
+        width: 100%;
+    }
+
+    /* Loại bỏ pseudo-element trên mobile vì chúng ta sử dụng click thay vì hover */
+    .bao-gia-hover-container::after {
+        display: none;
+    }
+
+    .hover-title {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        width: 100%;
+    }
+
+        .hover-title i {
+            margin-left: auto;
+        }
+
+    .bao-gia-list {
+        width: 100%;
+        position: static;
+        box-shadow: none;
+        background-color: transparent;
+        border-radius: 0;
+        padding: 0 0 0 12px;
+        margin-top: 5px;
+        border-left: 2px solid #e0e7ff;
+        border: none;
+    }
+
+    /* On mobile, don't show on hover, only on click */
+    .bao-gia-hover-container:hover .bao-gia-list {
+        display: none;
+    }
+
+    .bao-gia-list.show {
+        display: block;
+        animation: slideDown 0.3s ease forwards;
+    }
+
+    keyframes slideDown {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .list-group-item {
+        margin: 4px 0;
+        border-bottom: none;
+    }
+
+        .list-group-item a {
+            padding: 8px 12px;
+            background-color: transparent;
+        }
+
+            .list-group-item a:hover {
+                background-color: #f1f5f9;
+            }
+
+    }
+</style>
+<script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Get all hover containers on the page
+        const hoverContainers = document.querySelectorAll(".bao-gia-hover-container");
+
+        // Check if we're on a mobile device
+        const isMobile = () => window.matchMedia("(max-width: 767px)").matches;
+
+        hoverContainers.forEach((container) => {
+            const title = container.querySelector(".hover-title");
+            const list = container.querySelector(".bao-gia-list");
+
+            if (!title || !list) return; // Skip if elements don't exist
+
+            // For accessibility: make the title focusable
+            if (!title.hasAttribute("tabindex")) {
+                title.setAttribute("tabindex", "0");
+                title.setAttribute("role", "button");
+                title.setAttribute("aria-expanded", "false");
+                title.setAttribute("aria-haspopup", "true");
+            }
+
+            // Toggle function to handle showing/hiding the list
+            const toggleList = (show) => {
+                if (show === undefined) {
+                    // Toggle if no value provided
+                    list.classList.toggle("show");
+                    const isExpanded = list.classList.contains("show");
+                    title.setAttribute("aria-expanded", isExpanded.toString());
+
+                    // Toggle icon rotation
+                    const icon = title.querySelector("i");
+                    if (icon) {
+                        icon.style.transform = isExpanded ? "rotate(-180deg)" : "rotate(0)";
+                    }
+                } else {
+                    // Set to specific state
+                    if (show) {
+                        list.classList.add("show");
+                        title.setAttribute("aria-expanded", "true");
+                        const icon = title.querySelector("i");
+                        if (icon) icon.style.transform = "rotate(-180deg)";
+                    } else {
+                        list.classList.remove("show");
+                        title.setAttribute("aria-expanded", "false");
+                        const icon = title.querySelector("i");
+                        if (icon) icon.style.transform = "rotate(0)";
+                    }
+                }
+            };
+
+            // Click handler for title
+            title.addEventListener("click", (e) => {
+                if (isMobile()) {
+                    e.preventDefault();
+                    toggleList();
+                }
+            });
+
+            // Keyboard handler for accessibility
+            title.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    toggleList();
+                } else if (e.key === "Escape" && list.classList.contains("show")) {
+                    toggleList(false);
+                }
+            });
+
+            // Desktop hover behavior
+            if (!isMobile()) {
+                container.addEventListener("mouseenter", () => {
+                    if (!isMobile()) toggleList(true);
+                });
+
+                container.addEventListener("mouseleave", () => {
+                    if (!isMobile()) toggleList(false);
+                });
+            }
+
+            // Close when clicking outside
+            document.addEventListener("click", (e) => {
+                if (!container.contains(e.target) && list.classList.contains("show")) {
+                    toggleList(false);
+                }
+            });
+
+            // Handle window resize to adjust behavior
+            window.addEventListener("resize", () => {
+                // If transitioning from mobile to desktop with menu open, close it
+                if (!isMobile() && list.classList.contains("show")) {
+                    toggleList(false);
+                }
+            });
+        });
+    });
+</script>

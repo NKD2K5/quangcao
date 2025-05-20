@@ -1,0 +1,1385 @@
+﻿@model quangcao.Models.TinTuc
+@using System.Security.Claims
+@{
+    ViewData["Title"] = Model.TieuDe;
+    var formattedDate = Model.NgayDang.ToString("dd MMMM, yyyy");
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+
+<!-- Reading progress bar -->
+<div class="news-reading-progress-container">
+    <div class="news-reading-progress-bar" id="readingProgressBar"></div>
+</div>
+
+<!-- Header with featured image background -->
+<header class="news-detail-header">
+    <div class="news-header-overlay"></div>
+    @if (!string.IsNullOrEmpty(Model.HinhAnh))
+    {
+        <div class="news-header-bg" style="background-image: url('@Url.Content("~/" + Model.HinhAnh)');"></div>
+    }
+    else
+    {
+        <div class="news-header-bg" style="background-image: url('@Url.Content("~/images/default-header.jpg")');"></div>
+    }
+
+    <div class="container">
+        <div class="news-header-content">
+            <div class="news-category">
+                <span class="news-category-badge">Tin tức</span>
+            </div>
+            <h1 class="news-title">@Model.TieuDe</h1>
+            <div class="news-meta">
+                <div class="news-date">
+                    <i class="bi bi-calendar3"></i> @formattedDate
+                </div>
+                <div class="news-reading-time">
+                    <i class="bi bi-clock"></i> <span id="reading-time">5 phút đọc</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Container for content -->
+<div class="news-container">
+    <div class="container">
+        <div class="news-navigation">
+            <a href="@Url.Action("Index", "TinTuc")" class="news-back-link">
+                <i class="bi bi-arrow-left"></i> Quay lại danh sách
+            </a>
+            <div class="news-actions-top">
+                @{
+                    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                }
+                @if (Model != null && Model.User?.Id == currentUserId)
+                {
+                    <a asp-action="Edit" asp-route-id="@Model.IdTinTuc" class="news-action-btn news-edit-btn">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                }
+                <button type="button" class="news-action-btn news-print-btn" id="printButton">
+                    <i class="bi bi-printer"></i>
+                </button>
+                <button type="button" class="news-action-btn news-reader-btn" id="readerModeButton">
+                    <i class="bi bi-book"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="news-layout">
+            <!-- Main content column - 70% width -->
+            <main class="news-main">
+                <article class="news-content">
+                    @Html.Raw(Model.NoiDung)
+                </article>
+
+                <!-- Tags -->
+                <div class="news-tags">
+                    <span class="news-tags-title"><i class="bi bi-tags"></i> Chủ đề:</span>
+                    <div class="news-tags-list">
+                        @if (ViewBag.Tags != null && ViewBag.Tags.Count > 0)
+                        {
+                            foreach (var tag in ViewBag.Tags)
+                            {
+                                <a href="@Url.Action("Index", "TinTuc", new { tag = tag })" class="news-tag">@tag</a>
+                            }
+                        }
+                        else
+                        {
+                            <a href="#" class="news-tag">Tin tức</a>
+                            <a href="#" class="news-tag">Sự kiện</a>
+                            <a href="#" class="news-tag">Cập nhật</a>
+                        }
+                    </div>
+                </div>
+                <!-- Share -->
+                <div class="news-share">
+                    <h4 class="news-share-title">Chia sẻ bài viết</h4>
+                    <div class="news-share-buttons">
+                        <a href="#" class="news-share-btn news-facebook" onclick="shareOnFacebook(); return false;" aria-label="Chia sẻ lên Facebook">
+                            <i class="bi bi-facebook"></i> Facebook
+                        </a>
+                        <a href="#" class="news-share-btn news-twitter" onclick="shareOnTwitter(); return false;" aria-label="Chia sẻ lên Twitter">
+                            <i class="bi bi-twitter"></i> Twitter
+                        </a>
+                        <a href="#" class="news-share-btn news-linkedin" onclick="shareOnLinkedIn(); return false;" aria-label="Chia sẻ lên LinkedIn">
+                            <i class="bi bi-linkedin"></i> LinkedIn
+                        </a>
+                        <a href="#" class="news-share-btn news-email" onclick="shareByEmail(); return false;" aria-label="Chia sẻ qua Email">
+                            <i class="bi bi-envelope"></i> Email
+                        </a>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Sidebar column - 30% width -->
+            <aside class="news-sidebar">
+                <!-- Popular posts widget -->
+                <div class="news-sidebar-widget news-popular-widget">
+                    <h3 class="news-widget-title">Bài viết phổ biến</h3>
+                    <div class="news-popular-posts">
+                        @if (ViewBag.PopularPosts != null && ViewBag.PopularPosts.Count > 0)
+                        {
+                            int index = 1;
+                            foreach (var post in ViewBag.PopularPosts)
+                            {
+                                <div class="news-popular-post">
+                                    <div class="news-post-number">@(index.ToString().PadLeft(2, '0'))</div>
+                                    <div class="news-post-info">
+                                        <h5><a href="@Url.Action("Details", "TinTucs", new { id = post.IdTinTuc })">@post.TieuDe</a></h5>
+                                        <div class="news-post-meta">
+                                            <span><i class="bi bi-calendar3"></i> @post.NgayDang.ToString("dd/MM/yyyy")</span>
+                                            <span><i class="bi bi-eye"></i> @(post.ViewCount ?? 0) lượt xem</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                index++;
+                            }
+                        }
+                        else
+                        {
+                            <!-- Placeholder popular posts -->
+                            <div class="news-popular-post">
+                                <div class="news-post-number">01</div>
+                                <div class="news-post-info">
+                                    <h5><a href="#">Tin tức mới nhất về sự kiện</a></h5>
+                                    <div class="news-post-meta">
+                                        <span><i class="bi bi-calendar3"></i> 15/05/2023</span>
+                                        <span><i class="bi bi-eye"></i> 1.2k lượt xem</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="news-popular-post">
+                                <div class="news-post-number">02</div>
+                                <div class="news-post-info">
+                                    <h5><a href="#">Cập nhật thông tin mới</a></h5>
+                                    <div class="news-post-meta">
+                                        <span><i class="bi bi-calendar3"></i> 10/05/2023</span>
+                                        <span><i class="bi bi-eye"></i> 980 lượt xem</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="news-popular-post">
+                                <div class="news-post-number">03</div>
+                                <div class="news-post-info">
+                                    <h5><a href="#">Sự kiện sắp diễn ra</a></h5>
+                                    <div class="news-post-meta">
+                                        <span><i class="bi bi-calendar3"></i> 05/05/2023</span>
+                                        <span><i class="bi bi-eye"></i> 756 lượt xem</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Related posts widget -->
+                <div class="news-sidebar-widget news-related-widget">
+                    <h3 class="news-widget-title">Bài viết liên quan</h3>
+                    <div class="news-related-posts">
+                        @if (ViewBag.RelatedNews != null && ViewBag.RelatedNews.Count > 0)
+                        {
+                            foreach (var relatedNews in ViewBag.RelatedNews)
+                            {
+                                <div class="news-related-post">
+                                    <div class="news-related-image">
+                                        @if (!string.IsNullOrEmpty(relatedNews.HinhAnh))
+                                        {
+                                            <a href="@Url.Action("Details", "TinTucs", new { id = relatedNews.IdTinTuc })">
+                                                <img src="@Url.Content("~/" + relatedNews.HinhAnh)" alt="@relatedNews.TieuDe" class="img-fluid" />
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <div class="news-placeholder-image">
+                                                <i class="bi bi-image"></i>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="news-related-info">
+                                        <h5>
+                                            <a href="@Url.Action("Details", "TinTucs", new { id = relatedNews.IdTinTuc })">
+                                                @relatedNews.TieuDe
+                                            </a>
+                                        </h5>
+                                        <div class="news-related-date">
+                                            <i class="bi bi-calendar3"></i> @relatedNews.NgayDang.ToString("dd/MM/yyyy")
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <!-- Placeholder related posts -->
+                            <div class="news-related-post">
+                                <div class="news-related-image">
+                                    <div class="news-placeholder-image">
+                                        <i class="bi bi-image"></i>
+                                    </div>
+                                </div>
+                                <div class="news-related-info">
+                                    <h5><a href="#">Tin tức mới nhất về sự kiện</a></h5>
+                                    <div class="news-related-date">
+                                        <i class="bi bi-calendar3"></i> 15/05/2023
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="news-related-post">
+                                <div class="news-related-image">
+                                    <div class="news-placeholder-image">
+                                        <i class="bi bi-image"></i>
+                                    </div>
+                                </div>
+                                <div class="news-related-info">
+                                    <h5><a href="#">Cập nhật thông tin mới</a></h5>
+                                    <div class="news-related-date">
+                                        <i class="bi bi-calendar3"></i> 10/05/2023
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="news-related-post">
+                                <div class="news-related-image">
+                                    <div class="news-placeholder-image">
+                                        <i class="bi bi-image"></i>
+                                    </div>
+                                </div>
+                                <div class="news-related-info">
+                                    <h5><a href="#">Sự kiện sắp diễn ra</a></h5>
+                                    <div class="news-related-date">
+                                        <i class="bi bi-calendar3"></i> 05/05/2023
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Newsletter widget -->
+                <div class="news-sidebar-widget news-newsletter-widget">
+                    <h3 class="news-widget-title">Đăng ký nhận tin</h3>
+                    <p class="news-newsletter-desc">Nhận thông báo khi có bài viết mới</p>
+                    <form class="news-newsletter-form">
+                        <div class="form-group">
+                            <input type="email" class="form-control" placeholder="Email của bạn" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary news-btn-subscribe">
+                            <i class="bi bi-envelope-check"></i> Đăng ký
+                        </button>
+                    </form>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+
+<!-- Reader Mode -->
+<div id="readerModeOverlay" class="news-reader-mode-overlay">
+    <div class="news-reader-mode-container">
+        <div class="news-reader-mode-header">
+            <button id="closeReaderMode" class="news-close-reader-mode">
+                <i class="bi bi-x-lg"></i>
+            </button>
+            <h2 class="news-reader-title">@Model.TieuDe</h2>
+            <div class="news-reader-meta">
+                <span><i class="bi bi-calendar3"></i> @formattedDate</span>
+            </div>
+        </div>
+        <div class="news-reader-mode-content">
+            <!-- Content will be copied here by JavaScript -->
+        </div>
+    </div>
+</div>
+<style>
+    :root {
+        --primary-color: #2563eb;
+        --primary-light: #3b82f6;
+        --primary-dark: #1d4ed8;
+        --secondary-color: #64748b;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --light-color: #f8fafc;
+        --dark-color: #1e293b;
+        --text-color: #334155;
+        --text-light: #64748b;
+        --text-dark: #0f172a;
+        --border-color: #e2e8f0;
+        --border-radius: 0.75rem;
+        --box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+        --transition: all 0.3s ease;
+    }
+
+
+
+    /* Reading progress bar */
+    .news-reading-progress-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background-color: rgba(255, 255, 255, 0.1);
+        z-index: 9999;
+    }
+
+    .news-reading-progress-bar {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(to right, #3b82f6, #2563eb);
+        transition: width 0.1s ease;
+    }
+
+    /* News Header */
+    .news-detail-header {
+        position: relative;
+        height: 400px;
+        min-height: 300px;
+        max-height: 400px;
+        display: flex;
+        align-items: flex-end;
+        color: white;
+        overflow: hidden;
+        margin-bottom: 0;
+        background-color: #333; /* Fallback color if image doesn't load */
+    }
+
+    .news-header-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        z-index: 1;
+    }
+
+    .news-header-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.8));
+        z-index: 2;
+    }
+
+    .news-header-content {
+        position: relative;
+        z-index: 3;
+        padding-bottom: 3rem;
+        max-width: 800px;
+    }
+
+    .news-category {
+        margin-bottom: 1.5rem;
+    }
+
+    .news-category-badge {
+        display: inline-block;
+        background: var(--primary-color);
+        color: white;
+        padding: 0.35rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 10px rgba(37, 99, 235, 0.3);
+    }
+
+    .news-title {
+        font-family: "Playfair Display", serif;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+        font-size: 3rem;
+        letter-spacing: -0.5px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .news-meta {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.95rem;
+        gap: 1.5rem;
+    }
+
+    .news-date,
+    .news-reading-time {
+        display: flex;
+        align-items: center;
+    }
+
+        .news-date i,
+        .news-reading-time i {
+            margin-right: 0.5rem;
+            color: var(--primary-light);
+        }
+
+    /* News Container */
+    .news-container {
+        position: relative;
+        padding-top: 0; /* XÓA khoảng trắng thừa ở trên */
+        padding-bottom: 4rem;
+        background-color: #f8fafc;
+    }
+
+
+    .news-navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        background-color: white;
+        border-radius: var(--border-radius);
+        padding: 1rem 1.5rem;
+        box-shadow: var(--box-shadow);
+    }
+
+    .news-back-link {
+        display: flex;
+        align-items: center;
+        color: var(--text-color);
+        text-decoration: none;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+        .news-back-link i {
+            margin-right: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .news-back-link:hover {
+            color: var(--primary-color);
+        }
+
+            .news-back-link:hover i {
+                transform: translateX(-3px);
+            }
+
+    .news-actions-top {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .news-action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--light-color);
+        color: var(--text-color);
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+        .news-action-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+    .news-edit-btn:hover {
+        background-color: var(--warning-color);
+    }
+
+    /* News Layout */
+    .news-layout {
+        display: grid;
+        grid-template-columns: 7fr 3fr;
+        gap: 1.5rem;
+    }
+
+    /* Main Content */
+    .news-main {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+    }
+
+    .news-content {
+        font-family: "Merriweather", serif;
+        font-size: 1.1rem;
+        line-height: 1.9;
+        color: var(--text-dark);
+        padding: 2.5rem;
+    }
+
+        .news-content p {
+            margin-bottom: 1.8rem;
+        }
+
+            .news-content p:first-of-type::first-letter {
+                float: left;
+                font-family: "Playfair Display", serif;
+                font-size: 4rem;
+                line-height: 0.8;
+                font-weight: 700;
+                margin-right: 0.5rem;
+                background: var(--primary-color);
+                color: white;
+                padding: 0.8rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+        .news-content h2,
+        .news-content h3 {
+            font-family: "Playfair Display", serif;
+            margin-top: 2.5rem;
+            margin-bottom: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+
+            .news-content h2::after,
+            .news-content h3::after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 60px;
+                height: 3px;
+                background: var(--primary-color);
+            }
+
+        .news-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.75rem;
+            margin: 2.5rem auto;
+            display: block;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .news-content img:hover {
+                transform: scale(1.02);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            }
+
+        .news-content a {
+            color: var(--primary-color);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+            .news-content a:hover {
+                border-bottom-color: var(--primary-color);
+            }
+
+        .news-content blockquote {
+            border-left: 4px solid var(--primary-color);
+            padding: 1.5rem 2rem;
+            margin: 2.5rem 0;
+            background-color: var(--light-color);
+            font-style: italic;
+            color: var(--text-dark);
+            position: relative;
+            font-size: 1.2rem;
+            border-radius: 0 0.75rem 0.75rem 0;
+        }
+
+            .news-content blockquote::before {
+                content: '"';
+                position: absolute;
+                top: -20px;
+                left: 10px;
+                font-size: 5rem;
+                color: rgba(0, 0, 0, 0.05);
+                font-family: "Playfair Display", serif;
+                line-height: 1;
+            }
+
+        .news-content ul,
+        .news-content ol {
+            margin-bottom: 1.8rem;
+            padding-left: 1.8rem;
+        }
+
+        .news-content li {
+            margin-bottom: 0.8rem;
+        }
+
+    /* Tags */
+    .news-tags {
+        padding: 1.5rem 2.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .news-tags-title {
+        color: var(--text-dark);
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+        .news-tags-title i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+
+    .news-tags-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .news-tag {
+        display: inline-block;
+        background-color: var(--light-color);
+        color: var(--text-color);
+        padding: 0.4rem 1.2rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border: 1px solid transparent;
+        font-weight: 500;
+    }
+
+        .news-tag:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+    /* Author */
+    .news-author {
+        display: flex;
+        align-items: center;
+        padding: 2rem 2.5rem;
+        border-top: 1px solid var(--border-color);
+        background-color: var(--light-color);
+    }
+
+    .news-author-avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 1.5rem;
+        border: 3px solid white;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+        .news-author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .news-author-info {
+        flex: 1;
+    }
+
+    .news-author-name {
+        margin: 0 0 0.5rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .news-author-bio {
+        margin: 0;
+        color: var(--text-light);
+        font-size: 0.95rem;
+    }
+
+    /* Share */
+    .news-share {
+        padding: 2rem 2.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .news-share-title {
+        margin: 0 0 1.5rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 1.1rem;
+    }
+
+    .news-share-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .news-share-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.5rem;
+        border-radius: 2rem;
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+        .news-share-btn i {
+            margin-right: 0.5rem;
+        }
+
+        .news-share-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+    .news-facebook {
+        background-color: #1877f2;
+    }
+
+    .news-twitter {
+        background-color: #1da1f2;
+    }
+
+    .news-linkedin {
+        background-color: #0077b5;
+    }
+
+    .news-email {
+        background-color: #ea4335;
+    }
+
+    /* Sidebar */
+    .news-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .news-sidebar-widget {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 1.8rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .news-sidebar-widget:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+    .news-widget-title {
+        font-family: "Playfair Display", serif;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--border-color);
+        position: relative;
+        font-size: 1.25rem;
+    }
+
+        .news-widget-title::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--primary-color);
+        }
+
+    /* Popular Posts */
+    .news-popular-posts {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .news-popular-post {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        transition: all 0.3s ease;
+        padding: 0.75rem;
+        border-radius: 0.75rem;
+    }
+
+        .news-popular-post:hover {
+            background-color: var(--light-color);
+            transform: translateX(8px);
+        }
+
+    .news-post-number {
+        font-family: "Playfair Display", serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-fill-color: transparent;
+        line-height: 1;
+        flex-shrink: 0;
+    }
+
+    .news-post-info {
+        flex: 1;
+    }
+
+        .news-post-info h5 {
+            margin: 0 0 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+            .news-post-info h5 a {
+                color: var(--text-dark);
+                text-decoration: none;
+                transition: var(--transition);
+            }
+
+                .news-post-info h5 a:hover {
+                    color: var(--primary-color);
+                }
+
+    .news-post-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+
+        .news-post-meta span {
+            display: flex;
+            align-items: center;
+        }
+
+        .news-post-meta i {
+            margin-right: 0.35rem;
+            color: var(--primary-color);
+        }
+
+    /* Related Posts */
+    .news-related-posts {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .news-related-post {
+        display: flex;
+        align-items: center;
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+
+        .news-related-post:hover {
+            transform: translateX(5px);
+        }
+
+        .news-related-post:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+    .news-related-image {
+        width: 80px;
+        height: 60px;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        margin-right: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        flex-shrink: 0;
+    }
+
+        .news-related-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .news-placeholder-image {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-color);
+    }
+
+    .news-related-info h5 {
+        margin: 0 0 0.5rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+        .news-related-info h5 a {
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+            .news-related-info h5 a:hover {
+                color: var(--primary-color);
+            }
+
+    .news-related-date {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        display: flex;
+        align-items: center;
+    }
+
+        .news-related-date i {
+            margin-right: 0.35rem;
+            color: var(--primary-color);
+        }
+
+    /* Newsletter */
+    .news-newsletter-widget {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-light));
+        color: white;
+    }
+
+        .news-newsletter-widget .news-widget-title {
+            color: white;
+            border-bottom-color: rgba(255, 255, 255, 0.2);
+        }
+
+            .news-newsletter-widget .news-widget-title::after {
+                background: white;
+            }
+
+    .news-newsletter-desc {
+        margin-bottom: 1.5rem;
+        opacity: 0.9;
+    }
+
+    .news-newsletter-form .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .news-newsletter-form .form-control {
+        border-radius: 2rem;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .news-btn-subscribe {
+        width: 100%;
+        border-radius: 2rem;
+        padding: 0.75rem 1.5rem;
+        background-color: white;
+        color: var(--primary-dark);
+        border: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .news-btn-subscribe:hover {
+            background-color: var(--primary-dark);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .news-btn-subscribe i {
+            margin-right: 0.5rem;
+        }
+
+    /* Reader Mode */
+    .news-reader-mode-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(15, 23, 42, 0.95);
+        z-index: 9999;
+        display: none;
+        overflow-y: auto;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .news-reader-mode-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        background-color: white;
+        border-radius: var(--border-radius);
+        padding: 3rem;
+        position: relative;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    .news-reader-mode-header {
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .news-close-reader-mode {
+        position: absolute;
+        top: -1.5rem;
+        right: -1.5rem;
+        background-color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        color: var(--text-dark);
+    }
+
+        .news-close-reader-mode:hover {
+            transform: rotate(90deg);
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+    .news-reader-title {
+        font-family: "Playfair Display", serif;
+        font-weight: 700;
+        color: var(--text-dark);
+        font-size: 2rem;
+        line-height: 1.3;
+        margin-bottom: 1rem;
+    }
+
+    .news-reader-meta {
+        color: var(--text-light);
+        font-size: 0.95rem;
+    }
+
+        .news-reader-meta span {
+            display: flex;
+            align-items: center;
+        }
+
+        .news-reader-meta i {
+            margin-right: 0.5rem;
+        }
+
+    .news-reader-mode-content {
+        font-family: "Merriweather", serif;
+        font-size: 1.1rem;
+        line-height: 2;
+        color: var(--text-dark);
+    }
+
+    /* Print styles */
+    media print {
+        body
+
+    {
+        padding-top: 0;
+        background-color: white;
+    }
+
+    .news-reading-progress-container,
+    .news-detail-header,
+    .news-navigation,
+    .news-sidebar,
+    .news-tags,
+    .news-author,
+    .news-share {
+        display: none !important;
+    }
+
+    .news-layout {
+        display: block;
+    }
+
+    .news-main {
+        box-shadow: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .news-content {
+        padding: 0;
+    }
+
+    .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+
+    }
+
+    /* Responsive adjustments */
+    media (max-width: 991.98px) {
+        .news-layout
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .news-detail-header {
+        height: 50vh;
+    }
+
+    .news-title {
+        font-size: 2.5rem;
+    }
+
+    }
+
+    media (max-width: 767.98px) {
+        .news-detail-header
+
+    {
+        height: 40vh;
+        min-height: 300px;
+    }
+
+    .news-title {
+        font-size: 2rem;
+    }
+
+    .news-content {
+        padding: 1.5rem;
+    }
+
+        .news-content p:first-of-type::first-letter {
+            font-size: 3.5rem;
+            padding: 0.6rem;
+        }
+
+    .news-tags,
+    .news-author,
+    .news-share {
+        padding: 1.5rem;
+    }
+
+    .news-share-buttons {
+        flex-direction: column;
+    }
+
+    .news-share-btn {
+        width: 100%;
+    }
+
+    }
+
+    media (max-width: 575.98px) {
+        .news-detail-header
+
+    {
+        height: 30vh;
+        min-height: 250px;
+    }
+
+    .news-title {
+        font-size: 1.75rem;
+    }
+
+    .news-header-content {
+        padding-bottom: 2rem;
+    }
+
+    .news-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .news-navigation {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .news-actions-top {
+        align-self: flex-end;
+    }
+
+    .news-reader-mode-container {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+    }
+
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+</style>
+<script>
+        // Calculate reading time
+    document.addEventListener("DOMContentLoaded", () => {
+      // Calculate reading time
+      const calculateReadingTime = () => {
+        const content = document.querySelector(".news-content")
+        if (content) {
+          const text = content.textContent || ""
+          const wordCount = text.split(/\s+/).length
+          const readingTime = Math.ceil(wordCount / 200) // Average reading speed: 200 words per minute
+          const readingTimeElement = document.getElementById("reading-time")
+          if (readingTimeElement) {
+            readingTimeElement.textContent = `${readingTime} phút đọc`
+          }
+        }
+      }
+
+      // Reading progress bar
+      const setupReadingProgress = () => {
+        const progressBar = document.getElementById("readingProgressBar")
+        if (progressBar) {
+          window.addEventListener("scroll", () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight
+            const scrolled = (winScroll / height) * 100
+            progressBar.style.width = scrolled + "%"
+          })
+        }
+      }
+
+      // Reader mode functionality
+      const setupReaderMode = () => {
+        const readerModeButton = document.getElementById("readerModeButton")
+        const closeReaderMode = document.getElementById("closeReaderMode")
+        const readerModeOverlay = document.getElementById("readerModeOverlay")
+        const readerModeContent = document.querySelector(".news-reader-mode-content")
+        const articleContent = document.querySelector(".news-content")
+
+        if (readerModeButton && closeReaderMode && readerModeOverlay && readerModeContent && articleContent) {
+          readerModeButton.addEventListener("click", () => {
+            readerModeContent.innerHTML = articleContent.innerHTML
+            readerModeOverlay.style.display = "block"
+            setTimeout(() => {
+              readerModeOverlay.style.opacity = "1"
+            }, 10)
+            document.body.style.overflow = "hidden"
+          })
+
+          closeReaderMode.addEventListener("click", () => {
+            readerModeOverlay.style.opacity = "0"
+            setTimeout(() => {
+              readerModeOverlay.style.display = "none"
+              document.body.style.overflow = "auto"
+            }, 300)
+          })
+        }
+      }
+
+      // Print functionality
+      const setupPrintButton = () => {
+        const printButton = document.getElementById("printButton")
+        if (printButton) {
+          printButton.addEventListener("click", () => {
+            window.print()
+          })
+        }
+      }
+
+      // Initialize all functions
+      calculateReadingTime()
+      setupReadingProgress()
+      setupReaderMode()
+      setupPrintButton()
+
+      // Add image lightbox effect
+      const setupImageLightbox = () => {
+        const articleImages = document.querySelectorAll(".news-content img")
+        articleImages.forEach((img) => {
+          img.addEventListener("click", () => {
+            const lightbox = document.createElement("div")
+            lightbox.className = "news-image-lightbox"
+            lightbox.style.position = "fixed"
+            lightbox.style.top = "0"
+            lightbox.style.left = "0"
+            lightbox.style.width = "100%"
+            lightbox.style.height = "100%"
+            lightbox.style.backgroundColor = "rgba(0, 0, 0, 0.9)"
+            lightbox.style.display = "flex"
+            lightbox.style.alignItems = "center"
+            lightbox.style.justifyContent = "center"
+            lightbox.style.zIndex = "10000"
+            lightbox.style.opacity = "0"
+            lightbox.style.transition = "opacity 0.3s ease"
+
+            const imgClone = document.createElement("img")
+            imgClone.src = img.src
+            imgClone.alt = img.alt
+            imgClone.style.maxWidth = "90%"
+            imgClone.style.maxHeight = "90%"
+            imgClone.style.borderRadius = "0.5rem"
+            imgClone.style.boxShadow = "0 10px 25px rgba(0, 0, 0, 0.3)"
+
+            lightbox.appendChild(imgClone)
+            document.body.appendChild(lightbox)
+
+            setTimeout(() => {
+              lightbox.style.opacity = "1"
+            }, 10)
+
+            lightbox.addEventListener("click", () => {
+              lightbox.style.opacity = "0"
+              setTimeout(() => {
+                document.body.removeChild(lightbox)
+              }, 300)
+            })
+          })
+
+          // Add cursor pointer to indicate clickable
+          img.style.cursor = "pointer"
+        })
+      }
+
+      setupImageLightbox()
+    })
+
+    // Social sharing functionality
+    function shareOnFacebook() {
+      const url = encodeURIComponent(window.location.href)
+      const title = encodeURIComponent(document.title)
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&t=${title}`, "_blank")
+    }
+
+    function shareOnTwitter() {
+      const url = encodeURIComponent(window.location.href)
+      const title = encodeURIComponent(document.title)
+      window.open(`https://twitter.com/intent/tweet?url=${url}&text=${title}`, "_blank")
+    }
+
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href)
+      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, "_blank")
+    }
+
+    function shareByEmail() {
+      const url = encodeURIComponent(window.location.href)
+      const title = encodeURIComponent(document.title)
+      window.location.href = `mailto:?subject=${title}&body=${url}`
+    }
+
+</script>

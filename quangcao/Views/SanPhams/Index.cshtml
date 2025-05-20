@@ -1,0 +1,217 @@
+﻿@using quangcao.Controllers
+@model IEnumerable<SanPham>
+
+@{
+    var categories = ViewBag.Categories as List<string> ?? new List<string>();
+    var currentCategory = ViewBag.CurrentCategory as string;
+    var selectedSort = Context.Request.Query["sort"].ToString();
+    var recentlyViewed = ViewBag.RecentlyViewed as List<SanPham> ?? new List<SanPham>();
+}
+
+@section Styles {
+    <link href="~/css/sanphamindex.css" rel="stylesheet" />
+}
+
+<div class="product-page">
+    <!-- Breadcrumb and Sort Options -->
+    <div class="page-header">
+        <div class="breadcrumb-container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Trang chủ</a></li>
+                    <li class="breadcrumb-item active">
+                        @(string.IsNullOrEmpty(ViewBag.CurrentCategory as string) ? "Tất cả sản phẩm" : ViewBag.CurrentCategory)
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- Sort options -->
+        <form method="get" class="sort-options">
+            <span>Sắp xếp:</span>
+            <select class="form-select ms-2" name="sort" onchange="this.form.submit()">
+                <option value="popular" selected="@(selectedSort == "popular" ? "selected" : null)">Theo độ phổ biến</option>
+                <option value="price-asc" selected="@(selectedSort == "price-asc" ? "selected" : null)">Giá: thấp đến cao</option>
+                <option value="price-desc" selected="@(selectedSort == "price-desc" ? "selected" : null)">Giá: cao đến thấp</option>
+            </select>
+            @if (!string.IsNullOrEmpty(currentCategory))
+            {
+                <input type="hidden" name="currentCategory" value="@currentCategory" />
+            }
+
+            @if (ViewBag.CurrentPage != null)
+            {
+                <input type="hidden" name="page" value="1" />
+            }
+        </form>
+    </div>
+
+    <div class="product-container">
+        <!-- Categories sidebar -->
+        <div class="categories-sidebar">
+            <h3 class="sidebar-title">Danh mục sản phẩm</h3>
+
+            <div class="mobile-filter-toggle">
+                <button id="toggleCategories" class="btn-toggle-categories">
+                    <i class="fas fa-filter"></i> Lọc danh mục
+                </button>
+            </div>
+
+            <div class="category-list-container">
+                @if (ViewBag.Categories != null && ((List<CategoryModel>)ViewBag.Categories).Any())
+                {
+                    <ul class="category-list">
+                        <li>
+                            <a href="/SanPhams/Index" class="@(string.IsNullOrEmpty(ViewBag.CurrentCategory as string) ? "active" : "")">
+                                Tất cả sản phẩm
+                            </a>
+                        </li>
+                        @foreach (var cat in ViewBag.Categories as List<CategoryModel>)
+                        {
+                            <li>
+                                <a href="/SanPhams/Index?currentCategory=@cat.TheLoai" class="@(ViewBag.CurrentCategory == cat.TheLoai ? "active" : "")">
+                                    @cat.TheLoai <span class="product-count">(@cat.SoLuong)</span>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="no-categories">Không có danh mục nào.</p>
+                }
+            </div>
+        </div>
+
+        <!-- Products grid -->
+        <div class="products-section">
+            @if (!Model.Any())
+            {
+                <div class="no-products">
+                    <i class="fas fa-box-open"></i>
+                    <p>Không tìm thấy sản phẩm nào.</p>
+                    <a href="/SanPhams/Index" class="btn-view-all">Xem tất cả sản phẩm</a>
+                </div>
+            }
+            else
+            {
+                <div class="products-grid">
+                    @foreach (var item in Model)
+                    {
+                        string imageUrl = string.IsNullOrEmpty(item.HinhAnh)
+                        ? "img/sanpham/default.png"
+                        : item.HinhAnh.Split(';')[0];
+                        <div class="product-card">
+                            <div class="product-image">
+                                <a href="/SanPhams/Details/@item.IdSanPham">
+                                    <img src="@Url.Content("~/" + imageUrl)" alt="@item.TenSanPham" class="product-img" loading="lazy" />
+                                </a>
+                                <div class="product-actions">
+                                    <button type="button" class="btn-quick-view" onclick="quickView('@item.IdSanPham')" title="Xem nhanh">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-title">
+                                    <a href="/SanPhams/Details/@item.IdSanPham">@item.TenSanPham</a>
+                                </h3>
+                                <div class="product-price">@string.Format("{0:N3}", item.Gia)đ</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            <!-- Pagination -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <div class="pagination">
+                    @if (ViewBag.HasPreviousPage)
+                    {
+                        <a href="/SanPhams/Index?currentCategory=@ViewBag.CurrentCategory&sort=@ViewBag.CurrentSort&page=@(ViewBag.CurrentPage - 1)" class="page-link prev">
+                            <i class="fas fa-chevron-left"></i> Trang trước
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="page-link prev disabled">
+                            <i class="fas fa-chevron-left"></i> Trang trước
+                        </span>
+                    }
+
+                    <div class="page-info">
+                        Trang <span class="current-page">@ViewBag.CurrentPage</span> / <span class="total-pages">@ViewBag.TotalPages</span>
+                    </div>
+
+                    @if (ViewBag.HasNextPage)
+                    {
+                        <a href="/SanPhams/Index?currentCategory=@ViewBag.CurrentCategory&sort=@ViewBag.CurrentSort&page=@(ViewBag.CurrentPage + 1)" class="page-link next">
+                            Trang sau <i class="fas fa-chevron-right"></i>
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="page-link next disabled">
+                            Trang sau <i class="fas fa-chevron-right"></i>
+                        </span>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Recently viewed products -->
+    @if (recentlyViewed.Any())
+    {
+        <div class="recently-viewed">
+            <h3 class="section-title">Sản phẩm vừa xem</h3>
+            <div class="recent-products-slider">
+                @foreach (var item in recentlyViewed)
+                {
+                    string imageUrl = string.IsNullOrEmpty(item.HinhAnh)
+                    ? "img/sanpham/default.png"
+                    : item.HinhAnh.Split(';')[0];
+
+                    <div class="recent-product">
+                        <div class="recent-product-image">
+                            <a href="/SanPhams/Details/@item.IdSanPham">
+                                <img src="@Url.Content("~/" + imageUrl)" alt="@item.TenSanPham" class="recent-product-img" loading="lazy" />
+                            </a>
+                        </div>
+                        <div class="recent-product-info">
+                            <h4 class="recent-product-title">
+                                <a href="/SanPhams/Details/@item.IdSanPham">@item.TenSanPham</a>
+                            </h4>
+                            <div class="recent-product-price">@string.Format("{0:N3}", item.Gia)đ</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Quick View Modal -->
+<div id="quickViewModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div id="quickViewLoading" class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Đang tải...</span>
+        </div>
+        <div id="quickViewError" class="error-message" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i>
+            <p>Có lỗi xảy ra khi tải thông tin sản phẩm.</p>
+            <button id="btnRetryQuickView" class="btn-retry">Thử lại</button>
+        </div>
+        <div id="quickViewContainer" class="quick-view-content" style="display: none;"></div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="qv-toast-container"></div>
+
+@section Scripts {
+	<script src="~/js/sanphamindex.js"></script>
+}

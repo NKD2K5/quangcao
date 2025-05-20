@@ -1,0 +1,422 @@
+﻿@model quangcao.Models.SearchViewModel
+@{
+    ViewData["Title"] = string.IsNullOrEmpty(Model.Keyword) ? "Tìm kiếm" : $"Kết quả tìm kiếm cho '{Model.Keyword}'";
+}
+<link href="~/css/search.css" rel="stylesheet" />
+<style>
+    <link href="~/css/search.css" rel="stylesheet" />
+</style>
+<div class="search-results-container">
+    <div class="container">
+        <div class="search-header">
+            <h1 class="search-title">Kết quả tìm kiếm</h1>
+            @if (!string.IsNullOrEmpty(Model.Keyword))
+            {
+                <p class="search-subtitle">
+                    Tìm thấy <span style="color: var(--primary);">@Model.TotalResults</span> kết quả cho từ khóa "<span style="font-weight: 600;">@Model.Keyword</span>"
+                </p>
+            }
+            else
+            {
+                <p class="search-subtitle">Vui lòng nhập từ khóa để tìm kiếm</p>
+            }
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.Keyword) && Model.TotalResults > 0)
+        {
+            <div class="search-tabs">
+                <ul class="nav-tabs" role="tablist">
+                    <li role="presentation">
+                        <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab" aria-controls="all" aria-selected="true">
+                            Tất cả (@Model.TotalResults)
+                        </button>
+                    </li>
+                    <li role="presentation">
+                        <button class="nav-link" id="news-tab" data-bs-toggle="tab" data-bs-target="#news" type="button" role="tab" aria-controls="news" aria-selected="false">
+                            Tin tức (@Model.TotalNewsCount)
+                        </button>
+                    </li>
+                    <li role="presentation">
+                        <button class="nav-link" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button" role="tab" aria-controls="products" aria-selected="false">
+                            Sản phẩm (@Model.TotalProductsCount)
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content mt-4" id="searchTabsContent">
+                    <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tab">
+                        <!-- Hiển thị cả tin tức và sản phẩm -->
+                        @if (Model.News.Any())
+                        {
+                            <div class="search-section">
+                                <h2 class="section-title">Tin tức</h2>
+                                <div class="row g-4">
+                                    @foreach (var news in Model.News.Take(3))
+                                    {
+                                        <div class="col-md-6 col-lg-4">
+                                            <div class="result-card">
+                                                <a asp-controller="TinTucs" asp-action="Details" asp-route-id="@news.IdTinTuc" class="result-card-link">
+                                                    <div class="result-card-img">
+                                                        @if (!string.IsNullOrEmpty(news.HinhAnh))
+                                                        {
+                                                            <img src="@Url.Content($"~/{news.HinhAnh}")" alt="@news.TieuDe" class="img-fluid">
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="no-image">
+                                                                <i class="fas fa-image"></i>
+                                                                <span>Không có ảnh</span>
+                                                            </div>
+                                                        }
+                                                        <div class="result-card-date">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                            <span>@news.NgayDang.ToString("dd/MM/yyyy")</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="result-card-body">
+                                                        <h3 class="result-card-title">@news.TieuDe</h3>
+                                                        <div class="result-card-footer">
+                                                            <div class="result-read-more">
+                                                                Đọc thêm <i class="fas fa-arrow-right"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                @if (Model.TotalNewsCount > 3)
+                                {
+                                    <div class="text-center mt-3">
+                                        <button class="nav-link" id="view-all-news" data-bs-toggle="tab" data-bs-target="#news" type="button" style="background: none; border: none; color: var(--primary); font-weight: 500;">
+                                            Xem tất cả tin tức <i class="fas fa-arrow-right"></i>
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        @if (Model.Products.Any())
+                        {
+                            <div class="search-section mt-5">
+                                <h2 class="section-title">Sản phẩm</h2>
+                                <div class="row g-4">
+                                    @foreach (var product in Model.Products.Take(3))
+                                    {
+                                        <div class="col-md-6 col-lg-4">
+                                            <div class="result-card">
+                                                <a asp-controller="SanPhams" asp-action="Details" asp-route-id="@product.IdSanPham" class="result-card-link">
+                                                    <div class="result-card-img">
+                                                        @if (!string.IsNullOrEmpty(product.HinhAnh))
+                                                        {
+                                                            <img src="@Url.Content($"~/{product.HinhAnh}")" alt="@product.TenSanPham" class="img-fluid">
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="no-image">
+                                                                <i class="fas fa-box-open"></i>
+                                                                <span>Không có ảnh</span>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                    <div class="result-card-body">
+                                                        <h3 class="result-card-title">@product.TenSanPham</h3>
+                                                        <div class="result-card-footer">
+                                                            <div class="result-read-more">
+                                                                Xem chi tiết <i class="fas fa-arrow-right"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                @if (Model.TotalProductsCount > 3)
+                                {
+                                    <div class="text-center mt-3">
+                                        <button class="nav-link" id="view-all-products" data-bs-toggle="tab" data-bs-target="#products" type="button" style="background: none; border: none; color: var(--primary); font-weight: 500;">
+                                            Xem tất cả sản phẩm <i class="fas fa-arrow-right"></i>
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <div class="tab-pane fade" id="news" role="tabpanel" aria-labelledby="news-tab">
+                        <!-- Hiển thị chỉ tin tức -->
+                        @if (Model.News.Any())
+                        {
+                            <div class="row g-4">
+                                @foreach (var news in Model.News)
+                                {
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="result-card">
+                                            <a asp-controller="TinTucs" asp-action="Details" asp-route-id="@news.IdTinTuc" class="result-card-link">
+                                                <div class="result-card-img">
+                                                    @if (!string.IsNullOrEmpty(news.HinhAnh))
+                                                    {
+                                                        <img src="@Url.Content($"~/{news.HinhAnh}")" alt="@news.TieuDe" class="img-fluid">
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="no-image">
+                                                            <i class="fas fa-image"></i>
+                                                            <span>Không có ảnh</span>
+                                                        </div>
+                                                    }
+                                                    <div class="result-card-date">
+                                                        <i class="fas fa-calendar-alt"></i>
+                                                        <span>@news.NgayDang.ToString("dd/MM/yyyy")</span>
+                                                    </div>
+                                                </div>
+                                                <div class="result-card-body">
+                                                    <h3 class="result-card-title">@news.TieuDe</h3>
+                                                    <div class="result-card-footer">
+                                                        <div class="result-read-more">
+                                                            Đọc thêm <i class="fas fa-arrow-right"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <i class="fas fa-search"></i>
+                                <h3>Không tìm thấy tin tức</h3>
+                                <p>Không có tin tức nào phù hợp với từ khóa của bạn</p>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="tab-pane fade" id="products" role="tabpanel" aria-labelledby="products-tab">
+                        <!-- Hiển thị chỉ sản phẩm -->
+                        @if (Model.Products.Any())
+                        {
+                            <div class="row g-4">
+                                @foreach (var product in Model.Products)
+                                {
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="result-card">
+                                            <a asp-controller="SanPhams" asp-action="Details" asp-route-id="@product.IdSanPham" class="result-card-link">
+                                                <div class="result-card-img">
+                                                    @if (!string.IsNullOrEmpty(product.HinhAnh))
+                                                    {
+                                                        <img src="@Url.Content($"~/{product.HinhAnh}")" alt="@product.TenSanPham" class="img-fluid">
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="no-image">
+                                                            <i class="fas fa-box-open"></i>
+                                                            <span>Không có ảnh</span>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <div class="result-card-body">
+                                                    <h3 class="result-card-title">@product.TenSanPham</h3>
+                                                    <div class="result-card-footer">
+                                                        <div class="result-read-more">
+                                                            Xem chi tiết <i class="fas fa-arrow-right"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <i class="fas fa-search"></i>
+                                <h3>Không tìm thấy sản phẩm</h3>
+                                <p>Không có sản phẩm nào phù hợp với từ khóa của bạn</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phân trang -->
+            @if (Model.TotalPages > 1)
+            {
+                <nav aria-label="Page navigation" class="mt-5">
+                    <ul class="pagination">
+                        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                            <a class="page-link" asp-controller="Search" asp-action="Index" asp-route-keyword="@Model.Keyword" asp-route-page="@(Model.CurrentPage - 1)" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link" asp-controller="Search" asp-action="Index" asp-route-keyword="@Model.Keyword" asp-route-page="@i">@i</a>
+                            </li>
+                        }
+                        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link" asp-controller="Search" asp-action="Index" asp-route-keyword="@Model.Keyword" asp-route-page="@(Model.CurrentPage + 1)" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        }
+        else if (!string.IsNullOrEmpty(Model.Keyword))
+        {
+            <div class="empty-state">
+                <i class="fas fa-search"></i>
+                <h3>Không tìm thấy kết quả</h3>
+                <p>Không có tin tức hoặc sản phẩm nào phù hợp với từ khóa của bạn</p>
+                <a asp-controller="Home" asp-action="Index" class="btn">
+                    <i class="fas fa-home"></i> Về trang chủ
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Xử lý chuyển tab khi nhấn "Xem tất cả tin tức"
+            const viewAllNewsBtn = document.getElementById('view-all-news');
+            if (viewAllNewsBtn) {
+                viewAllNewsBtn.addEventListener('click', function() {
+                    document.getElementById('news-tab').click();
+                });
+            }
+
+            // Xử lý chuyển tab khi nhấn "Xem tất cả sản phẩm"
+            const viewAllProductsBtn = document.getElementById('view-all-products');
+            if (viewAllProductsBtn) {
+                viewAllProductsBtn.addEventListener('click', function() {
+                    document.getElementById('products-tab').click();
+                });
+            }
+        });
+                document.addEventListener("DOMContentLoaded", () => {
+          const searchInput = document.getElementById("searchInput")
+          if (!searchInput) return
+
+          // Tạo phần tử gợi ý
+          const suggestionsContainer = document.createElement("div")
+          suggestionsContainer.className = "search-suggestions"
+          suggestionsContainer.style.display = "none"
+          searchInput.parentNode.appendChild(suggestionsContainer)
+
+          // Biến để lưu trữ timeout
+          let debounceTimer
+
+          // Xử lý sự kiện input
+          searchInput.addEventListener("input", function () {
+            const keyword = this.value.trim()
+
+            // Xóa timeout cũ
+            clearTimeout(debounceTimer)
+
+            // Ẩn gợi ý nếu từ khóa trống
+            if (keyword.length < 2) {
+              suggestionsContainer.style.display = "none"
+              return
+            }
+
+            // Đặt timeout mới để tránh gọi API quá nhiều
+            debounceTimer = setTimeout(() => {
+              // Gọi API để lấy gợi ý
+              fetch(`/api/search/suggestions?keyword=${encodeURIComponent(keyword)}`)
+                .then((response) => response.json())
+                .then((data) => {
+                  // Hiển thị gợi ý
+                  if (data.length > 0) {
+                    suggestionsContainer.innerHTML = ""
+                    data.forEach((item) => {
+                      const suggestionItem = document.createElement("div")
+                      suggestionItem.className = "suggestion-item"
+
+                      const icon = document.createElement("i")
+                      icon.className = item.type === "news" ? "fas fa-newspaper" : "fas fa-box"
+                      suggestionItem.appendChild(icon)
+
+                      const text = document.createElement("span")
+                      text.textContent = item.title
+                      suggestionItem.appendChild(text)
+
+                      suggestionItem.addEventListener("click", () => {
+                        window.location.href = item.url
+                      })
+
+                      suggestionsContainer.appendChild(suggestionItem)
+                    })
+                    suggestionsContainer.style.display = "block"
+                  } else {
+                    suggestionsContainer.style.display = "none"
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error fetching suggestions:", error)
+                  suggestionsContainer.style.display = "none"
+                })
+            }, 300) // Đợi 300ms sau khi người dùng ngừng gõ
+          })
+
+          // Ẩn gợi ý khi click ra ngoài
+          document.addEventListener("click", (e) => {
+            if (!searchInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+              suggestionsContainer.style.display = "none"
+            }
+          })
+
+          // Xử lý phím mũi tên và Enter
+          searchInput.addEventListener("keydown", (e) => {
+            const items = suggestionsContainer.querySelectorAll(".suggestion-item")
+            if (items.length === 0) return
+
+            const activeItem = suggestionsContainer.querySelector(".suggestion-item.active")
+
+            switch (e.key) {
+              case "ArrowDown":
+                e.preventDefault()
+                if (!activeItem) {
+                  items[0].classList.add("active")
+                } else {
+                  activeItem.classList.remove("active")
+                  const nextItem = activeItem.nextElementSibling || items[0]
+                  nextItem.classList.add("active")
+                }
+                break
+
+              case "ArrowUp":
+                e.preventDefault()
+                if (!activeItem) {
+                  items[items.length - 1].classList.add("active")
+                } else {
+                  activeItem.classList.remove("active")
+                  const prevItem = activeItem.previousElementSibling || items[items.length - 1]
+                  prevItem.classList.add("active")
+                }
+                break
+
+              case "Enter":
+                if (activeItem) {
+                  e.preventDefault()
+                  window.location.href = activeItem.getAttribute("data-url")
+                }
+                break
+
+              case "Escape":
+                suggestionsContainer.style.display = "none"
+                break
+            }
+          })
+        })
+
+    </script>
+}

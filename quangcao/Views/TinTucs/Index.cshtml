@@ -1,0 +1,382 @@
+﻿@model IEnumerable<quangcao.Models.TinTuc>
+@using Microsoft.AspNetCore.Identity
+@using quangcao.Models
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    var user = await UserManager.GetUserAsync(User);
+    var isAdmin = User.IsInRole("Admin");
+    ViewBag.Title = "Danh Sách Tin Tức";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="~/css/tintucindex.css" rel="stylesheet" />
+
+<div class="news-container">
+    <div class="container">
+        <div class="news-header">
+            <div class="d-flex justify-content-between align-items-start flex-column flex-md-row">
+                <div class="mb-3 mb-md-0">
+                    <h1 class="news-title">Danh Sách Tin Tức</h1>
+                    <p class="news-subtitle">Khám phá những thông tin mới nhất</p>
+                </div>
+                @if (isAdmin)
+                {
+                    <a asp-action="Create" class="btn-custom btn-add">
+                        <i class="bi bi-plus-circle me-1"></i> Thêm Tin Tức Mới
+                    </a>
+                }
+            </div>
+        </div>
+
+        <div class="news-filter">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Tìm kiếm tin tức...">
+                <button type="button" id="clearSearch" class="input-group-text bg-white border-start-0 d-none">
+                    <i class="bi bi-x-circle"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="row g-4" id="newsGrid">
+            @foreach (var item in Model)
+            {
+                <!-- Loại bỏ toàn bộ thẻ HTML khỏi nội dung -->
+                var plainText = System.Text.RegularExpressions.Regex.Replace(item.NoiDung ?? "", "<.*?>", string.Empty);
+                var shortText = plainText.Length > 150 ? plainText.Substring(0, 150) + "..." : plainText;
+
+                <div class="col-12 col-sm-6 col-lg-4 news-item" data-title="@item.TieuDe?.ToLower()">
+                    <div class="news-card">
+                        <a asp-action="Details" asp-route-id="@item.IdTinTuc" class="news-card-link">
+                            <div class="news-card-img">
+                                @if (!string.IsNullOrEmpty(item.HinhAnh))
+                                {
+                                    <img src="@Url.Content($"~/{item.HinhAnh}")" class="card-img" alt="@item.TieuDe">
+                                }
+                                else
+                                {
+                                    <div class="no-image">
+                                        <i class="bi bi-image"></i>
+                                        <span>Không có ảnh</span>
+                                    </div>
+                                }
+                                <div class="news-card-date">
+                                    <i class="bi bi-calendar3"></i>
+                                    <span>@(item.NgayDang.ToString("dd/MM/yyyy") ?? "Chưa có ngày đăng")</span>
+                                </div>
+                            </div>
+                            <div class="news-card-body">
+                                <h3 class="news-card-title">@item.TieuDe</h3>
+                                <p class="news-card-text">@shortText</p>
+                                <div class="news-card-footer">
+                                    <div class="news-read-more">
+                                        Đọc thêm <i class="bi bi-arrow-right"></i>
+                                    </div>
+                                    <button type="button" class="btn-share-simple" onclick="shareNews('@item.TieuDe', '@item.IdTinTuc'); event.preventDefault(); event.stopPropagation();">
+                                        <i class="bi bi-share"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </a>
+
+                        @if (isAdmin)
+                        {
+                            <div class="news-card-admin-actions">
+                                <a asp-action="Edit" asp-route-id="@item.IdTinTuc" class="btn-custom btn-edit">
+                                    <i class="bi bi-pencil-square"></i> <span class="btn-text">Sửa</span>
+                                </a>
+                                <button type="button" class="btn-custom btn-delete"
+                                        data-id="@item.IdTinTuc"
+                                        data-title="@item.TieuDe">
+                                    <i class="bi bi-trash"></i> <span class="btn-text">Xóa</span>
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div id="noResults" class="empty-state d-none">
+            <i class="bi bi-search"></i>
+            <h3>Không tìm thấy kết quả</h3>
+            <p>Vui lòng thử lại với từ khóa khác</p>
+            <button id="resetSearch" class="btn-custom btn-reset mt-3">
+                <i class="bi bi-arrow-counterclockwise me-1"></i> Đặt lại tìm kiếm
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Back to top button -->
+<button id="backToTop" class="back-to-top">
+    <i class="bi bi-arrow-up"></i>
+</button>
+
+<!-- Delete Confirmation Modal -->
+@if (isAdmin)
+{
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Xác nhận xóa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa tin tức "<span id="deleteItemTitle"></span>"?</p>
+                    <p class="text-danger"><small>Hành động này không thể hoàn tác.</small></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <form id="deleteForm" asp-action="Delete" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" id="deleteItemId" name="id" />
+                        <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Share Modal -->
+<div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chia sẻ tin tức</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Chia sẻ tin tức "<span id="shareItemTitle"></span>" qua:</p>
+                <div class="share-buttons">
+                    <button class="btn-share-social facebook">
+                        <i class="bi bi-facebook"></i> Facebook
+                    </button>
+                    <button class="btn-share-social twitter">
+                        <i class="bi bi-twitter"></i> Twitter
+                    </button>
+                    <button class="btn-share-social linkedin">
+                        <i class="bi bi-linkedin"></i> LinkedIn
+                    </button>
+                    <button class="btn-share-social email">
+                        <i class="bi bi-envelope"></i> Email
+                    </button>
+                </div>
+                <div class="mt-3">
+                    <label for="shareLink" class="form-label">Hoặc sao chép liên kết:</label>
+                    <div class="input-group">
+                        <input type="text" id="shareLink" class="form-control" readonly>
+                        <button class="btn btn-outline-primary" type="button" id="copyLink">
+                            <i class="bi bi-clipboard"></i> Sao chép
+                        </button>
+                    </div>
+                    <div id="copySuccess" class="text-success mt-2 d-none">
+                        <i class="bi bi-check-circle"></i> Đã sao chép vào clipboard!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize variables
+        const newsItems = document.querySelectorAll('.news-item');
+        const searchInput = document.getElementById('searchInput');
+        const clearSearch = document.getElementById('clearSearch');
+        const resetSearch = document.getElementById('resetSearch');
+        const noResults = document.getElementById('noResults');
+        const backToTop = document.getElementById('backToTop');
+
+        // Admin-specific elements
+        const deleteButtons = document.querySelectorAll('.btn-delete');
+        const deleteModal = document.getElementById('deleteModal') ? new bootstrap.Modal(document.getElementById('deleteModal')) : null;
+        const deleteForm = document.getElementById('deleteForm');
+        const deleteItemId = document.getElementById('deleteItemId');
+        const deleteItemTitle = document.getElementById('deleteItemTitle');
+
+        // Share modal elements
+        const shareModal = new bootstrap.Modal(document.getElementById('shareModal'));
+        const shareItemTitle = document.getElementById('shareItemTitle');
+        const shareLink = document.getElementById('shareLink');
+        const copyLink = document.getElementById('copyLink');
+        const copySuccess = document.getElementById('copySuccess');
+
+        // Search functionality with debounce
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+
+            // Show/hide clear button
+            if (this.value.length > 0) {
+                clearSearch.classList.remove('d-none');
+            } else {
+                clearSearch.classList.add('d-none');
+            }
+
+            searchTimeout = setTimeout(() => {
+                const searchTerm = this.value.toLowerCase().trim();
+                let hasResults = false;
+
+                newsItems.forEach(item => {
+                    const title = item.getAttribute('data-title');
+                    if (title && title.includes(searchTerm)) {
+                        item.style.display = 'block';
+                        hasResults = true;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                // Show/hide no results message
+                if (hasResults) {
+                    noResults.classList.add('d-none');
+                } else {
+                    noResults.classList.remove('d-none');
+                }
+            }, 300);
+        });
+
+        // Clear search
+        clearSearch.addEventListener('click', function() {
+            searchInput.value = '';
+            searchInput.dispatchEvent(new Event('input'));
+            clearSearch.classList.add('d-none');
+        });
+
+        // Reset search button
+        resetSearch.addEventListener('click', function() {
+            searchInput.value = '';
+            searchInput.dispatchEvent(new Event('input'));
+            clearSearch.classList.add('d-none');
+        });
+
+        // Delete confirmation (Admin only)
+        if (deleteButtons.length > 0 && deleteModal) {
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent event bubbling
+                    e.preventDefault(); // Prevent default action
+                    const id = this.getAttribute('data-id');
+                    const title = this.getAttribute('data-title');
+
+                    deleteItemId.value = id;
+                    deleteItemTitle.textContent = title;
+                    deleteModal.show();
+                });
+            });
+        }
+
+        // Copy link functionality
+        if (copyLink) {
+            copyLink.addEventListener('click', function() {
+                shareLink.select();
+                document.execCommand('copy');
+                copySuccess.classList.remove('d-none');
+
+                setTimeout(() => {
+                    copySuccess.classList.add('d-none');
+                }, 3000);
+            });
+        }
+
+        // Image lazy loading with fade-in effect
+        const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+        lazyImages.forEach(img => {
+            img.addEventListener('load', function() {
+                this.classList.add('loaded');
+            });
+        });
+
+        // Back to top button
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.remove('show');
+            }
+        });
+
+        backToTop.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Add touch support for mobile
+        if ('ontouchstart' in window) {
+            document.body.classList.add('touch-device');
+        }
+
+        // Prevent click event on action buttons from triggering card click
+        document.querySelectorAll('.news-card-admin-actions .btn-custom').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+            });
+        });
+    });
+
+    // Share functionality
+    function shareNews(title, id) {
+        const shareModal = new bootstrap.Modal(document.getElementById('shareModal'));
+        const shareItemTitle = document.getElementById('shareItemTitle');
+        const shareLink = document.getElementById('shareLink');
+
+        // Get the base URL (without query parameters)
+        const baseUrl = window.location.href.split('?')[0];
+
+        // Create the detail page URL
+        const detailUrl = baseUrl.replace(/\/[^\/]*$/, `/Details/${id}`);
+
+        // Set the title and link
+        shareItemTitle.textContent = title;
+        shareLink.value = detailUrl;
+
+        // Show the modal
+        shareModal.show();
+
+        // Set up social sharing buttons
+        const facebookBtn = document.querySelector('.btn-share-social.facebook');
+        const twitterBtn = document.querySelector('.btn-share-social.twitter');
+        const linkedinBtn = document.querySelector('.btn-share-social.linkedin');
+        const emailBtn = document.querySelector('.btn-share-social.email');
+
+        // Remove previous event listeners
+        const newFacebookBtn = facebookBtn.cloneNode(true);
+        const newTwitterBtn = twitterBtn.cloneNode(true);
+        const newLinkedinBtn = linkedinBtn.cloneNode(true);
+        const newEmailBtn = emailBtn.cloneNode(true);
+
+        facebookBtn.parentNode.replaceChild(newFacebookBtn, facebookBtn);
+        twitterBtn.parentNode.replaceChild(newTwitterBtn, twitterBtn);
+        linkedinBtn.parentNode.replaceChild(newLinkedinBtn, linkedinBtn);
+        emailBtn.parentNode.replaceChild(newEmailBtn, emailBtn);
+
+        newFacebookBtn.addEventListener('click', function() {
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(detailUrl)}`, '_blank');
+        });
+
+        newTwitterBtn.addEventListener('click', function() {
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(detailUrl)}`, '_blank');
+        });
+
+        newLinkedinBtn.addEventListener('click', function() {
+            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(detailUrl)}`, '_blank');
+        });
+
+        newEmailBtn.addEventListener('click', function() {
+            window.location.href = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent('Xem tin tức này: ' + detailUrl)}`;
+        });
+    }
+</script>

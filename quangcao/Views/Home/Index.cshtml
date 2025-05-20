@@ -1,0 +1,271 @@
+﻿@{
+    ViewData["Title"] = "Trang Chủ";
+}
+
+@section Styles {
+    <link href="~/css/home.css" rel="stylesheet" />
+	<link href="~/js/home.js" rel="stylesheet" />
+}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="stars" id="stars"></div>
+    <div class="container">
+        <div class="hero-content">
+            <h1>Công Ty TNHH Sản Xuất Thương Mại In Huy Chúc</h1>
+            <p>Đơn vị tiên phong trong lĩnh vực in nhanh kỹ thuật số tại TP Hải Dương</p>
+            <div class="hero-buttons">
+                <a asp-controller="SanPhams" asp-action="Index" class="btn btn-light">Xem Sản Phẩm</a>
+                <a asp-controller="LienHes" asp-action="Index" class="btn btn-outline">Liên Hệ Ngay</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Product Categories Section -->
+<section class="product-categories">
+    <div class="container">
+        <h2 class="section-title">DANH MỤC SẢN PHẨM</h2>
+
+        <div class="category-grid">
+            <a href="/san-pham/to-roi" class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h3>In tờ rơi, tờ gấp</h3>
+            </a>
+
+            <a href="/san-pham/tui-giay" class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <h3>In túi giấy</h3>
+            </a>
+
+            <a href="/san-pham/name-card" class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-id-card"></i>
+                </div>
+                <h3>In name card</h3>
+            </a>
+
+            <a href="/san-pham/hop-giay" class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-box"></i>
+                </div>
+                <h3>In hộp giấy</h3>
+            </a>
+
+            <a href="/san-pham/catalogue" class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h3>In catalogue</h3>
+            </a>
+
+            <a href="/san-pham/tem-nhan" class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-tag"></i>
+                </div>
+                <h3>In tem nhãn mác</h3>
+            </a>
+
+            <a href="/san-pham/thiep-cuoi" class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3>In thiệp cưới</h3>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="about">
+    <div class="container">
+        <div class="about-grid">
+            <div class="about-image">
+                <img src="~/images/printing-facility.jpg" alt="In Huy Chúc Printing Facility">
+            </div>
+
+            <div class="about-content">
+                <h2 class="section-title">Giới Thiệu Về Công Ty Chúng Tôi</h2>
+                <p>Công ty TNHH Sản xuất Thương mại in Huy Chúc tự hào là đơn vị tiên phong trong lĩnh vực in nhanh kỹ thuật số tại TP Hải Dương. In Huy Chúc không ngừng mở rộng và đầu tư đồng bộ hệ thống con người, máy móc để có thể đáp ứng tốt nhất mọi nhu cầu của khách hàng.</p>
+                <p>Trong tình hình kinh tế hiện nay, hầu như ai cũng muốn mình có được những sản phẩm giá rẻ, nhưng chỉ rẻ không thôi thì chưa đủ. Công ty in Huy Chúc không cam kết sẽ tạo ra những sản phẩm in ấn có giá rẻ nhất nhưng chúng tôi đảm bảo rằng quý khách sẽ có được những sản phẩm chất lượng tốt nhất với giá cả hợp lý nhất.</p>
+                <a asp-controller="Home" asp-action="Privacy" class="btn btn-primary">Xem Thêm</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section class="services">
+    <div class="container">
+        <h2 class="section-title">Dịch Vụ Của Chúng Tôi</h2>
+        <p class="section-description">In Huy Chúc cung cấp đa dạng dịch vụ in ấn chất lượng cao với giá cả hợp lý, đáp ứng mọi nhu cầu của khách hàng cá nhân và doanh nghiệp.</p>
+
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-print"></i>
+                </div>
+                <h3>Công Nghệ Hiện Đại</h3>
+                <p>Áp dụng công nghệ in Offset với máy móc hiện đại nhất giúp tạo ra những sản phẩm in ấn chất lượng cao, chuẩn màu.</p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3>In Nhanh Chóng</h3>
+                <p>Dịch vụ in nhanh, đáp ứng mọi nhu cầu cấp bách của khách hàng với thời gian xử lý đơn hàng nhanh chóng.</p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-award"></i>
+                </div>
+                <h3>Chất Lượng Cao</h3>
+                <p>Cam kết mang đến những sản phẩm in ấn chất lượng cao nhất, đảm bảo độ sắc nét và bền màu theo thời gian.</p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <h3>Giao Hàng Tận Nơi</h3>
+                <p>Dịch vụ giao hàng tận nơi nhanh chóng, đảm bảo sản phẩm đến tay khách hàng an toàn và đúng hẹn.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials">
+    <div class="container">
+        <h2 class="section-title">Khách Hàng Nói Gì Về Chúng Tôi</h2>
+        <p class="section-description">Sự hài lòng của khách hàng là thước đo thành công của chúng tôi</p>
+
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <p class="testimonial-text">Tôi rất hài lòng với chất lượng in ấn của In Huy Chúc. Sản phẩm đẹp, giao hàng đúng hẹn và giá cả hợp lý.</p>
+                <div class="testimonial-author">
+                    <p class="author-name">Nguyễn Văn A</p>
+                    <p class="author-company">Công ty TNHH ABC</p>
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <p class="testimonial-text">Đã hợp tác với In Huy Chúc trong nhiều năm. Luôn tin tưởng vào chất lượng và dịch vụ chuyên nghiệp của công ty.</p>
+                <div class="testimonial-author">
+                    <p class="author-name">Trần Thị B</p>
+                    <p class="author-company">Shop thời trang XYZ</p>
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="far fa-star"></i>
+                </div>
+                <p class="testimonial-text">Đặt in menu và tờ rơi quảng cáo tại In Huy Chúc. Sản phẩm đẹp, màu sắc chuẩn và bền. Sẽ tiếp tục sử dụng dịch vụ.</p>
+                <div class="testimonial-author">
+                    <p class="author-name">Lê Văn C</p>
+                    <p class="author-company">Nhà hàng DEF</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="contact">
+    <div class="container">
+        <h2 class="section-title">Liên Hệ Với Chúng Tôi</h2>
+        <div class="contact-grid">
+            <div class="contact-info">
+                <h3>Thông Tin Liên Hệ</h3>
+
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <p>Khu Công Nghiệp Thạch Khôi, Phường Thạch Khôi, Thành Phố Hải Dương, Hải Dương, Việt Nam</p>
+                </div>
+
+                <div class="info-item">
+                    <i class="fas fa-phone"></i>
+                    <div>
+                        <p>097.734.4567 – Mr Huy</p>
+                        <p>093.628.6466 – Mrs Chúc</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <i class="fas fa-envelope"></i>
+                    <p>invinhphat6868@gmail.com</p>
+                </div>
+
+                <div class="info-item">
+                    <i class="fas fa-globe"></i>
+                    <p>https://inhuychuc.vn</p>
+                </div>
+
+                <div class="working-hours">
+                    <h4>Giờ Làm Việc</h4>
+                    <p>Thứ Hai - Thứ Bảy: 8:00 - 17:30</p>
+                    <p>Chủ Nhật: Nghỉ</p>
+                </div>
+            </div>
+
+            <div class="contact-form">
+                <h3>Gửi Yêu Cầu</h3>
+
+                <form id="contactForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Họ và tên</label>
+                            <input type="text" id="name" placeholder="Nhập họ và tên">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Số điện thoại</label>
+                            <input type="text" id="phone" placeholder="Nhập số điện thoại">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Nhập địa chỉ email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">Tiêu đề</label>
+                        <input type="text" id="subject" placeholder="Nhập tiêu đề">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Nội dung</label>
+                        <textarea id="message" placeholder="Nhập nội dung yêu cầu" rows="5"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">Gửi Yêu Cầu</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
