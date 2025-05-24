@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using quangcao.Models;
 using quangcao.Models.ViewModel;
 
-namespace quangcao.Controllers
 {
     public class HomeController : Controller
     {
