@@ -1,8 +1,15 @@
-﻿@{
+﻿@model quangcao.Models.ViewModel.TrangChuViewModel
+@{
     ViewData["Title"] = "Giới Thiệu";
+    bool isAdmin = ViewData["IsAdmin"] != null && (bool)ViewData["IsAdmin"];
+
+    string anhBiaUrl = Model?.AnhBia?.DuongDanAnh ?? "/images/default-cover.jpg";
+    if (!string.IsNullOrEmpty(anhBiaUrl) && !anhBiaUrl.StartsWith("/") && !anhBiaUrl.StartsWith("http"))
+    {
+        anhBiaUrl = "/" + anhBiaUrl;
+    }
 }
 
-<!-- Add the custom CSS for the About page -->
 <link href="~/css/Privacy.css" rel="stylesheet" />
 
 @if (TempData["SuccessMessage"] != null)
@@ -15,400 +22,391 @@
     </div>
 }
 
-<!-- Header Section -->
-<header class="page-header text-center">
+<!-- Header -->
+<header class="page-header" style="background-image: url('@anhBiaUrl');">
     <div class="container">
-        <h1 class="display-4">Giới Thiệu Về Chúng Tôi</h1>
-        <p class="lead">Công ty TNHH Sản xuất Thương mại in Huy Chúc - Đơn vị tiên phong trong lĩnh vực in nhanh kỹ thuật số tại TP Hải Dương</p>
+        <h1 class="mb-4 reveal-text">@(Model?.GioiThieu?.TieuDe ?? "Giới Thiệu Về Chúng Tôi")</h1>
+        <p class="lead">Công ty TNHH Sản xuất Thương mại in Vinh Phát - Đơn vị tiên phong trong lĩnh vực in nhanh kỹ thuật số tại TP Hải Dương</p>
     </div>
+    @if (isAdmin)
+    {
+        <a asp-controller="Home" asp-action="CapNhatAnhBia" class="edit-button position-absolute top-0 end-0 m-3">
+            <i class="fas fa-edit"></i> Sửa ảnh bìa
+        </a>
+    }
 </header>
 
-<!-- About Us Section -->
-<section class="py-5">
+<!-- About Section -->
+<section class="about-section">
     <div class="container">
-        <h2 class="text-center mb-4 fade-in">Giới Thiệu Về Chúng Tôi</h2>
-        <p class="lead fade-in">
-            Công ty TNHH Sản xuất Thương mại in Huy Chúc tự hào là đơn vị hàng đầu trong lĩnh vực in nhanh kỹ thuật số tại TP Hải Dương. Chúng tôi không ngừng mở rộng và đầu tư đồng bộ vào hệ thống nhân lực và trang thiết bị nhằm đáp ứng tốt nhất mọi nhu cầu của khách hàng. In Huy Chúc đã và sẽ tiếp tục mang đến cho quý khách hàng những sản phẩm chất lượng nhất, đa dạng lựa chọn với mức giá hợp lý nhất.
-        </p>
-        <p class="lead fade-in">
-            Trong bối cảnh kinh tế hiện nay, mọi người đều muốn có những sản phẩm giá rẻ, nhưng chỉ giá rẻ thôi là chưa đủ. Chúng tôi không hứa hẹn sẽ cung cấp những sản phẩm in ấn rẻ nhất, nhưng cam kết rằng quý khách sẽ nhận được những sản phẩm chất lượng tốt nhất với giá cả hợp lý. Với tiêu chí kinh doanh "Mang đến lợi ích lớn nhất cho khách hàng", chúng tôi hy vọng dịch vụ của mình sẽ đồng hành cùng quý khách trên con đường thành công.
-        </p>
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Thêm ảnh giới thiệu -->
+                <div class="about-image-container fade-in">
+                    @if (Model?.GioiThieu != null && !string.IsNullOrEmpty(Model.GioiThieu.AnhGioiThieu))
+                    {
+                        <img src="@Model.GioiThieu.AnhGioiThieu" alt="Ảnh giới thiệu" class="img-fluid" 
+                             onerror="this.src='/images/default-about.jpg'; this.onerror=null;" />
+                    }
+                    else
+                    {
+                        <img src="/images/default-about.jpg" alt="Ảnh giới thiệu" class="img-fluid" />
+                    }
+                </div>
+            </div>
+            <div class="col-md-6 about-content fade-in">
+                <h2 class="section-title">Giới Thiệu Về Công Ty Chúng Tôi</h2>
+                <div class="section-title-gradient"></div>
+                <div class="lead mt-4">
+                    @if (Model?.GioiThieu != null)
+                    {
+                        @Html.Raw(Model.GioiThieu.NoiDung)
+                    }
+                    else
+                    {
+                        <p>Công ty TNHH Sản xuất Thương mại In Huy Chức tự hào là đơn vị tiên phong trong lĩnh vực in nhanh kỹ thuật số tại TP Hải Dương. In Huy Chức không ngừng mở rộng và đầu tư đồng bộ hệ thống con người, máy móc để có thể đáp ứng tốt nhất mọi nhu cầu của khách hàng.</p>
+                        <p>Trong tình hình kinh tế hiện nay, hầu như ai cũng muốn mình có được những sản phẩm giá rẻ, nhưng chỉ rẻ không thôi thì chưa đủ. Công ty in Huy Chức không cam kết sẽ tạo ra những sản phẩm in ấn có giá rẻ nhất nhưng chúng tôi đảm bảo rằng quý khách sẽ có được những sản phẩm chất lượng tốt nhất với giá cả hợp lý nhất.</p>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
+    @if (isAdmin)
+    {
+        <a asp-controller="Home" asp-action="CapNhatGioiThieu" class="edit-button position-absolute top-0 end-0 m-3">
+            <i class="fas fa-edit"></i> Sửa nội dung
+        </a>
+    }
 </section>
 
-<!-- Products & Services Section -->
-<section class="products-services py-5">
+<!-- Services Section -->
+<section class="services-section py-5">
     <div class="container">
-        <h2 class="section-title text-center fade-in">Sản Phẩm & Dịch Vụ</h2>
-        <p class="section-description text-center fade-in">Chúng tôi cung cấp đa dạng các dịch vụ in ấn chất lượng cao, đáp ứng mọi nhu cầu của khách hàng cá nhân và doanh nghiệp</p>
+        <h2 class="section-title mb-2 fade-in">SẢN PHẨM & DỊCH VỤ</h2>
+        <div class="section-title-gradient"></div>
+        <p class="section-description text-center mb-5 fade-in">Chúng tôi cung cấp đa dạng các dịch vụ in ấn chất lượng cao, đáp ứng mọi nhu cầu của khách hàng</p>
 
         <div class="services-grid">
-            <!-- Service 1 -->
-            <div class="service-card fade-in">
-                <div class="service-icon">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-                <div class="service-content">
-                    <h3>In Tờ Rơi, Tờ Gấp</h3>
-                    <p>Thiết kế và in ấn tờ rơi, tờ gấp quảng cáo với đa dạng kích thước, chất liệu giấy và màu sắc sắc nét.</p>
-                    <a href="/san-pham/to-roi" class="service-link">Xem chi tiết <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
+            @{
+                var services = new[]
+                {
+                    new { Icon = "fa-file-alt", Title = "In Tờ Rơi, Tờ Gấp", Desc = "Thiết kế và in ấn tờ rơi chuyên nghiệp, đa dạng kích thước và chất liệu", Link = "/san-pham/to-roi" },
+                    new { Icon = "fa-shopping-bag", Title = "In Túi Giấy", Desc = "Sản xuất túi giấy cao cấp, in ấn sắc nét với nhiều mẫu mã đa dạng", Link = "/san-pham/tui-giay" },
+                    new { Icon = "fa-box-open", Title = "In Bao Bì", Desc = "Thiết kế và sản xuất bao bì chuyên nghiệp, đảm bảo chất lượng", Link = "/san-pham/bao-bi" },
+                    new { Icon = "fa-tag", Title = "In Tem Nhãn", Desc = "In tem nhãn sản phẩm với công nghệ hiện đại, bền đẹp", Link = "/san-pham/tem-nhan" },
+                    new { Icon = "fa-book", Title = "In Catalogue", Desc = "Thiết kế và in ấn catalogue sang trọng, chuyên nghiệp", Link = "/san-pham/catalogue" },
+                    new { Icon = "fa-box", Title = "In Hộp Giấy", Desc = "Sản xuất hộp giấy đựng sản phẩm với nhiều kích thước và mẫu mã", Link = "/san-pham/hop-giay" },
+                    new { Icon = "fa-id-card", Title = "In Danh Thiếp", Desc = "Thiết kế và in ấn danh thiếp chuyên nghiệp, sang trọng", Link = "/san-pham/danh-thiep" },
+                    new { Icon = "fa-print", Title = "Dịch Vụ In Khác", Desc = "Đa dạng dịch vụ in ấn khác như poster, banner, thiệp cưới...", Link = "/san-pham" }
+                };
+            }
 
-            <!-- Service 2 -->
-            <div class="service-card fade-in">
-                <div class="service-icon">
-                    <i class="fas fa-shopping-bag"></i>
+            @foreach (var service in services)
+            {
+                <div class="service-card fade-in">
+                    <div class="service-icon">
+                        <i class="fas @service.Icon"></i>
+                    </div>
+                    <div class="service-content">
+                        <h3>@service.Title</h3>
+                        <p>@service.Desc</p>
+                        <a href="@service.Link" class="service-link">
+                            Xem chi tiết <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="service-content">
-                    <h3>In Túi Giấy</h3>
-                    <p>Sản xuất túi giấy cao cấp với nhiều mẫu mã, kích thước và độ bền cao, phù hợp cho cửa hàng, thương hiệu.</p>
-                    <a href="/san-pham/tui-giay" class="service-link">Xem chi tiết <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-
-            <!-- Service 3 -->
-            <div class="service-card fade-in">
-                <div class="service-icon">
-                    <i class="fas fa-box-open"></i>
-                </div>
-                <div class="service-content">
-                    <h3>In Bao Bì</h3>
-                    <p>Thiết kế và sản xuất bao bì sản phẩm chuyên nghiệp, bắt mắt, giúp nâng tầm thương hiệu của bạn.</p>
-                    <a href="/san-pham/bao-bi" class="service-link">Xem chi tiết <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-
-            <!-- Service 4 -->
-            <div class="service-card fade-in">
-                <div class="service-icon">
-                    <i class="fas fa-tag"></i>
-                </div>
-                <div class="service-content">
-                    <h3>In Tem Nhãn</h3>
-                    <p>In tem nhãn sản phẩm với công nghệ hiện đại, đảm bảo độ bền màu và khả năng chống giả mạo.</p>
-                    <a href="/san-pham/tem-nhan" class="service-link">Xem chi tiết <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-
-            <!-- Service 5 -->
-            <div class="service-card fade-in">
-                <div class="service-icon">
-                    <i class="fas fa-book"></i>
-                </div>
-                <div class="service-content">
-                    <h3>In Catalogue</h3>
-                    <p>Thiết kế và in ấn catalogue chuyên nghiệp, trình bày sản phẩm một cách ấn tượng và thu hút.</p>
-                    <a href="/san-pham/catalogue" class="service-link">Xem chi tiết <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-
-            <!-- Service 6 -->
-            <div class="service-card fade-in">
-                <div class="service-icon">
-                    <i class="fas fa-box"></i>
-                </div>
-                <div class="service-content">
-                    <h3>In Hộp Giấy</h3>
-                    <p>Sản xuất hộp giấy đựng sản phẩm với nhiều kích thước, kiểu dáng và độ bền cao, phù hợp mọi ngành hàng.</p>
-                    <a href="/san-pham/hop-giay" class="service-link">Xem chi tiết <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-
-            <!-- Service 7 -->
-            <div class="service-card fade-in">
-                <div class="service-icon">
-                    <i class="fas fa-id-card"></i>
-                </div>
-                <div class="service-content">
-                    <h3>In Danh Thiếp</h3>
-                    <p>Thiết kế và in ấn danh thiếp chuyên nghiệp, sang trọng, tạo ấn tượng tốt trong giao tiếp kinh doanh.</p>
-                    <a href="/san-pham/danh-thiep" class="service-link">Xem chi tiết <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-
-            <!-- Service 8 -->
-            <div class="service-card fade-in">
-                <div class="service-icon">
-                    <i class="fas fa-print"></i>
-                </div>
-                <div class="service-content">
-                    <h3>Dịch Vụ In Khác</h3>
-                    <p>Cung cấp đa dạng các dịch vụ in ấn khác như in poster, banner, backdrop, thiệp cưới, thiệp mời...</p>
-                    <a href="/san-pham" class="service-link">Xem tất cả <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
+            }
         </div>
     </div>
 </section>
 
-<!-- Mission & Vision Section -->
-<section class="mission-vision py-5">
+<!-- Team Section -->
+<section class="team-section">
     <div class="container">
-        <h2 class="text-center mb-5 fade-in">Sứ Mệnh & Tầm Nhìn</h2>
-        <div class="row">
-            <div class="col-md-6 mb-4 fade-in">
-                <div class="mission-vision-card">
-                    <h3>Sứ Mệnh</h3>
-                    <p>Chúng tôi cam kết cung cấp các sản phẩm và dịch vụ tốt nhất, với chất lượng vượt trội và chi phí hợp lý. Mục tiêu của chúng tôi là trở thành đối tác tin cậy, góp phần vào sự thành công của khách hàng thông qua các giải pháp in ấn chuyên nghiệp.</p>
-                </div>
-            </div>
-            <div class="col-md-6 mb-4 fade-in">
-                <div class="mission-vision-card">
-                    <h3>Tầm Nhìn</h3>
-                    <p>Trở thành công ty hàng đầu trong lĩnh vực in ấn tại Việt Nam, được biết đến với chất lượng sản phẩm xuất sắc, dịch vụ chuyên nghiệp và đổi mới không ngừng. Chúng tôi hướng tới việc mở rộng thị trường và phát triển các công nghệ in ấn tiên tiến.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Team Section (Original) -->
-<section class="bg-light py-5">
-    <div class="container">
-        <h2 class="text-center mb-4 fade-in">Đội Ngũ Của Chúng Tôi</h2>
-<!-- Team Carousel Section (New) -->
-<section class="team-section py-5">
-    <div class="container">
-        <h2 class="team-title">ĐỘI NGŨ NHÂN VIÊN - CỐT LÕI THÀNH CÔNG CỦA IN HUY CHÚC</h2>
+        <h2 class="section-title mb-2 fade-in">ĐỘI NGŨ NHÂN VIÊN</h2>
+        <div class="section-title-gradient"></div>
+        <p class="team-title mb-5 fade-in">Những con người tâm huyết là cốt lõi thành công của In Vinh Phát</p>
 
         <div class="team-carousel">
             <div class="team-slides">
-                <!-- Slide 1 -->
-                <div class="team-slide active">
-                    <div class="team-member">
-                        <div class="member-image">
-                            <img src="~/images/team-member-1.jpg" alt="Nguyễn Văn Huy">
+                @if (Model?.DanhSachNhanVien != null && Model.DanhSachNhanVien.Any())
+                {
+                    @for (int i = 0; i < Model.DanhSachNhanVien.Count; i++)
+                    {
+                        var nhanVien = Model.DanhSachNhanVien[i];
+                        <div class="team-slide @(i == 0 ? "active" : "")">
+                            <div class="team-member">
+                                <div class="member-image">
+                                    <img src="@(string.IsNullOrEmpty(nhanVien.AnhUrl) ? "/images/default-avatar.jpg" : nhanVien.AnhUrl)"
+                                         alt="@nhanVien.HoTen"
+                                         onerror="this.src='/images/default-avatar.jpg'; this.onerror=null;">
+                                </div>
+                                <div class="member-quote">
+                                    "@(string.IsNullOrEmpty(nhanVien.TamHiet) ? "Đang cập nhật..." : nhanVien.TamHiet)"
+                                </div>
+                                <div class="member-name">@nhanVien.HoTen.ToUpper()</div>
+                                <div class="member-position">@(string.IsNullOrEmpty(nhanVien.ViTri) ? "NHÂN VIÊN" : nhanVien.ViTri.ToUpper())</div>
+                            </div>
                         </div>
-                        <div class="member-quote">
-                            "Tôi có được thành công là nhờ tận tâm và tư vấn trung thực với khách hàng. Có những khách hàng đã gắn bó với tôi từ ngày đầu thành lập Công ty"
+                    }
+                }
+                else
+                {
+                    <div class="team-slide active">
+                        <div class="team-member">
+                            <div class="member-image">
+                                <img src="/images/default-avatar.jpg" alt="Nhân viên">
+                            </div>
+                            <div class="member-quote">
+                                "Đang cập nhật thông tin..."
+                            </div>
+                            <div class="member-name">ĐANG CẬP NHẬT</div>
+                            <div class="member-position">CHỨC VỤ</div>
                         </div>
-                        <div class="member-name">NGUYỄN VĂN HUY</div>
-                        <div class="member-position">GIÁM ĐỐC</div>
                     </div>
-                </div>
-
-                <!-- Slide 2 -->
-                <div class="team-slide">
-                    <div class="team-member">
-                        <div class="member-image">
-                            <img src="~/images/team-member-2.jpg" alt="Trần Thị Chúc">
-                        </div>
-                        <div class="member-quote">
-                            "Chúng tôi luôn đặt chất lượng sản phẩm lên hàng đầu. Sự hài lòng của khách hàng chính là thành công lớn nhất của chúng tôi trong suốt những năm qua"
-                        </div>
-                        <div class="member-name">TRẦN THỊ CHÚC</div>
-                        <div class="member-position">PHÓ GIÁM ĐỐC</div>
-                    </div>
-                </div>
-
-                <!-- Slide 3 -->
-                <div class="team-slide">
-                    <div class="team-member">
-                        <div class="member-image">
-                            <img src="~/images/team-member-3.jpg" alt="Lê Văn Minh">
-                        </div>
-                        <div class="member-quote">
-                            "Với hơn 10 năm kinh nghiệm trong ngành in ấn, tôi tự hào mang đến những giải pháp in ấn tối ưu nhất cho khách hàng của chúng tôi"
-                        </div>
-                        <div class="member-name">LÊ VĂN MINH</div>
-                        <div class="member-position">TRƯỞNG PHÒNG KỸ THUẬT</div>
-                    </div>
-                </div>
+                }
             </div>
 
-            <!-- Carousel Controls -->
             <div class="carousel-controls">
-                <button class="carousel-control prev" id="prevSlide" aria-label="Previous slide"><i class="fas fa-chevron-left"></i></button>
-                <button class="carousel-control next" id="nextSlide" aria-label="Next slide"><i class="fas fa-chevron-right"></i></button>
+                <button class="carousel-control prev" id="prevSlide">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-control next" id="nextSlide">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
-        </div>
-    </div>
-</section>
 
-<!-- Achievements Section -->
-<section class="achievements py-5">
-    <div class="container">
-        <h2 class="text-center mb-5 fade-in">Thành Tựu</h2>
-        <div class="row">
-            <div class="col-md-4 mb-4 fade-in">
-                <div class="achievement-item">
-                    <div class="achievement-icon">
-                        <i class="fas fa-award"></i>
-                    </div>
-                    <div class="achievement-content">
-                        <h4>Giải Thưởng Xuất Sắc</h4>
-                        <p>Đạt giải thưởng "Doanh nghiệp xuất sắc" 3 năm liên tiếp.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4 fade-in">
-                <div class="achievement-item">
-                    <div class="achievement-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="achievement-content">
-                        <h4>Đối Tác Tin Cậy</h4>
-                        <p>Hơn 500 đối tác và khách hàng hài lòng trên toàn quốc.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4 fade-in">
-                <div class="achievement-item">
-                    <div class="achievement-icon">
-                        <i class="fas fa-lightbulb"></i>
-                    </div>
-                    <div class="achievement-content">
-                        <h4>Sáng Tạo Không Ngừng</h4>
-                        <p>Ra mắt sản phẩm sáng tạo, nhận được đánh giá cao từ chuyên gia.</p>
-                    </div>
-                </div>
-            </div>
+            <!-- Thêm thanh dots -->
+            <div class="slider-dots"></div>
         </div>
     </div>
+    @if (isAdmin)
+    {
+        <a asp-controller="Home" asp-action="CapNhatNhanVien" class="edit-button position-absolute top-0 end-0 m-3">
+            <i class="fas fa-edit"></i> Quản lý đội ngũ
+        </a>
+    }
 </section>
 
 @section Scripts {
     <script>
+        // Team Carousel with Enhanced Effects
         document.addEventListener('DOMContentLoaded', function () {
-            // Smooth scrolling for anchor links
-            const links = document.querySelectorAll('a[href^="#"]');
-            links.forEach(link => {
-                link.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href').substring(1);
-                    const targetElement = document.getElementById(targetId);
-                    if (targetElement) {
-                        targetElement.scrollIntoView({ behavior: 'smooth' });
-                    }
-                });
-            });
+            const slides = document.querySelectorAll('.team-slide');
+            if (slides.length > 0) {
+                const prevBtn = document.getElementById('prevSlide');
+                const nextBtn = document.getElementById('nextSlide');
+                let currentIndex = 0;
+                let interval;
 
-            // Form validation
-            const contactForm = document.getElementById('contactForm');
-            if (contactForm) {
-                contactForm.addEventListener('submit', function (e) {
-                    let isValid = true;
-                    const inputs = contactForm.querySelectorAll('input, textarea');
-                    inputs.forEach(input => {
-                        if (!input.value.trim()) {
-                            isValid = false;
-                            input.classList.add('is-invalid');
-                        } else {
-                            input.classList.remove('is-invalid');
-                        }
+                // Create dots if they don't exist
+                const dotsContainer = document.querySelector('.slider-dots');
+                if (slides.length > 0) {
+                    dotsContainer.innerHTML = '';
+                    for (let i = 0; i < slides.length; i++) {
+                        const dot = document.createElement('span');
+                        dot.classList.add('slider-dot');
+                        if (i === 0) dot.classList.add('active');
+                        dot.addEventListener('click', () => {
+                            showSlide(i);
+                            stopAutoSlide();
+                            startAutoSlide();
+                        });
+                        dotsContainer.appendChild(dot);
+                    }
+                }
+
+                function showSlide(index) {
+                    // Update dots
+                    const dots = document.querySelectorAll('.slider-dot');
+                    dots.forEach((dot, i) => {
+                        dot.classList.toggle('active', i === index);
                     });
 
-                    if (!isValid) {
-                        e.preventDefault();
-                        alert('Vui lòng điền đầy đủ thông tin.');
-                    }
-                });
+                    // Hide all slides
+                    slides.forEach(slide => {
+                        slide.classList.remove('active');
+                    });
+
+                    // Show the selected slide with fadeIn animation
+                    slides[index].classList.add('active');
+                    currentIndex = index;
+                }
+
+                function nextSlide() {
+                    currentIndex = (currentIndex + 1) % slides.length;
+                    showSlide(currentIndex);
+                }
+
+                function prevSlide() {
+                    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+                    showSlide(currentIndex);
+                }
+
+                // Auto slide
+                function startAutoSlide() {
+                    interval = setInterval(nextSlide, 5000);
+                }
+
+                function stopAutoSlide() {
+                    clearInterval(interval);
+                }
+
+                // Event listeners
+                if (prevBtn && nextBtn) {
+                    prevBtn.addEventListener('click', () => {
+                        stopAutoSlide();
+                        prevSlide();
+                        startAutoSlide();
+                    });
+
+                    nextBtn.addEventListener('click', () => {
+                        stopAutoSlide();
+                        nextSlide();
+                        startAutoSlide();
+                    });
+                }
+
+                // Start auto sliding
+                startAutoSlide();
+
+                // Pause on hover
+                const carousel = document.querySelector('.team-carousel');
+                carousel.addEventListener('mouseenter', stopAutoSlide);
+                carousel.addEventListener('mouseleave', startAutoSlide);
             }
+        });
 
-            // Fade-out success message
-            const successMessage = document.querySelector('.alert-success');
-            if (successMessage) {
-                setTimeout(() => {
-                    successMessage.classList.add('fade-out');
-                    setTimeout(() => {
-                        successMessage.remove();
-                    }, 500);
-                }, 5000);
-            }
-
-            // Animate elements on scroll
-            const animatedElements = document.querySelectorAll('.fade-in');
-
-            const isInViewport = (element) => {
-                const rect = element.getBoundingClientRect();
-                return (
-                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8 &&
-                    rect.bottom >= 0
-                );
+        // Nâng cao hiệu ứng scroll animation - hiệu ứng như Home
+        document.addEventListener('DOMContentLoaded', function() {
+            // Thiết lập IntersectionObserver với các tùy chọn
+            const observerOptions = {
+                threshold: 0.15,
+                rootMargin: '-50px 0px'
             };
 
-            const handleScroll = () => {
-                animatedElements.forEach(item => {
-                    if (isInViewport(item) && !item.classList.contains('animated')) {
-                        item.classList.add('animated');
+            // Xử lý gradient line dưới tiêu đề
+            const titleObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animated');
+                        
+                        // Áp dụng hiệu ứng cho gradient line nếu có
+                        const gradientLine = entry.target.nextElementSibling;
+                        if (gradientLine && gradientLine.classList.contains('section-title-gradient')) {
+                            setTimeout(() => {
+                                gradientLine.classList.add('animated');
+                            }, 200);
+                        }
+                        
+                        titleObserver.unobserve(entry.target);
                     }
                 });
-            };
-
-            // Initial check
-            handleScroll();
-
-            // Check on scroll
-            window.addEventListener('scroll', handleScroll);
-
-            // Team Carousel
-            const slides = document.querySelectorAll('.team-slide');
-            const prevButton = document.getElementById('prevSlide');
-            const nextButton = document.getElementById('nextSlide');
-
-            // Set initial slide index
-            let currentSlideIndex = 0;
-            let slideInterval;
-
-            // Function to show a specific slide
-            function showSlide(index) {
-                // Hide all slides
-                slides.forEach(slide => {
-                    slide.classList.remove('active');
+            }, observerOptions);
+            
+            // Tạo observer cho các gradient lines trực tiếp
+            const lineObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.classList.add('animated');
+                        }, 300);
+                        lineObserver.unobserve(entry.target);
+                    }
                 });
+            }, observerOptions);
 
-                // Show the current slide
-                slides[index].classList.add('active');
-            }
+            // Quan sát các tiêu đề section
+            document.querySelectorAll('.section-title').forEach(el => {
+                titleObserver.observe(el);
+            });
+            
+            // Quan sát trực tiếp các gradient lines
+            document.querySelectorAll('.section-title-gradient').forEach(el => {
+                lineObserver.observe(el);
+            });
 
-            // Function to show the next slide
-            function nextSlide() {
-                currentSlideIndex++;
-                if (currentSlideIndex >= slides.length) {
-                    currentSlideIndex = 0;
+            // Áp dụng hiệu ứng cho các phần tử khác nhau
+            // Fade in default
+            document.querySelectorAll('.fade-in').forEach(el => {
+                const fadeObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('animated');
+                            fadeObserver.unobserve(entry.target);
+                        }
+                    });
+                }, observerOptions);
+                
+                fadeObserver.observe(el);
+            });
+
+            // Slide in from sides - Alternating
+            document.querySelectorAll('.service-card').forEach((el, index) => {
+                if (index % 2 === 0) {
+                    el.classList.add('slide-in-left');
+                } else {
+                    el.classList.add('slide-in-right');
                 }
-                showSlide(currentSlideIndex);
-            }
+                
+                const cardObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            setTimeout(() => {
+                                entry.target.classList.add('animated');
+                            }, 100 + (index * 100));
+                            cardObserver.unobserve(entry.target);
+                        }
+                    });
+                }, observerOptions);
+                
+                cardObserver.observe(el);
+            });
 
-            // Function to show the previous slide
-            function prevSlide() {
-                currentSlideIndex--;
-                if (currentSlideIndex < 0) {
-                    currentSlideIndex = slides.length - 1;
+            // Special elements
+            document.querySelectorAll('.about-image-container').forEach(el => {
+                el.classList.add('zoom-in');
+                const specialObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('animated');
+                            specialObserver.unobserve(entry.target);
+                        }
+                    });
+                }, observerOptions);
+                
+                specialObserver.observe(el);
+            });
+
+            // Reveal text animation for header
+            const revealElements = document.querySelectorAll('.reveal-text');
+            revealElements.forEach(element => {
+                element.style.opacity = '1';
+            });
+
+            // Scroll to element function
+            function scrollToElement(elementSelector) {
+                const element = document.querySelector(elementSelector);
+                if (element) {
+                    const headerOffset = 100;
+                    const elementPosition = element.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: "smooth"
+                    });
                 }
-                showSlide(currentSlideIndex);
             }
 
-            // Add event listeners to buttons
-            if (prevButton) {
-                prevButton.addEventListener('click', function() {
-                    prevSlide();
-                    resetInterval();
+            // Scroll to relevant section when clicking nav items
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    scrollToElement(targetId);
                 });
-            }
-
-            if (nextButton) {
-                nextButton.addEventListener('click', function() {
-                    nextSlide();
-                    resetInterval();
-                });
-            }
-
-            // Function to reset the auto-rotation interval
-            function resetInterval() {
-                clearInterval(slideInterval);
-                startInterval();
-            }
-
-            // Function to start the auto-rotation interval
-            function startInterval() {
-                slideInterval = setInterval(nextSlide, 8000);
-            }
-
-            // Start the auto-rotation
-            startInterval();
+            });
         });
     </script>
-    @await Html.PartialAsync("_ValidationScriptsPartial")
 }

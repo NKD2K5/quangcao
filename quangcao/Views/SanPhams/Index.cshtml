@@ -1,15 +1,28 @@
-﻿@using quangcao.Controllers
+﻿@using quangcao.Models
+@using Microsoft.AspNetCore.Identity
+@using quangcao.Controllers
 @model IEnumerable<SanPham>
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     var categories = ViewBag.Categories as List<string> ?? new List<string>();
     var currentCategory = ViewBag.CurrentCategory as string;
     var selectedSort = Context.Request.Query["sort"].ToString();
     var recentlyViewed = ViewBag.RecentlyViewed as List<SanPham> ?? new List<SanPham>();
+    var user = await UserManager.GetUserAsync(User);
+    var isAdmin = User.IsInRole("Admin");
 }
 
 @section Styles {
     <link href="~/css/sanphamindex.css" rel="stylesheet" />
+}
+@if (isAdmin)
+{
+    <div class="mb-3 text-end">
+        <a asp-controller="SanPhams" asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> Thêm sản phẩm
+        </a>
+    </div>
 }
 
 <div class="product-page">
@@ -93,8 +106,7 @@
                     <a href="/SanPhams/Index" class="btn-view-all">Xem tất cả sản phẩm</a>
                 </div>
             }
-            else
-            {
+            else{
                 <div class="products-grid">
                     @foreach (var item in Model)
                     {
@@ -118,10 +130,21 @@
                                 </h3>
                                 <div class="product-price">@string.Format("{0:N3}", item.Gia)đ</div>
                             </div>
+
+                        @if (isAdmin)
+                        {
+                            <a asp-controller="SanPhams" asp-action="Delete" asp-route-id="@item.IdSanPham"
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');"
+                               class="btn-delete">
+                                <i class="fas fa-trash-alt"></i> Xóa
+                            </a>
+                        }
                         </div>
                     }
-                </div>
+                </div>                
             }
+            
+            
 
             <!-- Pagination -->
             @if (ViewBag.TotalPages > 1)
@@ -190,7 +213,6 @@
             </div>
         </div>
     }
-</div>
 
 <!-- Quick View Modal -->
 <div id="quickViewModal" class="modal">

@@ -1,0 +1,117 @@
+.product-edit-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.product-edit-title {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #34495e;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    border: 1px solid #dce4ec;
+    border-radius: 4px;
+    padding: 0.75rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.image-preview-container {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.image-preview {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 4px;
+    border: 2px dashed #dce4ec;
+    padding: 4px;
+}
+
+.btn-submit {
+    background: #2ecc71;
+    color: white;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.btn-submit:hover {
+    background: #27ae60;
+}
+
+.btn-cancel {
+    background: #95a5a6;
+    color: white;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.btn-cancel:hover {
+    background: #7f8c8d;
+}
+
+.text-danger {
+    color: #e74c3c;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.ck-editor__editable {
+    min-height: 200px;
+}
+
+.price-input-group {
+    position: relative;
+}
+
+.price-input-group::before {
+    content: "₫";
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #7f8c8d;
+}
+
+.price-input {
+    padding-left: 25px !important;
+}
+
+.form-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+}

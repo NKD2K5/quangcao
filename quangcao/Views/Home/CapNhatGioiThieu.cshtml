@@ -1,0 +1,100 @@
+﻿@model quangcao.Models.GioiThieu
+@{
+    ViewData["Title"] = "Cập nhật giới thiệu";
+    string redirectTo = Context.Request.Query["redirectTo"].ToString();
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">@ViewData["Title"]</h1>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            <form asp-action="CapNhatGioiThieu" enctype="multipart/form-data" method="post">
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" name="redirectTo" value="@redirectTo" />
+
+                <div class="mb-3">
+                    <label asp-for="TieuDe" class="form-label">Tiêu đề</label>
+                    <input asp-for="TieuDe" class="form-control" />
+                    <span asp-validation-for="TieuDe" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="NoiDung" class="form-label">Nội dung</label>
+                    <textarea asp-for="NoiDung" id="editor" class="form-control"></textarea>
+                    <span asp-validation-for="NoiDung" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="AnhGioiThieu" class="form-label">Hình ảnh giới thiệu</label>
+                    <input type="file" name="anhFile" id="anhFile" class="form-control mb-2" accept="image/*" />
+
+                    @if (!string.IsNullOrEmpty(Model?.AnhGioiThieu))
+                    {
+                        <div class="mt-2">
+                            <p>Ảnh hiện tại:</p>
+                            <img src="@Model.AnhGioiThieu" alt="Ảnh giới thiệu" style="max-width: 300px; max-height: 200px;"
+                                 class="img-thumbnail" />
+                        </div>
+                    }
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-save me-1"></i> Lưu thay đổi
+                    </button>
+                    @if (!string.IsNullOrEmpty(redirectTo) && redirectTo.Equals("Index", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Quay lại Trang chủ
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Home" asp-action="Privacy" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Quay lại Giới thiệu
+                        </a>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#editor'), {
+                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
+                heading: {
+                    options: [
+                        { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                        { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                        { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+                        { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
+                    ]
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+}

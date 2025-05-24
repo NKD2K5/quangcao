@@ -1,42 +1,99 @@
 ﻿@model quangcao.Models.BaoGia
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết báo giá";
 }
+<link href="~/css/baogia-detail.css" rel="stylesheet" />
 
-<h1>Details</h1>
+<div class="baogia-detail-page">
+    <div class="baogia-detail-container">
+        <!-- Header Section -->
+        <div class="baogia-detail-header">
+            <h1 class="baogia-detail-title">@Model.TieuDe</h1>
+            <div class="baogia-detail-meta">
+                <div class="meta-item">
+                    <i class="bi bi-calendar3"></i>
+                    <span>Ngày tạo: @Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+            </div>
+        </div>
 
-<div>
-    <h4>BaoGia</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TieuDe)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TieuDe)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NoiDung)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NoiDung)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NgayTao)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NgayTao)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.Id)
-        </dd>
-    </dl>
+        <!-- Content Section -->
+        <div class="baogia-detail-content">
+            <div class="baogia-detail-section">
+                <h2 class="section-title">Thông tin chi tiết</h2>
+                <div class="section-content">
+                    @Html.Raw(Model.NoiDung)
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Section -->
+        <div class="baogia-detail-footer">
+            <div class="contact-section">
+                <h2 class="contact-title">Bạn cần tư vấn thêm?</h2>
+                <p class="contact-description">
+                    Liên hệ với chúng tôi ngay để được tư vấn chi tiết về dịch vụ và nhận báo giá tốt nhất cho doanh nghiệp của bạn
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="tel:0977344567" class="contact-button">
+                        <i class="bi bi-telephone"></i>
+                        Gọi ngay
+                    </a>
+                    <a href="mailto:contact@example.com" class="contact-button">
+                        <i class="bi bi-envelope"></i>
+                        Gửi email
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-4 d-flex justify-content-between align-items-center">
+            <div class="d-flex gap-2">
+                <a asp-action="Edit" asp-route-id="@Model.IdBaoGia" class="contact-button">
+                    <i class="bi bi-pencil-square"></i>
+                    Chỉnh sửa
+                </a>
+                <a asp-action="Index" class="contact-button" style="background: var(--text-gray)">
+                    <i class="bi bi-arrow-left"></i>
+                    Quay lại
+                </a>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="contact-button" onclick="window.print()" style="background: var(--text-dark)">
+                    <i class="bi bi-printer"></i>
+                    In báo giá
+                </button>
+                <button class="contact-button" onclick="shareBaoGia()" style="background: var(--primary-dark)">
+                    <i class="bi bi-share"></i>
+                    Chia sẻ
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.IdBaoGia">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Scripts {
+    <script>
+        function shareBaoGia() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '@Model.TieuDe',
+                    text: 'Xem chi tiết báo giá: @Model.TieuDe',
+                    url: window.location.href
+                })
+                .catch(console.error);
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                const dummy = document.createElement('input');
+                document.body.appendChild(dummy);
+                dummy.value = window.location.href;
+                dummy.select();
+                document.execCommand('copy');
+                document.body.removeChild(dummy);
+                alert('Đã sao chép liên kết vào clipboard!');
+            }
+        }
+    </script>
+}

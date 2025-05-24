@@ -24,6 +24,15 @@ namespace quangcao.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IProductService _productService;
 
+        public static readonly List<string> DefaultCategories = new List<string>
+        {
+            "Danh Thiếp", "Giấy Tiêu Đề", "Hóa Đơn Bán Lẻ", "In Catalogue", "In Chứng Chỉ-Giấy Khen",
+            "In Kẹp File-Folder", "In Phong Bì-Envelope", "In Menu-Thực Đơn", "In Tờ Rơi-Tờ Gấp",
+            "Phiếu Quà Tặng", "In Hộp Giấy", "In Túi Giấy", "In Nhãn Mác Sản Phẩm", "In Tem Nhãn",
+            "In Phiếu Bảo Hành", "In Decal", "Bao Lì Xì", "In Lịch Tết", "Sổ Bìa Da", "Sổ Lò Xo",
+            "Sổ Note", "Thiệp Chúc Mừng", "Thiệp Cưới", "Vở Học Sinh"
+        };
+
         public SanPhamsController(AppDbContext context, IWebHostEnvironment webHostEnvironment, UserManager<ApplicationUser> userManager, IProductService productService)
         {
             _context = context;
@@ -73,14 +82,13 @@ namespace quangcao.Controllers
                 .ToListAsync();
 
             // Lấy danh sách thể loại
-            var categories = await _context.SanPhams
-                .GroupBy(p => p.TheLoai)
-                .Select(g => new CategoryModel
+            var categories = DefaultCategories
+                .Select(cat => new CategoryModel
                 {
-                    TheLoai = g.Key,
-                    SoLuong = g.Count()
+                    TheLoai = cat,
+                    SoLuong = _context.SanPhams.Count(p => p.TheLoai == cat)
                 })
-                .ToListAsync();
+                .ToList();
 
             // Lấy sản phẩm đã xem gần đây
             var recentlyViewed = HttpContext.Session.GetObjectFromJson<List<SanPham>>("RecentlyViewed");
@@ -200,7 +208,7 @@ namespace quangcao.Controllers
             var tatCaDanhGias = _context.DanhGias
                 .Where(d => d.IdSanPham == product.IdSanPham)
                 .ToList();
-            ViewBag.TatCaDanhGias = tatCaDanhGias; // Gửi qua View để tính tổng quan sao
+            ViewBag.TatCaDanhGias = tatCaDanhGias;
 
             // Lọc đánh giá theo số sao (nếu có)
             var danhGiasQuery = _context.DanhGias
@@ -211,9 +219,15 @@ namespace quangcao.Controllers
                 danhGiasQuery = danhGiasQuery.Where(d => d.SoSao == soSao.Value);
             }
 
+            // Sắp xếp sau khi đã lọc xong
+            danhGiasQuery = danhGiasQuery.OrderByDescending(d => d.NgayDanhGia);
+
             var pageSize = 3;
             var totalRatings = danhGiasQuery.Count();
             var totalPages = (int)Math.Ceiling((double)totalRatings / pageSize);
+            
+            // Đảm bảo page không vượt quá totalPages
+            page = Math.Max(1, Math.Min(page, totalPages));
 
             if (totalRatings == 0)
             {
@@ -225,7 +239,6 @@ namespace quangcao.Controllers
             else
             {
                 var danhGias = danhGiasQuery
-                    .OrderByDescending(d => d.NgayDanhGia)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .ToList();
@@ -234,6 +247,7 @@ namespace quangcao.Controllers
                 ViewBag.TotalRatings = totalRatings;
                 ViewBag.TotalPages = totalPages;
                 ViewBag.CurrentPage = page;
+                ViewBag.SoSao = soSao;
             }
 
             // Sản phẩm tương tự
@@ -281,10 +295,7 @@ namespace quangcao.Controllers
         }
         public IActionResult Create()
         {
-            ViewBag.ExistingCategories = _context.SanPhams
-                .Select(sp => sp.TheLoai)
-                .Distinct()
-                .ToList();
+            ViewBag.ExistingCategories = DefaultCategories;
 
             return View();
         }
@@ -312,12 +323,14 @@ namespace quangcao.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewBag.ExistingCategories = _context.SanPhams
-                    .Select(sp => sp.TheLoai)
-                    .Distinct()
-                    .ToList();
+                ViewBag.ExistingCategories = DefaultCategories;
 
                 return View(sanPham);
+            }
+
+            if (!DefaultCategories.Contains(sanPham.TheLoai))
+            {
+                ModelState.AddModelError("TheLoai", "Thể loại không hợp lệ.");
             }
 
             if (hinhAnhFiles != null && hinhAnhFiles.Any())
@@ -350,9 +363,17 @@ namespace quangcao.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> Edit(Guid? id)
+        {
+            if (id == null) return NotFound();
+            var sanPham = await _context.SanPhams.FindAsync(id);
+            if (sanPham == null) return NotFound();
+            ViewBag.ExistingCategories = DefaultCategories;
+            return View(sanPham);
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("IdSanPham,TenSanPham,Gia,SoLuongDaBan,MoTa,HinhAnh,NgayTao")] SanPham sanPham)
+        public async Task<IActionResult> Edit(Guid id, [Bind("IdSanPham,TenSanPham,Gia,SoLuongDaBan,MoTa,HinhAnh,NgayTao,TheLoai")] SanPham sanPham, IFormFile imageFile)
         {
             if (id != sanPham.IdSanPham) return NotFound();
 
@@ -360,8 +381,54 @@ namespace quangcao.Controllers
             {
                 try
                 {
-                    _context.Update(sanPham);
-                    await _context.SaveChangesAsync();
+                    // Xử lý upload hình ảnh mới nếu có
+                    if (imageFile != null && imageFile.Length > 0)
+                    {
+                        // Xóa ảnh cũ nếu có
+                        if (!string.IsNullOrEmpty(sanPham.HinhAnh))
+                        {
+                            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, sanPham.HinhAnh.TrimStart('/'));
+                            if (System.IO.File.Exists(oldImagePath))
+                            {
+                                System.IO.File.Delete(oldImagePath);
+                            }
+                        }
+
+                        // Lưu ảnh mới
+                        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
+                        var folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "img", "sanpham");
+                        
+                        if (!Directory.Exists(folderPath))
+                        {
+                            Directory.CreateDirectory(folderPath);
+                        }
+
+                        var filePath = Path.Combine(folderPath, fileName);
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await imageFile.CopyToAsync(stream);
+                        }
+
+                        sanPham.HinhAnh = $"/img/sanpham/{fileName}";
+                    }
+
+                    // Cập nhật sản phẩm
+                    var existingProduct = await _context.SanPhams.FindAsync(id);
+                    if (existingProduct != null)
+                    {
+                        existingProduct.TenSanPham = sanPham.TenSanPham;
+                        existingProduct.Gia = sanPham.Gia;
+                        existingProduct.SoLuongDaBan = sanPham.SoLuongDaBan;
+                        existingProduct.MoTa = sanPham.MoTa;
+                        existingProduct.TheLoai = sanPham.TheLoai;
+                        
+                        if (imageFile != null && imageFile.Length > 0)
+                        {
+                            existingProduct.HinhAnh = sanPham.HinhAnh;
+                        }
+
+                        await _context.SaveChangesAsync();
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -376,6 +443,10 @@ namespace quangcao.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            // Nếu có lỗi, load lại danh sách thể loại
+            ViewBag.ExistingCategories = DefaultCategories;
+                
             return View(sanPham);
         }
 

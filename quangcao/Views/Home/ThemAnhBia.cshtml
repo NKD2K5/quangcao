@@ -1,0 +1,79 @@
+﻿@model quangcao.Models.AnhBiaTrang
+@{
+    ViewData["Title"] = "Thêm Ảnh Bìa";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2>Thêm Ảnh Bìa Mới</h2>
+            <p>Thêm ảnh bìa cho trang mới của website</p>
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+
+            <form asp-action="ThemAnhBia" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label asp-for="TenTrang">Tên Trang</label>
+                    <input asp-for="TenTrang" class="form-control" required placeholder="Ví dụ: LienHe, SanPham, TinTuc..." />
+                    <small class="form-text text-muted">Nhập tên trang không dấu, không khoảng trắng (ví dụ: LienHe, SanPham)</small>
+                    <span asp-validation-for="TenTrang" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label>Ảnh Bìa</label>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="anhFile" name="anhFile" accept="image/*" required>
+                        <label class="custom-file-label" for="anhFile">Chọn ảnh...</label>
+                    </div>
+                    <span asp-validation-for="DuongDanAnh" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="preview-container mt-2" id="preview" style="display: none;">
+                        <p class="text-muted">Xem trước ảnh:</p>
+                        <img src="/placeholder.svg" class="img-thumbnail preview-image" style="max-width: 300px;" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Lưu
+                    </button>
+                    <a asp-action="CapNhatAnhBia" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Quay Lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.custom-file-input').on('change', function () {
+                var fileName = $(this).val().split('\\').pop();
+                $(this).next('.custom-file-label').html(fileName);
+
+                // Hiển thị xem trước ảnh
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#preview').show();
+                        $('#preview .preview-image').attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        });
+    </script>
+}

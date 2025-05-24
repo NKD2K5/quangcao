@@ -1,0 +1,108 @@
+:root {
+    /* Màu sắc */
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --primary-light: #3b82f6;
+    --secondary-color: #10b981;
+    --secondary-hover: #0d9488;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+    --warning-color: #f59e0b;
+    --warning-hover: #d97706;
+    --light-color: #f9fafb;
+    --dark-color: #111827;
+    --gray-color: #6b7280;
+    --gray-light: #e5e7eb;
+    --border-color: #e5e7eb;
+    --text-dark: #1e293b;
+    --text-light: #94a3b8;
+    --bg-light: #f8fafc;
+
+    /* Đổ bóng */
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+    /* Hiệu ứng chuyển động */
+    --transition: all 0.3s ease;
+}
+
+/* Kiểu dáng danh sách chung */
+.list-group {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.list-group-item {
+    margin: 0;
+    border-radius: 0;
+    overflow: hidden;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.list-group-item a {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    color: var(--gray-color);
+    text-decoration: none;
+    transition: var(--transition);
+    font-size: 0.9rem;
+    position: relative;
+    border-radius: 0;
+    background-color: transparent;
+    width: 100%;
+}
+
+.list-group-item a:hover {
+    background-color: #f1f5f9;
+    color: var(--primary-color);
+}
+
+/* Mũi tên chỉ báo chung */
+.list-group-item a::before {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 4px 0 4px 4px;
+    border-color: transparent transparent transparent var(--primary-color);
+    opacity: 0;
+    margin-right: 8px;
+    transform: translateX(-8px);
+    transition: var(--transition);
+}
+
+.list-group-item a:hover::before {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Hiệu ứng chuyển động chung */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Kiểu dáng cho thiết bị di động */
+@media (max-width: 767px) {
+    .list-group-item a {
+        padding: 8px 12px;
+    }
+
+    .list-group-item a:hover {
+        padding-left: 16px;
+    }
+}

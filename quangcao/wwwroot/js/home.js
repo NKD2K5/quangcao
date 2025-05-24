@@ -1,110 +1,228 @@
-﻿function renderServices(categoryId) {
-    const category = categories[categoryId];
+﻿document.addEventListener('DOMContentLoaded', function () {
+    // Cache DOM elements
+    const testimonialsSlider = document.getElementById('testimonialsSlider');
+    const testimonialPrev = document.getElementById('testimonialPrev');
+    const testimonialNext = document.getElementById('testimonialNext');
+    const testimonials = document.querySelectorAll('.testimonial-card');
+    const contactForm = document.getElementById('contactForm');
+    const starsContainer = document.getElementById('stars');
 
-    if (!category) return;
+    // Testimonials slider
+    if (testimonialsSlider && testimonialPrev && testimonialNext && testimonials.length > 0) {
+        let currentIndex = 0;
+        let autoplayInterval;
 
-    // Update category title and description
-    categoryTitle.textContent = category.name;
-    categoryDescription.textContent = category.description;
+        // Hiển thị testimonial hiện tại
+        function showTestimonial(index) {
+            testimonials.forEach((testimonial, i) => {
+                const isVisible = i === index;
+                testimonial.style.display = isVisible ? 'block' : 'none';
+                testimonial.setAttribute('aria-hidden', !isVisible);
+            });
+        }
 
-    // Clear services grid
-    servicesGrid.innerHTML = '';
+        // Chuyển đến testimonial tiếp theo
+        function nextTestimonial() {
+            currentIndex = (currentIndex + 1) % testimonials.length;
+            showTestimonial(currentIndex);
+        }
 
-    // Render services
-    category.services.forEach(service => {
-        const serviceCard = document.createElement('div');
-        serviceCard.className = 'service-card';
-        serviceCard.dataset.id = service.id;
+        // Chuyển đến testimonial trước đó
+        function prevTestimonial() {
+            currentIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
+            showTestimonial(currentIndex);
+        }
 
-        serviceCard.innerHTML = `
-                <div class="service-image">
-                    <img src="${service.image}" alt="${service.name}">
-                </div>
-                <div class="service-content">
-                    <h3>${service.name}</h3>
-                    <p>${service.description}</p>
-                    <button class="detail-btn" data-id="${service.id}">
-                        <span>Chi tiết</span>
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-                <div class="service-details" id="details-${service.id}">
-                    <h4>Đặc điểm nổi bật:</h4>
-                    <ul class="features-list">
-                        ${service.features.map(feature => `<li>${feature}</li>`).join('')}
-                    </ul>
-                    <div class="order-btn-container">
-                        <a href="/san-pham/${service.id}" class="order-btn">Đặt hàng ngay</a>
-                    </div>
-                </div>
-            `;
+        // Bắt đầu autoplay
+        function startAutoplay() {
+            stopAutoplay();
+            autoplayInterval = setInterval(nextTestimonial, 5000);
+        }
 
-        servicesGrid.appendChild(serviceCard);
-    });
+        // Dừng autoplay
+        function stopAutoplay() {
+            if (autoplayInterval) {
+                clearInterval(autoplayInterval);
+            }
+        }
 
-    // Add event listeners to detail buttons
-    const detailButtons = document.querySelectorAll('.detail-btn');
-    detailButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const serviceId = this.dataset.id;
-            const detailsElement = document.getElementById(`details-${serviceId}`);
-            const serviceCard = this.closest('.service-card');
-
-            // Toggle details visibility
-            if (detailsElement.classList.contains('active')) {
-                detailsElement.classList.remove('active');
-                serviceCard.classList.remove('active');
+        // Khởi tạo hiển thị
+        function initTestimonials() {
+            if (window.innerWidth < 768) {
+                showTestimonial(currentIndex);
+                startAutoplay();
             } else {
-                // Close any open details
-                document.querySelectorAll('.service-details.active').forEach(el => {
-                    el.classList.remove('active');
-                    el.closest('.service-card').classList.remove('active');
+                testimonials.forEach(testimonial => {
+                    testimonial.style.display = 'block';
+                    testimonial.setAttribute('aria-hidden', 'false');
                 });
-
-                // Open this detail
-                detailsElement.classList.add('active');
-                serviceCard.classList.add('active');
+                stopAutoplay();
             }
-        });
-    });
-}
+        }
 
-// Initialize with first category
-renderServices('in-an');
-
-// Category button click handlers
-categoryButtons.forEach(button => {
-    button.addEventListener('click', function () {
-        const categoryId = this.dataset.category;
-
-        // Update active button
-        categoryButtons.forEach(btn => btn.classList.remove('active'));
-        this.classList.add('active');
-
-        // Update select for mobile
-        categorySelect.value = categoryId;
-
-        // Render services for selected category
-        renderServices(categoryId);
-    });
-});
-
-// Mobile category select change handler
-if (categorySelect) {
-    categorySelect.addEventListener('change', function () {
-        const categoryId = this.value;
-
-        // Update active button
-        categoryButtons.forEach(btn => {
-            if (btn.dataset.category === categoryId) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
+        // Xử lý nút next
+        testimonialNext.addEventListener('click', function () {
+            if (window.innerWidth < 768) {
+                nextTestimonial();
+                stopAutoplay();
+                startAutoplay();
             }
         });
 
-        // Render services for selected category
-        renderServices(categoryId);
+        // Xử lý nút prev
+        testimonialPrev.addEventListener('click', function () {
+            if (window.innerWidth < 768) {
+                prevTestimonial();
+                stopAutoplay();
+                startAutoplay();
+            }
+        });
+
+        // Xử lý responsive với debounce
+        let resizeTimeout;
+        window.addEventListener('resize', function () {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(initTestimonials, 200);
+        });
+
+        // Khởi tạo
+        initTestimonials();
+
+        // Dừng autoplay khi hover
+        testimonialsSlider.addEventListener('mouseenter', stopAutoplay);
+        testimonialsSlider.addEventListener('mouseleave', function () {
+            if (window.innerWidth < 768) {
+                startAutoplay();
+            }
+        });
+    }
+
+    // Form validation
+    if (contactForm) {
+        contactForm.addEventListener('submit', function (e) {
+            const name = document.getElementById('name');
+            const phone = document.getElementById('phone');
+            const subject = document.getElementById('subject');
+            const message = document.getElementById('message');
+            let isValid = true;
+
+            // Reset previous error messages
+            document.querySelectorAll('.error-message').forEach(el => el.remove());
+
+            // Validate required fields
+            [name, phone, subject, message].forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    showError(field, 'Trường này không được để trống');
+                }
+            });
+
+            // Validate phone number
+            if (phone.value.trim()) {
+                const phoneRegex = /^[0-9]{10,11}$/;
+                if (!phoneRegex.test(phone.value.replace(/\s/g, ''))) {
+                    isValid = false;
+                    showError(phone, 'Số điện thoại không hợp lệ');
+                }
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+
+        // Helper function to show error message
+        function showError(field, message) {
+            const errorElement = document.createElement('div');
+            errorElement.className = 'error-message';
+            errorElement.textContent = message;
+            errorElement.style.color = 'red';
+            errorElement.style.fontSize = '0.875rem';
+            errorElement.style.marginTop = '5px';
+            field.parentNode.appendChild(errorElement);
+            field.classList.add('error');
+            field.focus();
+        }
+
+        // Clear error on input
+        contactForm.querySelectorAll('input, textarea').forEach(field => {
+            field.addEventListener('input', function () {
+                this.classList.remove('error');
+                const errorMessage = this.parentNode.querySelector('.error-message');
+                if (errorMessage) {
+                    errorMessage.remove();
+                }
+            });
+        });
+    }
+
+    // Stars animation
+    if (starsContainer) {
+        // Tạo ngôi sao với kích thước ngẫu nhiên
+        for (let i = 0; i < 50; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+
+            // Kích thước ngẫu nhiên
+            const size = Math.random() * 2 + 1; // 1-3px
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+
+            // Vị trí ngẫu nhiên
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.left = `${Math.random() * 100}%`;
+
+            // Độ trễ animation ngẫu nhiên
+            star.style.animationDelay = `${Math.random() * 10}s`;
+
+            // Thời gian animation ngẫu nhiên
+            star.style.animationDuration = `${Math.random() * 3 + 2}s`; // 2-5s
+
+            starsContainer.appendChild(star);
+        }
+    }
+        // Khởi tạo Swiper cho tin tức
+        if (document.getElementById('newsSlider')) {
+            const newsSwiper = new Swiper('#newsSlider', {
+                slidesPerView: 1,
+                spaceBetween: 30,
+                loop: true,
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 1,
+                        spaceBetween: 20,
+                    },
+                    768: {
+                        slidesPerView: 2,
+                        spaceBetween: 30,
+                    },
+                    1024: {
+                        slidesPerView: 3,
+                        spaceBetween: 30,
+                    },
+                }
+            });
+
+            // Dừng autoplay khi hover
+            const newsSlider = document.getElementById('newsSlider');
+            newsSlider.addEventListener('mouseenter', function () {
+                newsSwiper.autoplay.stop();
+            });
+
+            newsSlider.addEventListener('mouseleave', function () {
+                newsSwiper.autoplay.start();
+            });
+        }
     });
-}
-});

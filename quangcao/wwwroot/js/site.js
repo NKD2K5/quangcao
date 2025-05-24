@@ -260,3 +260,49 @@
 //    window.addEventListener("resize", adjustMainContentPadding);
 //    window.addEventListener("scroll", handleScroll);
 //});
+
+// Testimonials Slideshow
+document.addEventListener('DOMContentLoaded', function () {
+    const slides = document.querySelectorAll('.testimonial-card');
+    const dotsContainer = document.querySelector('.slider-dots');
+    let currentSlide = 0;
+
+    // Create dots
+    slides.forEach((_, index) => {
+        const dot = document.createElement('div');
+        dot.classList.add('slider-dot');
+        if (index === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => goToSlide(index));
+        dotsContainer.appendChild(dot);
+    });
+
+    // Update dots
+    function updateDots() {
+        document.querySelectorAll('.slider-dot').forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentSlide);
+        });
+    }
+
+    // Go to specific slide
+    function goToSlide(index) {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = index;
+        if (currentSlide >= slides.length) currentSlide = 0;
+        if (currentSlide < 0) currentSlide = slides.length - 1;
+        slides[currentSlide].classList.add('active');
+        updateDots();
+    }
+
+    // Next slide
+    window.nextSlide = function () {
+        goToSlide(currentSlide + 1);
+    };
+
+    // Previous slide
+    window.prevSlide = function () {
+        goToSlide(currentSlide - 1);
+    };
+
+    // Auto advance slides
+    setInterval(nextSlide, 5000);
+});

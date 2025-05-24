@@ -1,69 +1,159 @@
 ﻿@model SanPham
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Chỉnh sửa sản phẩm";
+    var danhSachTheLoai = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "-- Chọn thể loại --", Value = "" },
+        new SelectListItem { Text = "Danh Thiếp", Value = "Danh Thiếp" },
+        new SelectListItem { Text = "Giấy Tiêu Đề", Value = "Giấy Tiêu Đề" },
+        new SelectListItem { Text = "Hóa Đơn Bán Lẻ", Value = "Hóa Đơn Bán Lẻ" },
+        new SelectListItem { Text = "In Catalogue", Value = "In Catalogue" },
+        new SelectListItem { Text = "In Chứng Chỉ-Giấy Khen", Value = "In Chứng Chỉ-Giấy Khen" },
+        new SelectListItem { Text = "In Kẹp File-Folder", Value = "In Kẹp File-Folder" },
+        new SelectListItem { Text = "In Phong Bì-Envelope", Value = "In Phong Bì-Envelope" },
+        new SelectListItem { Text = "In Menu-Thực Đơn", Value = "In Menu-Thực Đơn" },
+        new SelectListItem { Text = "In Tờ Rơi-Tờ Gấp", Value = "In Tờ Rơi-Tờ Gấp" },
+        new SelectListItem { Text = "Phiếu Quà Tặng", Value = "Phiếu Quà Tặng" },
+        new SelectListItem { Text = "In Hộp Giấy", Value = "In Hộp Giấy" },
+        new SelectListItem { Text = "In Túi Giấy", Value = "In Túi Giấy" },
+        new SelectListItem { Text = "In Nhãn Mác Sản Phẩm", Value = "In Nhãn Mác Sản Phẩm" },
+        new SelectListItem { Text = "In Tem Nhãn", Value = "In Tem Nhãn" },
+        new SelectListItem { Text = "In Phiếu Bảo Hành", Value = "In Phiếu Bảo Hành" },
+        new SelectListItem { Text = "In Decal", Value = "In Decal" },
+        new SelectListItem { Text = "Bao Lì Xì", Value = "Bao Lì Xì" },
+        new SelectListItem { Text = "In Lịch Tết", Value = "In Lịch Tết" },
+        new SelectListItem { Text = "Sổ Bìa Da", Value = "Sổ Bìa Da" },
+        new SelectListItem { Text = "Sổ Lò Xo", Value = "Sổ Lò Xo" },
+        new SelectListItem { Text = "Sổ Note", Value = "Sổ Note" },
+        new SelectListItem { Text = "Thiệp Chúc Mừng", Value = "Thiệp Chúc Mừng" },
+        new SelectListItem { Text = "Thiệp Cưới", Value = "Thiệp Cưới" },
+        new SelectListItem { Text = "Vở Học Sinh", Value = "Vở Học Sinh" }
+    };
 }
 
-<h1>Edit Sản Phẩm</h1>
-<hr />
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdSanPham" />
+<link href="~/css/product-edit.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
-            <div class="form-group">
-                <label asp-for="TenSanPham" class="control-label"></label>
-                <input asp-for="TenSanPham" class="form-control" />
-                <span asp-validation-for="TenSanPham" class="text-danger"></span>
-            </div>
+<div class="product-edit-container">
+    <h1 class="product-edit-title">Chỉnh sửa sản phẩm</h1>
+    
+    <form asp-action="Edit" id="editForm" enctype="multipart/form-data" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="IdSanPham" />
+        <input type="hidden" asp-for="NgayTao" />
 
-            <div class="form-group">
-                <label asp-for="Gia" class="control-label"></label>
-                <input asp-for="Gia" class="form-control" />
-                <span asp-validation-for="Gia" class="text-danger"></span>
-            </div>
+        <div class="form-group">
+            <label asp-for="TenSanPham" class="form-label">Tên sản phẩm</label>
+            <input asp-for="TenSanPham" class="form-control" required />
+            <span asp-validation-for="TenSanPham" class="text-danger"></span>
+        </div>
 
-            <div class="form-group">
-                <label asp-for="SoLuongDaBan" class="control-label"></label>
-                <input asp-for="SoLuongDaBan" class="form-control" />
-                <span asp-validation-for="SoLuongDaBan" class="text-danger"></span>
+        <div class="form-group">
+            <label asp-for="Gia" class="form-label">Giá</label>
+            <div class="price-input-group">
+                <input asp-for="Gia" class="form-control price-input" type="number" min="0" required />
             </div>
+            <span asp-validation-for="Gia" class="text-danger"></span>
+        </div>
 
-            <div class="form-group">
-                <label asp-for="MoTa" class="control-label"></label>
-                <textarea asp-for="MoTa" class="form-control"></textarea>
-                <span asp-validation-for="MoTa" class="text-danger"></span>
-            </div>
+        <div class="form-group">
+            <label asp-for="SoLuongDaBan" class="form-label">Số lượng đã bán</label>
+            <input asp-for="SoLuongDaBan" class="form-control" type="number" min="0" required />
+            <span asp-validation-for="SoLuongDaBan" class="text-danger"></span>
+        </div>
 
-            <div class="form-group">
-                <label asp-for="HinhAnh" class="control-label"></label>
-                <input asp-for="HinhAnh" class="form-control" />
-                <span asp-validation-for="HinhAnh" class="text-danger"></span>
-            </div>
+        <div class="form-group">
+            <label asp-for="MoTa" class="form-label">Mô tả</label>
+            <textarea asp-for="MoTa" id="editor" class="form-control"></textarea>
+            <span asp-validation-for="MoTa" class="text-danger"></span>
+        </div>
 
-            <div class="form-group">
-                <label asp-for="NgayTao" class="control-label"></label>
-                <input asp-for="NgayTao" class="form-control" type="date" />
-                <span asp-validation-for="NgayTao" class="text-danger"></span>
+        <div class="form-group">
+            <label asp-for="HinhAnh" class="form-label">Hình ảnh</label>
+            <input type="file" class="form-control" id="imageInput" name="imageFile" accept="image/*" 
+                   onchange="previewImage(event)" />
+            <div class="image-preview-container">
+                <img id="preview" src="@Model.HinhAnh" class="image-preview" 
+                     onerror="this.src='/images/placeholder.png'" />
             </div>
+            <input type="hidden" asp-for="HinhAnh" id="currentImage" />
+        </div>
 
-            <div class="form-group">
-                <label asp-for="TheLoai" class="control-label">Thể loại</label>
-                <select asp-for="TheLoai" class="form-control" asp-items="ViewBag.DanhSachTheLoai"></select>
-                <span asp-validation-for="TheLoai" class="text-danger"></span>
-            </div>
+        <div class="form-group">
+            <label asp-for="TheLoai" class="form-label">Thể loại</label>
+            <select asp-for="TheLoai" class="form-control select2" required>
+                @foreach (var item in danhSachTheLoai)
+                {
+                    if (item.Value == Model.TheLoai)
+                    {
+                        <option value="@item.Value" selected>@item.Text</option>
+                    }
+                    else
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                }
+            </select>
+            <span asp-validation-for="TheLoai" class="text-danger"></span>
+        </div>
 
-            <div class="form-group mt-3">
-                <input type="submit" value="Lưu" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
-            </div>
-        </form>
-    </div>
+        <div class="form-buttons">
+            <a asp-action="Index" class="btn btn-cancel">Hủy</a>
+            <button type="submit" class="btn btn-submit" id="submitButton">
+                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                Lưu thay đổi
+            </button>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+    
+    <script>
+        // Initialize Select2
+        $(document).ready(function() {
+            $('.select2').select2({
+                theme: 'classic',
+                width: '100%'
+            });
+        });
+
+        // Initialize CKEditor
+        ClassicEditor
+            .create(document.querySelector('#editor'))
+            .catch(error => {
+                console.error(error);
+            });
+
+        // Image preview
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Form submission
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            const submitButton = document.getElementById('submitButton');
+            const spinner = submitButton.querySelector('.spinner-border');
+            
+            submitButton.disabled = true;
+            spinner.classList.remove('d-none');
+        });
+
+        // Price formatting
+        const priceInput = document.querySelector('.price-input');
+        priceInput.addEventListener('input', function(e) {
+            if (this.value < 0) this.value = 0;
+        });
+    </script>
 }

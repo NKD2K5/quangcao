@@ -1,0 +1,92 @@
+﻿@model quangcao.Models.ThanhVienDoiNgu
+@{
+    ViewData["Title"] = "Thêm Thành Viên";
+    Layout = "_Layout";
+}
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>Lỗi ModelState:</strong>
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+<div class="card">
+    <div class="card-header">
+        <h5>Thêm Thành Viên Mới</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="ThemNhanVien" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label asp-for="HoTen">Họ Tên</label>
+                <input asp-for="HoTen" class="form-control" required />
+                <span asp-validation-for="HoTen" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ViTri">Vị Trí/Chức Vụ</label>
+                <input asp-for="ViTri" class="form-control" required />
+                <span asp-validation-for="ViTri" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="TamHiet">Tâm Hiết/Mô Tả</label>
+                <textarea asp-for="TamHiet" class="form-control" rows="5" required></textarea>
+                <span asp-validation-for="TamHiet" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Hình Ảnh</label>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="anhUrl" name="anhUrl" accept="image/*" required>
+                    <label class="custom-file-label" for="anhUrl">Chọn ảnh...</label>
+                </div>
+                <span asp-validation-for="AnhUrl" class="text-danger"></span>
+            </div>
+
+            <div class="form-group text-right">
+                <a asp-action="CapNhatNhanVien" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Quay Lại
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Lưu
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.custom-file-input').on('change', function () {
+                var fileName = $(this).val().split('\\').pop();
+                $(this).next('.custom-file-label').html(fileName);
+
+                // Hiển thị xem trước ảnh
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var previewContainer = $('<div class="mt-2 mb-3"></div>');
+                        var previewImage = $('<img class="img-thumbnail" style="max-width: 300px;">').attr('src', e.target.result);
+                        var previewLabel = $('<p class="text-muted">Xem trước ảnh:</p>');
+
+                        // Xóa xem trước cũ nếu có
+                        $('.preview-container').remove();
+
+                        previewContainer.addClass('preview-container');
+                        previewContainer.append(previewLabel);
+                        previewContainer.append(previewImage);
+
+                        $('.custom-file').after(previewContainer);
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        });
+    </script>
+}

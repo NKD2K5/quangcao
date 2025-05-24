@@ -38,7 +38,7 @@
             thumbnails.forEach((thumbnail) => {
                 thumbnail.addEventListener("click", function () {
                     const index = Number.parseInt(this.getAttribute("data-index"))
-                    updateMainImage(index)
+                    updateMainMedia(index)
                 })
             })
 
@@ -46,7 +46,7 @@
             if (prevButton) {
                 prevButton.addEventListener("click", () => {
                     currentIndex = (currentIndex - 1 + totalImages) % totalImages
-                    updateMainImage(currentIndex)
+                    updateMainMedia(currentIndex)
                 })
             }
 
@@ -54,7 +54,7 @@
             if (nextButton) {
                 nextButton.addEventListener("click", () => {
                     currentIndex = (currentIndex + 1) % totalImages
-                    updateMainImage(currentIndex)
+                    updateMainMedia(currentIndex)
                 })
             }
 
@@ -71,11 +71,45 @@
                 })
             }
 
-            function updateMainImage(index) {
+            function updateMainMedia(index) {
                 currentIndex = index
                 const selectedThumbnail = thumbnails[index]
-                const imgSrc = selectedThumbnail.querySelector("img").getAttribute("data-src")
-                mainImage.src = "/" + imgSrc
+                const thumbnailVideo = selectedThumbnail.querySelector('video')
+                const thumbnailImage = selectedThumbnail.querySelector('img')
+
+                // Xóa main image/video cũ
+                const mainImageContainer = document.getElementById("mainImageContainer")
+                const oldMainVideo = mainImageContainer.querySelector('video.main-image')
+                if (oldMainVideo) {
+                    oldMainVideo.pause()
+                }
+                mainImageContainer.querySelectorAll('img.main-image,video.main-image').forEach(e => e.remove())
+
+                if (thumbnailVideo) {
+                    // Nếu là video
+                    const mainVideo = document.createElement('video')
+                    mainVideo.src = thumbnailVideo.getAttribute('src')
+                    mainVideo.className = 'main-image'
+                    mainVideo.controls = true
+                    mainVideo.preload = 'metadata'
+                    mainVideo.style.background = '#000'
+                    mainVideo.style.maxWidth = '100%'
+                    mainVideo.style.maxHeight = '400px'
+                    mainImageContainer.prepend(mainVideo)
+
+                    // Thêm sự kiện error handling
+                    mainVideo.onerror = function () {
+                        console.error('Lỗi khi tải video:', mainVideo.src)
+                        mainVideo.innerHTML = '<p>Không thể tải video</p>'
+                    }
+                } else if (thumbnailImage) {
+                    // Nếu là ảnh
+                    const mainImage = document.createElement('img')
+                    mainImage.src = thumbnailImage.src
+                    mainImage.className = 'main-image'
+                    mainImage.alt = thumbnailImage.alt
+                    mainImageContainer.prepend(mainImage)
+                }
 
                 // Update active thumbnail
                 thumbnails.forEach((thumb) => thumb.classList.remove("active"))
@@ -84,6 +118,13 @@
                 // Update counter
                 if (currentIndexSpan) {
                     currentIndexSpan.textContent = (index + 1).toString()
+                }
+
+                // Cập nhật lightbox
+                if (thumbnailVideo) {
+                    updateLightboxContent(thumbnailVideo.src, true)
+                } else if (thumbnailImage) {
+                    updateLightboxContent(thumbnailImage.src, false)
                 }
             }
 
@@ -782,4 +823,92 @@
         // Chuyển hướng đến trang liên hệ với thông tin sản phẩm
         window.location.href = `/LienHe?idSanPham=${idSanPham}&tenSanPham=${tenSanPham}`
     }
+
+    // Xử lý video thumbnails
+    const videoThumbnails = document.querySelectorAll('.video-thumbnail');
+    videoThumbnails.forEach(thumbnail => {
+        const video = thumbnail.querySelector('video');
+        if (!video) return;
+
+        // Tự động play video khi hover
+        thumbnail.addEventListener('mouseenter', () => {
+            if (video.paused) {
+                video.currentTime = 0; // Reset về đầu trước khi play
+                video.play().catch(err => {
+                    console.error('Không thể phát video:', err);
+                });
+            }
+        });
+
+        // Pause video khi không hover
+        thumbnail.addEventListener('mouseleave', () => {
+            if (!video.paused) {
+                video.pause();
+                video.currentTime = 0;
+            }
+        });
+
+        // Xử lý click vào video thumbnail
+        thumbnail.addEventListener('click', function () {
+            const wrapper = this.closest('.thumbnail-wrapper');
+            if (wrapper) {
+                const index = parseInt(wrapper.getAttribute('data-index'));
+                if (!isNaN(index)) {
+                    updateMainMedia(index);
+                }
+            }
+        });
+    });
+
+    // Cập nhật lightbox khi thay đổi ảnh/video
+    function updateLightboxContent(src, isVideo = false) {
+        const lightboxContent = document.querySelector('.lightbox-content');
+        if (!lightboxContent) return;
+
+        lightboxContent.innerHTML = '';
+
+        if (isVideo) {
+            const video = document.createElement('video');
+            video.id = 'lightboxVideo';
+            video.className = 'lightbox-media';
+            video.controls = true;
+            video.innerHTML = `
+                <source src="${src}" type="video/${src.split('.').pop()}">
+                Trình duyệt của bạn không hỗ trợ video.
+            `;
+            lightboxContent.appendChild(video);
+        } else {
+            const img = document.createElement('img');
+            img.id = 'lightboxImage';
+            img.className = 'lightbox-media';
+            img.src = src;
+            img.alt = 'Lightbox Image';
+            lightboxContent.appendChild(img);
+        }
+    }
+
+    // Xử lý video thumbnails trong sản phẩm liên quan
+    const relatedVideoThumbnails = document.querySelectorAll('.related-product-img-container .video-thumbnail');
+    relatedVideoThumbnails.forEach(thumbnail => {
+        const video = thumbnail.querySelector('video');
+        if (!video) return;
+
+        // Tự động play video khi hover
+        thumbnail.addEventListener('mouseenter', () => {
+            if (video.paused) {
+                video.currentTime = 0; // Reset về đầu trước khi play
+                video.play().catch(err => {
+                    console.error('Không thể phát video:', err);
+                });
+            }
+        });
+
+        // Pause video khi không hover
+        thumbnail.addEventListener('mouseleave', () => {
+            if (!video.paused) {
+                video.pause();
+                video.currentTime = 0;
+            }
+        });
+    });
 })

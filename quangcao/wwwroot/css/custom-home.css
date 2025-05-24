@@ -1,6 +1,7 @@
 ﻿/* Mega Menu Styles */
 .has-mega-menu {
-    position: static; /* Important for full-width mega menu */
+    position: static;
+    /* Important for full-width mega menu */
 }
 
 .mega-menu {
@@ -52,35 +53,19 @@
     gap: 0.5rem;
 }
 
-    .mega-menu-list li a {
-        font-size: 0.875rem;
-        color: var(--muted);
-        transition: all 0.2s ease;
-        display: block;
-        padding: 0.25rem 0;
-        position: relative;
-    }
-        .mega-menu-list li a::before {
-            content: '';
-            display: inline-block;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 4px 0 4px 4px;
-            border-color: transparent transparent transparent #2563eb; /* Tam giác màu xanh */
-            opacity: 0;
-            margin-right: 8px;
-            transform: translateX(-8px); /* Đưa tam giác sang trái */
-            transition: all 0.2s ease;
-        }
-        .mega-menu-list li a:hover {
-            color: var(--primary);
-            transform: translateX(5px);
-        }
-            .mega-menu-list li a:hover::before {
-                opacity: 1;
-                transform: translateX(0);
-            }
+.mega-menu-list li a {
+    font-size: 0.875rem;
+    color: var(--muted);
+    transition: all 0.2s ease;
+    display: block;
+    padding: 0.25rem 0;
+    position: relative;
+}
+
+.mega-menu-list li a:hover {
+    color: var(--primary);
+    transform: translateX(5px);
+}
 
 /* Mobile Mega Menu */
 .mobile-mega-menu {
@@ -110,14 +95,14 @@
     gap: 0.25rem;
 }
 
-    .mobile-mega-list a {
-        display: block;
-        padding: 0.25rem 0;
-        color: var(--muted-foreground);
-        font-size: 0.875rem;
-        border-bottom: none !important;
-    }
+.mobile-mega-list a {
+    display: block;
+    padding: 0.25rem 0;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    border-bottom: none !important;
+}
 
-        .mobile-mega-list a:hover {
-            color: var(--primary);
-        }
+.mobile-mega-list a:hover {
+    color: var(--primary);
+}

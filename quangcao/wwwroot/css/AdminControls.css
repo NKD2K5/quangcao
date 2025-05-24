@@ -1,0 +1,150 @@
+﻿/* Admin Controls */
+.admin-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.admin-controls-toggle {
+    text-align: right;
+}
+
+    .admin-controls-toggle .btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #2563eb;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+        .admin-controls-toggle .btn:hover {
+            background-color: #1d4ed8;
+            transform: scale(1.05);
+        }
+
+        .admin-controls-toggle .btn i {
+            font-size: 20px;
+        }
+
+.admin-controls-panel {
+    display: none;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.admin-controls-header {
+    background-color: #f8f9fa;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #dee2e6;
+}
+
+    .admin-controls-header h5 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+.admin-controls-body {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+    .admin-controls-body .btn {
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+
+        .admin-controls-body .btn:hover {
+            background-color: #f0f9ff;
+            color: #2563eb;
+        }
+
+        .admin-controls-body .btn i {
+            width: 20px;
+            text-align: center;
+        }
+
+.menu-divider {
+    height: 1px;
+    background-color: #e5e7eb;
+    margin: 5px 0;
+}
+
+/* Inline Edit Buttons */
+.editable-section {
+    position: relative;
+}
+
+.edit-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 5px 10px;
+    display: none;
+    z-index: 100;
+    font-size: 14px;
+    color: #2563eb;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+    .edit-button:hover {
+        background-color: #2563eb;
+        color: white;
+        border-color: #2563eb;
+    }
+
+.editable-section:hover .edit-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.edit-button i {
+    font-size: 12px;
+}
+
+@media (max-width: 768px) {
+    .admin-controls-panel {
+        width: 250px;
+    }
+
+    .edit-button {
+        padding: 3px 8px;
+        font-size: 12px;
+    }
+}

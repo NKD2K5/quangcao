@@ -1,76 +1,102 @@
-﻿.bao-gia-hover-container {
+/* Kiểu dáng cho phần báo giá */
+.baogia-page {
+    --primary-color: #2563eb;
+    --border-color: #e2e8f0;
+    --text-dark: #1e293b;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --transition: all 0.3s ease;
+}
+
+/* Menu hover báo giá */
+.bao-gia-hover-container {
     position: relative;
     display: inline-block;
 }
 
-.hover-title {
+.bao-gia-hover-container .hover-title {
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    color: #0f172a;
+    color: #1e293b;
     margin: 0;
-    padding: 0;
-    transition: color 0.2s;
-    font-size: 1rem;
-    font-weight: 500;
-    border-radius: 0;
+    padding: 0.15rem;
+    transition: all 0.3s ease;
+    font-size: 0.65rem;
+    font-weight: 400;
     background-color: transparent;
     white-space: nowrap;
+    border: none;
+    text-decoration: none;
 }
 
-    .hover-title:hover {
-        color: #2563eb;
-        background-color: transparent;
-    }
+.bao-gia-hover-container .hover-title:hover {
+    color: #2563eb;
+}
 
-    .hover-title i {
-        font-size: 0.8em;
-        transition: transform 0.3s ease;
-        margin-left: 6px;
-    }
+.bao-gia-hover-container .hover-title i {
+    font-size: 0.75em;
+    transition: transform 0.3s ease;
+    margin-left: 4px;
+    color: #6B7280;
+}
 
 .bao-gia-hover-container:hover .hover-title i {
     transform: rotate(-180deg);
-}
-
-/* Thêm pseudo-element để "bắc cầu" giữa title và dropdown */
-.bao-gia-hover-container::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    height: 10px;
-    background: transparent;
-    z-index: 999;
+    color: #2563eb;
 }
 
 .bao-gia-list {
     display: none;
     position: absolute;
-    top: calc(100% + 5px);
+    top: 100%;
     left: 0;
     background-color: #fff;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    width: 200px;
-    border-radius: 0;
-    z-index: 1000;
-    padding: 0;
-    overflow: hidden;
-    margin-top: 0;
-    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    min-width: 180px;
+    border-radius: 4px;
+    z-index: 9999;
+    padding: 8px 0;
+    margin-top: 2px;
+    border: 1px solid #e2e8f0;
 }
 
-    .bao-gia-hover-container:hover .bao-gia-list,
-    .bao-gia-list.show {
-        display: block;
-        animation: fadeIn 0.25s ease-out forwards;
-    }
+.bao-gia-hover-container:hover .bao-gia-list {
+    display: block;
+    animation: fadeIn 0.2s ease-out forwards;
+}
+
+.baogia-list-group {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.baogia-list-group-item {
+    margin: 0;
+    padding: 0;
+}
+
+.baogia-list-group-item a {
+    color: #1e293b;
+    text-decoration: none;
+    font-size: 0.65rem;
+    font-weight: 400;
+    padding: 6px 16px;
+    display: block;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.baogia-list-group-item a:hover {
+    color: #2563eb;
+    background-color: #f8fafc;
+    padding-left: 20px;
+}
 
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(-8px);
+        transform: translateY(6px);
     }
 
     to {
@@ -79,140 +105,54 @@
     }
 }
 
-/* Thêm tiêu đề cho dropdown */
-.bao-gia-list-header {
-    padding: 10px 15px;
-    border-bottom: 1px solid #e5e7eb;
-    color: #2563eb;
-    font-weight: 500;
-    font-size: 0.95rem;
-}
-
-.list-group {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.list-group-item {
-    margin: 0;
-    border-radius: 0;
-    overflow: hidden;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-    .list-group-item:last-child {
-        border-bottom: none;
-    }
-
-    .list-group-item a {
-        display: flex;
-        align-items: center;
-        padding: 10px 15px;
-        color: #4b5563;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        font-size: 0.9rem;
-        position: relative;
-        border-radius: 0;
-        background-color: transparent;
-        width: 100%;
-    }
-
-        /* Hiệu ứng hover với màu xám nhạt giống trong hình */
-        .list-group-item a:hover {
-            background-color: #f1f5f9; /* Màu xám nhạt khi hover */
-            color: #2563eb; /* Màu chữ xanh khi hover */
-        }
-
-        /* Tam giác CSS đúng như ban đầu */
-        .list-group-item a::before {
-            content: '';
-            display: inline-block;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 4px 0 4px 4px;
-            border-color: transparent transparent transparent #2563eb;
-            opacity: 0;
-            margin-right: 8px;
-            transform: translateX(-8px);
-            transition: all 0.2s ease;
-        }
-
-        .list-group-item a:hover::before {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-/* Mobile styles */
+/* Responsive styles */
 @media (max-width: 767px) {
     .bao-gia-hover-container {
         display: block;
         width: 100%;
     }
 
-        /* Loại bỏ pseudo-element trên mobile vì chúng ta sử dụng click thay vì hover */
-        .bao-gia-hover-container::after {
-            display: none;
-        }
-
-    .hover-title {
+    .bao-gia-hover-container .hover-title {
         display: flex;
         justify-content: space-between;
-        padding: 12px 0;
+        padding: 8px 10px;
         width: 100%;
+        border-radius: 4px;
     }
 
-        .hover-title i {
-            margin-left: auto;
-        }
+    .bao-gia-hover-container .hover-title i {
+        margin-left: auto;
+    }
 
     .bao-gia-list {
-        width: 100%;
         position: static;
+        width: 100%;
         box-shadow: none;
-        background-color: transparent;
-        border-radius: 0;
-        padding: 0 0 0 12px;
-        margin-top: 5px;
-        border-left: 2px solid #e0e7ff;
         border: none;
+        border-radius: 0;
+        margin-top: 4px;
+        padding: 0 0 0 10px;
+        background-color: transparent;
     }
 
-    /* On mobile, don't show on hover, only on click */
     .bao-gia-hover-container:hover .bao-gia-list {
         display: none;
     }
 
     .bao-gia-list.show {
         display: block;
-        animation: slideDown 0.3s ease forwards;
+        animation: slideDown 0.2s ease forwards;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
     }
 
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
-
-    .list-group-item {
-        margin: 4px 0;
-        border-bottom: none;
-    }
-
-        .list-group-item a {
-            padding: 8px 12px;
-            background-color: transparent;
-        }
-
-            .list-group-item a:hover {
-                background-color: #f1f5f9;
-            }
 }

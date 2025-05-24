@@ -36,6 +36,9 @@ namespace quangcao.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DiaChi")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -46,11 +49,17 @@ namespace quangcao.Migrations
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("HoTen")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTime?>("NgaySinh")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -90,110 +99,6 @@ namespace quangcao.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("ChiTietHoaDon", b =>
-                {
-                    b.Property<Guid>("IdChiTietHoaDon")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("Gia")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid>("IdHoaDon")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("IdSanPham")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("SoLuong")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TenSanPham")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("TongTien")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("IdChiTietHoaDon");
-
-                    b.HasIndex("IdHoaDon");
-
-                    b.HasIndex("IdSanPham");
-
-                    b.ToTable("ChiTietHoaDons");
-                });
-
-            modelBuilder.Entity("GioHang", b =>
-                {
-                    b.Property<Guid>("IdGioHang")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("Gia")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("HinhAnh")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("IdSanPham")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("SoLuong")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TenSanPham")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("IdGioHang");
-
-                    b.HasIndex("IdSanPham");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("GioHangs");
-                });
-
-            modelBuilder.Entity("HoaDon", b =>
-                {
-                    b.Property<Guid>("IdHoaDon")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("TenKhachHang")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("ThoiGianDat")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ThoiGianKetThuc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("TongTien")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("TrangThaiHoaDon")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("IdHoaDon");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("HoaDons");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -344,6 +249,114 @@ namespace quangcao.Migrations
                     b.ToTable("SanPhamTuongTus");
                 });
 
+            modelBuilder.Entity("SanPhamYeuThich", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("IdSanPham")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnOrder(1);
+
+                    b.HasKey("UserId", "IdSanPham");
+
+                    b.HasIndex("IdSanPham");
+
+                    b.ToTable("SanPhamYeuThiches");
+                });
+
+            modelBuilder.Entity("quangcao.Models.AnhBiaTrang", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DuongDanAnh")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("NgayCapNhat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TenTrang")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AnhBiaTrangs");
+                });
+
+            modelBuilder.Entity("quangcao.Models.BaoGia", b =>
+                {
+                    b.Property<Guid>("IdBaoGia")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NoiDung")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TieuDe")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("IdBaoGia");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("baogia", (string)null);
+                });
+
+            modelBuilder.Entity("quangcao.Models.ChiTietHoaDon", b =>
+                {
+                    b.Property<Guid>("IdChiTietHoaDon")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Gia")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("IdHoaDon")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("IdSanPham")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SoLuong")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TenSanPham")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("TongTien")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("IdChiTietHoaDon");
+
+                    b.HasIndex("IdHoaDon");
+
+                    b.HasIndex("IdSanPham");
+
+                    b.ToTable("ChiTietHoaDons");
+                });
+
             modelBuilder.Entity("quangcao.Models.DanhGia", b =>
                 {
                     b.Property<Guid>("IdDanhGia")
@@ -354,8 +367,17 @@ namespace quangcao.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("DaBaoCao")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("HinhAnh")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("IdSanPham")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("LuotHuuIch")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("NgayDanhGia")
                         .HasColumnType("datetime2");
@@ -363,17 +385,125 @@ namespace quangcao.Migrations
                     b.Property<int>("SoSao")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("TenNguoiDung")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdDanhGia");
 
                     b.HasIndex("IdSanPham");
 
+                    b.ToTable("DanhGias");
+                });
+
+            modelBuilder.Entity("quangcao.Models.GioHang", b =>
+                {
+                    b.Property<Guid>("IdGioHang")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Gia")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("HinhAnh")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("IdSanPham")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SoLuong")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TenSanPham")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("IdGioHang");
+
+                    b.HasIndex("IdSanPham");
+
                     b.HasIndex("UserId");
 
-                    b.ToTable("DanhGias");
+                    b.ToTable("GioHangs");
+                });
+
+            modelBuilder.Entity("quangcao.Models.GioiThieu", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AnhGioiThieu")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("NoiDung")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TieuDe")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("gioiThieus");
+                });
+
+            modelBuilder.Entity("quangcao.Models.HoaDon", b =>
+                {
+                    b.Property<Guid>("IdHoaDon")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DiaChi")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenKhachHang")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ThoiGianDat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ThoiGianKetThuc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("TongTien")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("TrangThaiHoaDon")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("IdHoaDon");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("HoaDons");
                 });
 
             modelBuilder.Entity("quangcao.Models.LienHe", b =>
@@ -385,8 +515,14 @@ namespace quangcao.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("HoTen")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("NoiDung")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SoDienThoai")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ThoiGian")
@@ -396,13 +532,7 @@ namespace quangcao.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("IdLienHe");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("LienHes");
                 });
@@ -412,6 +542,9 @@ namespace quangcao.Migrations
                     b.Property<Guid>("IdSanPham")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ChiTiet")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Gia")
                         .HasColumnType("decimal(18,2)");
@@ -443,22 +576,47 @@ namespace quangcao.Migrations
                     b.ToTable("SanPhams");
                 });
 
-            modelBuilder.Entity("quangcao.Models.SanPhamYeuThich", b =>
+            modelBuilder.Entity("quangcao.Models.ThanhVienDoiNgu", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AnhUrl")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("HoTen")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TamHiet")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid>("IdSanPham")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("ViTri")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<Guid>("SanPhamIdSanPham")
-                        .HasColumnType("uniqueidentifier");
+                    b.HasKey("Id");
 
-                    b.HasKey("UserId", "IdSanPham");
+                    b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("SanPhamIdSanPham");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("SanPhamYeuThiches");
+                    b.ToTable("thanhVienDoiNgus");
                 });
 
             modelBuilder.Entity("quangcao.Models.TinTuc", b =>
@@ -479,66 +637,20 @@ namespace quangcao.Migrations
 
                     b.Property<string>("TieuDe")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("ViewCount")
+                        .HasColumnType("int");
 
                     b.HasKey("IdTinTuc");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("TinTucs");
-                });
-
-            modelBuilder.Entity("ChiTietHoaDon", b =>
-                {
-                    b.HasOne("HoaDon", "HoaDon")
-                        .WithMany("ChiTietHoaDons")
-                        .HasForeignKey("IdHoaDon")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("quangcao.Models.SanPham", "SanPham")
-                        .WithMany("ChiTietHoaDons")
-                        .HasForeignKey("IdSanPham")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("HoaDon");
-
-                    b.Navigation("SanPham");
-                });
-
-            modelBuilder.Entity("GioHang", b =>
-                {
-                    b.HasOne("quangcao.Models.SanPham", "SanPham")
-                        .WithMany("GioHangs")
-                        .HasForeignKey("IdSanPham")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("ApplicationUser", "User")
-                        .WithMany("GioHangs")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SanPham");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("HoaDon", b =>
-                {
-                    b.HasOne("ApplicationUser", "User")
-                        .WithMany("HoaDons")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -611,41 +723,11 @@ namespace quangcao.Migrations
                     b.Navigation("SanPhamGoiY");
                 });
 
-            modelBuilder.Entity("quangcao.Models.DanhGia", b =>
-                {
-                    b.HasOne("quangcao.Models.SanPham", "SanPham")
-                        .WithMany("DanhGias")
-                        .HasForeignKey("IdSanPham")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ApplicationUser", "User")
-                        .WithMany("DanhGias")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SanPham");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("quangcao.Models.LienHe", b =>
-                {
-                    b.HasOne("ApplicationUser", "User")
-                        .WithMany("LienHes")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("quangcao.Models.SanPhamYeuThich", b =>
+            modelBuilder.Entity("SanPhamYeuThich", b =>
                 {
                     b.HasOne("quangcao.Models.SanPham", "SanPham")
                         .WithMany("YeuThichs")
-                        .HasForeignKey("SanPhamIdSanPham")
+                        .HasForeignKey("IdSanPham")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -660,10 +742,94 @@ namespace quangcao.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("quangcao.Models.TinTuc", b =>
+            modelBuilder.Entity("quangcao.Models.AnhBiaTrang", b =>
                 {
                     b.HasOne("ApplicationUser", "User")
-                        .WithMany("TinTucs")
+                        .WithMany("AnhBiaTrangs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_AnhBiaTrangs_AspNetUsers_UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("quangcao.Models.BaoGia", b =>
+                {
+                    b.HasOne("ApplicationUser", "User")
+                        .WithMany("BaoGias")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("quangcao.Models.ChiTietHoaDon", b =>
+                {
+                    b.HasOne("quangcao.Models.HoaDon", "HoaDon")
+                        .WithMany("ChiTietHoaDons")
+                        .HasForeignKey("IdHoaDon")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("quangcao.Models.SanPham", "SanPham")
+                        .WithMany("ChiTietHoaDons")
+                        .HasForeignKey("IdSanPham")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("HoaDon");
+
+                    b.Navigation("SanPham");
+                });
+
+            modelBuilder.Entity("quangcao.Models.DanhGia", b =>
+                {
+                    b.HasOne("quangcao.Models.SanPham", "SanPham")
+                        .WithMany("DanhGias")
+                        .HasForeignKey("IdSanPham")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SanPham");
+                });
+
+            modelBuilder.Entity("quangcao.Models.GioHang", b =>
+                {
+                    b.HasOne("quangcao.Models.SanPham", "SanPham")
+                        .WithMany("GioHangs")
+                        .HasForeignKey("IdSanPham")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ApplicationUser", "User")
+                        .WithMany("GioHangs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SanPham");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("quangcao.Models.GioiThieu", b =>
+                {
+                    b.HasOne("ApplicationUser", null)
+                        .WithMany("GioiThieus")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("quangcao.Models.HoaDon", b =>
+                {
+                    b.HasOne("ApplicationUser", "User")
+                        .WithMany("HoaDons")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -671,22 +837,49 @@ namespace quangcao.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("quangcao.Models.ThanhVienDoiNgu", b =>
+                {
+                    b.HasOne("ApplicationUser", null)
+                        .WithMany("ThanhVienDoiNgus")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("quangcao.Models.TinTuc", b =>
+                {
+                    b.HasOne("ApplicationUser", "User")
+                        .WithMany("TinTucs")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ApplicationUser", b =>
                 {
-                    b.Navigation("DanhGias");
+                    b.Navigation("AnhBiaTrangs");
+
+                    b.Navigation("BaoGias");
 
                     b.Navigation("GioHangs");
 
+                    b.Navigation("GioiThieus");
+
                     b.Navigation("HoaDons");
 
-                    b.Navigation("LienHes");
-
                     b.Navigation("SanPhamYeuThiches");
+
+                    b.Navigation("ThanhVienDoiNgus");
 
                     b.Navigation("TinTucs");
                 });
 
-            modelBuilder.Entity("HoaDon", b =>
+            modelBuilder.Entity("quangcao.Models.HoaDon", b =>
                 {
                     b.Navigation("ChiTietHoaDons");
                 });

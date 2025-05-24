@@ -23,7 +23,7 @@ namespace quangcao
             // Cấu hình Session
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.IdleTimeout = TimeSpan.FromMinutes(60);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
@@ -57,7 +57,7 @@ namespace quangcao
                 options.Cookie.IsEssential = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(2);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                 options.SlidingExpiration = false;
                 options.Cookie.Expiration = null;
                 options.Cookie.MaxAge = null;

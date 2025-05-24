@@ -34,7 +34,22 @@ namespace quangcao.Controllers
 
             return View(list);
         }
-
+        public async Task<IActionResult> Details(Guid? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            // Truy vấn báo giá và Include luôn User
+            var baoGia = await _context.BaoGias
+                .Include(b => b.User)
+                .FirstOrDefaultAsync(b => b.IdBaoGia == id);
+            if (baoGia == null)
+            {
+                return NotFound();
+            }
+            return View(baoGia);
+        }
         // GET: Tạo báo giá mới
         public IActionResult Create()
         {
