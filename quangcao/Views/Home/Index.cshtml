@@ -1,4 +1,4 @@
-﻿@model quangcao.Models.ViewModel.TrangChuViewModel
+@model quangcao.Models.ViewModel.TrangChuViewModel
 @using System.Web;
 
 @{
@@ -126,8 +126,12 @@
                     <img src="/images/printing-facility.jpg" alt="Ảnh giới thiệu" class="img-fluid" />
                 }
             </div>
-
             <div class="about-content">
+                <button class="accordion-toggle" type="button" aria-expanded="false">
+                    <span class="accordion-title">In Ấn Kỹ Thuật Số (Giới Thiệu)</span>
+                    <span class="accordion-icon"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <div class="accordion-content" style="display:none;">
                 @if (Model?.GioiThieu != null)
                 {
                     <h2 class="animate-in">@Model.GioiThieu.TieuDe</h2>
@@ -145,6 +149,7 @@
                 <a asp-controller="Home" asp-action="Privacy" class="btn btn-primary">
                     <i class="fas fa-info-circle"></i> Xem Thêm
                 </a>
+                </div>
             </div>
         </div>
     </div>
@@ -155,6 +160,21 @@
         </a>
     }
 </section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var toggleBtn = document.querySelector('.about-content .accordion-toggle');
+        var content = document.querySelector('.about-content .accordion-content');
+        var icon = toggleBtn.querySelector('.accordion-icon i');
+        toggleBtn.addEventListener('click', function () {
+            var isOpen = content.style.display === 'block';
+            content.style.display = isOpen ? 'none' : 'block';
+            toggleBtn.setAttribute('aria-expanded', !isOpen);
+            icon.classList.toggle('fa-chevron-down', isOpen);
+            icon.classList.toggle('fa-chevron-up', !isOpen);
+        });
+    });
+</script>
 
 <!-- Services Section -->
 <section class="services">

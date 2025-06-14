@@ -1,4 +1,4 @@
-﻿@using quangcao.Models
+@using quangcao.Models
 @using Microsoft.AspNetCore.Identity
 @using quangcao.Controllers
 @model IEnumerable<SanPham>
@@ -110,9 +110,21 @@
                 <div class="products-grid">
                     @foreach (var item in Model)
                     {
-                        string imageUrl = string.IsNullOrEmpty(item.HinhAnh)
-                        ? "img/sanpham/default.png"
-                        : item.HinhAnh.Split(';')[0];
+                        string imageUrl = "img/sanpham/default.png";
+                        if (!string.IsNullOrEmpty(item.HinhAnh))
+                        {
+                            var mediaFiles = item.HinhAnh.Split(';');
+                            // Tìm file ảnh đầu tiên (không phải video)
+                            var firstImage = mediaFiles.FirstOrDefault(f => 
+                                !f.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase) && 
+                                !f.EndsWith(".webm", StringComparison.OrdinalIgnoreCase) &&
+                                !f.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase));
+                            
+                            if (!string.IsNullOrEmpty(firstImage))
+                            {
+                                imageUrl = firstImage;
+                            }
+                        }
                         <div class="product-card">
                             <div class="product-image">
                                 <a href="/SanPhams/Details/@item.IdSanPham">
@@ -133,11 +145,9 @@
 
                         @if (isAdmin)
                         {
-                            <a asp-controller="SanPhams" asp-action="Delete" asp-route-id="@item.IdSanPham"
-                               onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');"
-                               class="btn-delete">
+                            <button type="button" class="btn-delete" onclick="deleteProduct('@item.IdSanPham', '@item.TenSanPham')">
                                 <i class="fas fa-trash-alt"></i> Xóa
-                            </a>
+                            </button>
                         }
                         </div>
                     }
@@ -233,6 +243,11 @@
 
 <!-- Toast Container -->
 <div id="qv-toast-container"></div>
+
+<!-- CSRF Token for AJAX requests -->
+<form id="csrf-form">
+    @Html.AntiForgeryToken()
+</form>
 
 @section Scripts {
 	<script src="~/js/sanphamindex.js"></script>

@@ -1,4 +1,4 @@
-﻿:root {
+:root {
     --primary: #2563eb;
     --primary-dark: #1d4ed8;
     --primary-light: #3b82f6;
@@ -97,6 +97,53 @@ button {
 
 .common-section-title-gradient.animated {
     transform: scaleX(1);
+}
+
+/* Add your custom CSS here */
+
+@media (max-width: 768px) {
+  .mobile-accordion-toggle {
+    width: 100%;
+    background: #f7faff;
+    border: none;
+    outline: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: left;
+    padding: 14px 16px;
+    border-radius: 6px;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .mobile-accordion-toggle:active,
+  .mobile-accordion-toggle[aria-expanded="true"] {
+    background: #e9f0fb;
+  }
+  .mobile-accordion-icon {
+    margin-left: 8px;
+    transition: transform 0.3s;
+    display: inline-flex;
+    align-items: center;
+  }
+  .mobile-accordion-toggle[aria-expanded="false"] .mobile-accordion-icon {
+    transform: rotate(-90deg);
+  }
+  .mobile-mega-list {
+    transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+    overflow: hidden;
+    opacity: 1;
+    max-height: 1000px;
+  }
+  .mobile-mega-list[style*="display: none"] {
+    opacity: 0;
+    max-height: 0 !important;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
 }
 
 /* About section styles */

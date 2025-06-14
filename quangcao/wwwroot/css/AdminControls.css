@@ -1,150 +1,319 @@
-﻿/* Admin Controls */
+﻿/* Admin Controls Styles */
 .admin-controls {
     position: fixed;
     bottom: 20px;
-    right: 20px;
-    z-index: 1000;
+    left: 20px;
+    z-index: var(--z-modal);
 }
 
-.admin-controls-toggle {
-    text-align: right;
+.admin-toggle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--white);
+    border: none;
+    box-shadow: var(--shadow-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-lg);
 }
 
-    .admin-controls-toggle .btn {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: #2563eb;
-        border: none;
-        transition: all 0.3s ease;
+    .admin-toggle:hover {
+        transform: scale(1.1);
+        box-shadow: var(--shadow-xl);
     }
 
-        .admin-controls-toggle .btn:hover {
-            background-color: #1d4ed8;
-            transform: scale(1.05);
-        }
-
-        .admin-controls-toggle .btn i {
-            font-size: 20px;
-        }
-
-.admin-controls-panel {
-    display: none;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
-    width: 300px;
-    margin-bottom: 10px;
-    overflow: hidden;
-    animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
+    .admin-toggle:focus {
+        outline: 2px solid var(--white);
+        outline-offset: 2px;
     }
 
-    to {
+.admin-panel {
+    position: absolute;
+    bottom: 60px;
+    left: 0;
+    min-width: 280px;
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--gray-200);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all var(--transition-normal);
+}
+
+    .admin-panel[style*="block"] {
         opacity: 1;
+        visibility: visible;
         transform: translateY(0);
     }
-}
 
-.admin-controls-header {
-    background-color: #f8f9fa;
-    padding: 10px 15px;
+.admin-panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #dee2e6;
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--gray-200);
+    background: linear-gradient(135deg, var(--gray-50), var(--white));
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
-    .admin-controls-header h5 {
+    .admin-panel-header h4 {
         margin: 0;
-        font-size: 16px;
+        color: var(--gray-800);
+        font-size: var(--text-lg);
         font-weight: 600;
     }
 
-.admin-controls-body {
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-    .admin-controls-body .btn {
-        text-align: left;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.2s ease;
-    }
-
-        .admin-controls-body .btn:hover {
-            background-color: #f0f9ff;
-            color: #2563eb;
-        }
-
-        .admin-controls-body .btn i {
-            width: 20px;
-            text-align: center;
-        }
-
-.menu-divider {
-    height: 1px;
-    background-color: #e5e7eb;
-    margin: 5px 0;
-}
-
-/* Inline Edit Buttons */
-.editable-section {
-    position: relative;
-}
-
-.edit-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: rgba(255, 255, 255, 0.9);
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-    padding: 5px 10px;
-    display: none;
-    z-index: 100;
-    font-size: 14px;
-    color: #2563eb;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-    .edit-button:hover {
-        background-color: #2563eb;
-        color: white;
-        border-color: #2563eb;
-    }
-
-.editable-section:hover .edit-button {
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--gray-500);
+    cursor: pointer;
+    padding: var(--space-1);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
     display: flex;
     align-items: center;
-    gap: 5px;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
 }
 
-.edit-button i {
-    font-size: 12px;
-}
-
-@media (max-width: 768px) {
-    .admin-controls-panel {
-        width: 250px;
+    .close-btn:hover {
+        background-color: var(--gray-100);
+        color: var(--gray-700);
     }
 
-    .edit-button {
-        padding: 3px 8px;
-        font-size: 12px;
+    .close-btn:focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 1px;
+    }
+
+.admin-panel-content {
+    padding: var(--space-4);
+}
+
+.admin-section {
+    margin-bottom: var(--space-4);
+}
+
+    .admin-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .admin-section h5 {
+        margin: 0 0 var(--space-3) 0;
+        color: var(--gray-700);
+        font-size: var(--text-sm);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding-bottom: var(--space-2);
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+.admin-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    color: var(--gray-600);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    margin-bottom: var(--space-1);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+}
+
+    .admin-link::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.1), transparent);
+        transition: left var(--transition-normal);
+    }
+
+    .admin-link:hover::before {
+        left: 100%;
+    }
+
+    .admin-link:hover {
+        background-color: var(--gray-50);
+        color: var(--primary-color);
+        transform: translateX(2px);
+    }
+
+    .admin-link:focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 1px;
+    }
+
+    .admin-link i {
+        width: 16px;
+        color: var(--gray-500);
+        transition: color var(--transition-fast);
+        flex-shrink: 0;
+    }
+
+    .admin-link:hover i {
+        color: var(--primary-color);
+    }
+
+/* Admin Badge */
+.admin-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: var(--secondary-color);
+    color: var(--white);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    }
+}
+
+/* Quick Actions */
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--gray-200);
+}
+
+.quick-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-3);
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--gray-600);
+    transition: all var(--transition-fast);
+    font-size: var(--text-xs);
+    text-align: center;
+}
+
+    .quick-action:hover {
+        background: var(--primary-color);
+        color: var(--white);
+        transform: translateY(-2px);
+    }
+
+    .quick-action i {
+        font-size: var(--text-lg);
+    }
+
+/* Responsive Admin Controls */
+@media (max-width: 768px) {
+    .admin-controls {
+        bottom: 15px;
+        left: 15px;
+    }
+
+    .admin-toggle {
+        width: 45px;
+        height: 45px;
+        font-size: var(--text-base);
+    }
+
+    .admin-panel {
+        min-width: 260px;
+        bottom: 55px;
+    }
+
+    .admin-panel-content {
+        padding: var(--space-3);
+    }
+
+    .admin-link {
+        padding: var(--space-2) var(--space-3);
+        font-size: var(--text-xs);
+    }
+
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .admin-panel {
+        background: var(--gray-800);
+        border-color: var(--gray-700);
+    }
+
+    .admin-panel-header {
+        background: linear-gradient(135deg, var(--gray-700), var(--gray-800));
+        border-color: var(--gray-700);
+    }
+
+        .admin-panel-header h4 {
+            color: var(--white);
+        }
+
+    .admin-section h5 {
+        color: var(--gray-300);
+        border-color: var(--gray-700);
+    }
+
+    .admin-link {
+        color: var(--gray-300);
+    }
+
+        .admin-link:hover {
+            background-color: var(--gray-700);
+            color: var(--white);
+        }
+
+    .quick-action {
+        background: var(--gray-700);
+        color: var(--gray-300);
+    }
+
+        .quick-action:hover {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+}
+
+/* Print styles */
+@media print {
+    .admin-controls {
+        display: none !important;
     }
 }

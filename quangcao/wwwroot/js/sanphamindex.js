@@ -1,4 +1,4 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     // Initialize Quick View Modal
     initQuickViewModal();
 
@@ -311,4 +311,82 @@ function closeQuickViewToast(toast) {
 function contactUs(idSanPham, tenSanPham) {
     // Chuyển hướng đến trang liên hệ với thông tin sản phẩm
     window.location.href = `/LienHe?idSanPham=${idSanPham}&tenSanPham=${tenSanPham}`;
+}
+
+// Xóa sản phẩm trực tiếp không qua view xác nhận
+function deleteProduct(productId, productName) {
+    if (!productId) return;
+    
+    // Hiển thị hộp thoại xác nhận
+    if (!confirm(`Bạn có chắc chắn muốn xóa sản phẩm "${productName}"?`)) {
+        return;
+    }
+    
+    // Lấy token CSRF
+    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value || "";
+    
+    // Tìm button xóa để hiển thị trạng thái loading
+    const deleteButton = event.currentTarget;
+    const originalContent = deleteButton.innerHTML;
+    deleteButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xóa...';
+    deleteButton.disabled = true;
+    
+    // Gửi request xóa sản phẩm
+    fetch('/SanPhams/DeleteDirect/' + productId, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token
+        },
+        body: JSON.stringify({ id: productId })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // Hiển thị thông báo thành công
+            showQuickViewToast(data.message, 'success');
+            
+            // Tìm thẻ cha của sản phẩm và xóa khỏi DOM với hiệu ứng fade out
+            const productCard = deleteButton.closest('.product-card');
+            if (productCard) {
+                productCard.style.transition = 'opacity 0.5s ease';
+                productCard.style.opacity = '0';
+                
+                setTimeout(() => {
+                    productCard.remove();
+                    
+                    // Kiểm tra nếu không còn sản phẩm nào thì hiển thị thông báo
+                    const productsGrid = document.querySelector('.products-grid');
+                    if (productsGrid && productsGrid.children.length === 0) {
+                        const productsSection = document.querySelector('.products-section');
+                        productsSection.innerHTML = `
+                            <div class="no-products">
+                                <i class="fas fa-box-open"></i>
+                                <p>Không tìm thấy sản phẩm nào.</p>
+                                <a href="/SanPhams/Index" class="btn-view-all">Xem tất cả sản phẩm</a>
+                            </div>
+                        `;
+                    }
+                }, 500);
+            }
+        } else {
+            // Hiển thị thông báo lỗi
+            showQuickViewToast(data.message, 'error');
+            // Khôi phục trạng thái nút xóa
+            deleteButton.innerHTML = originalContent;
+            deleteButton.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting product:', error);
+        showQuickViewToast('Có lỗi xảy ra khi xóa sản phẩm. Vui lòng thử lại sau.', 'error');
+        // Khôi phục trạng thái nút xóa
+        deleteButton.innerHTML = originalContent;
+        deleteButton.disabled = false;
+    });
 }

@@ -1,25 +1,20 @@
-﻿@model quangcao.Models.ViewModel.sanphamChiTietViewModel
-@using Microsoft.AspNetCore.Identity
-@using System.Linq
-@inject SignInManager<ApplicationUser> SignInManager
-
+@model quangcao.Models.ViewModel.sanphamChiTietViewModel
 @{
     ViewData["Title"] = Model.SanPham.TenSanPham;
-    var hinhAnhs = Model.SanPham.HinhAnh?.Split(';') ?? Array.Empty<string>();
-    var danhGias = ViewBag.TatCaDanhGias as List<quangcao.Models.DanhGia>;
-    var avgRatingAll = danhGias != null && danhGias.Any() ? danhGias.Average(d => d.SoSao) : 0;
-    var ratingCounts = new int[5];
-    if (danhGias != null)
-    {
-        foreach (var dg in danhGias)
-        {
-            ratingCounts[dg.SoSao - 1]++;
-        }
-    }
-}
+    Layout = "~/Views/Shared/_Layout.cshtml";
 
+    var images = !string.IsNullOrEmpty(Model.SanPham.HinhAnh)
+        ? Model.SanPham.HinhAnh.Split(';').ToList()
+        : new List<string>();
+
+    var reviews = Model.DanhGiaHienTai ?? new List<DanhGia>();
+    var allReviews = Model.TatCaDanhGia ?? new List<DanhGia>();
+    var avgRating = allReviews.Any() ? allReviews.Average(r => r.SoSao) : 0;
+    var relatedProducts = ViewBag.RelatedProducts as List<SanPham> ?? new List<SanPham>();
+}
+<link href="~/css/sanphamchitiet.css" rel="stylesheet" />
 <div class="product-detail-container">
-    <!-- Breadcrumb Navigation -->
+    <!-- Breadcrumb -->
     <div class="breadcrumb">
         <a href="/" class="breadcrumb-item">Trang chủ</a>
         <i class="fas fa-chevron-right breadcrumb-separator"></i>
@@ -27,269 +22,244 @@
         @if (!string.IsNullOrEmpty(Model.SanPham.TheLoai))
         {
             <i class="fas fa-chevron-right breadcrumb-separator"></i>
-            <a href="/SanPhams?theloai=@Model.SanPham.TheLoai" class="breadcrumb-item">@Model.SanPham.TheLoai</a>
+            <a href="/SanPhams?category=@Model.SanPham.TheLoai" class="breadcrumb-item">@Model.SanPham.TheLoai</a>
         }
         <i class="fas fa-chevron-right breadcrumb-separator"></i>
         <span class="breadcrumb-item active">@Model.SanPham.TenSanPham</span>
     </div>
 
     <div class="product-detail-grid">
-        <!-- Phần hình ảnh sản phẩm -->
+        <!-- Product Images -->
         <div class="product-images">
-            @if (hinhAnhs.Length > 0)
+            @if (images.Any())
             {
-                <div class="main-image-container" id="mainImageContainer">
+                <div id="mainImageContainer" class="main-image-container">
                     @{
-                        var mainExt = System.IO.Path.GetExtension(hinhAnhs[0]).ToLower();
+                        var firstImage = images.First();
+                        var isVideo = new[] { "mp4", "webm", "ogg" }.Contains(firstImage.Split('.').Last().ToLower());
                     }
-                    @if (mainExt == ".mp4" || mainExt == ".webm" || mainExt == ".ogg")
+
+                    @if (isVideo)
                     {
-                        <video id="mainImage" 
-                               src="/@hinhAnhs[0]" 
-                               controls 
-                               preload="metadata"
-                               class="main-image" 
-                               style="background:#000;max-width:100%;max-height:400px">
-                            <source src="/@hinhAnhs[0]" type="video/@mainExt.Substring(1)">
+                        <video src="/@firstImage" controls preload="metadata" class="main-image" style="background: #000; max-width: 100%; max-height: 400px;">
+                            <source src="/@firstImage" type="video/@firstImage.Split('.').Last()">
                             Trình duyệt của bạn không hỗ trợ video.
                         </video>
                     }
                     else
                     {
-                        <img id="mainImage" src="/@hinhAnhs[0]" asp-append-version="true" class="main-image" alt="@Model.SanPham.TenSanPham" />
+                        <img src="/@firstImage" class="main-image" alt="@Model.SanPham.TenSanPham" id="mainImage">
                     }
 
-                    <!-- Nút điều hướng hình ảnh -->
-                    @if (hinhAnhs.Length > 1)
+                    @if (images.Count > 1)
                     {
-                        <div class="image-navigation">
-                            <button type="button" class="nav-button prev" id="prevImage">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <button type="button" class="nav-button next" id="nextImage">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
+
                         <div class="image-counter">
-                            <span id="currentImageIndex">1</span> / <span id="totalImages">@hinhAnhs.Length</span>
+                            <span id="currentImageIndex">1</span> / <span id="totalImages">@images.Count</span>
                         </div>
                     }
 
-                    <div class="image-zoom-lens" id="imageLens"></div>
-
-                    <!-- Nút xem toàn màn hình -->
-                    <button type="button" class="fullscreen-button" id="fullscreenButton" onclick="openLightbox()">
+                    <button type="button" class="fullscreen-button" id="fullscreenButton">
                         <i class="fas fa-expand"></i>
                     </button>
 
-                    <!-- Lightbox -->
-                    <div id="imageLightbox" class="lightbox">
-                        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
-                        <div class="lightbox-content">
-                            @if (mainExt == ".mp4" || mainExt == ".webm" || mainExt == ".ogg")
-                            {
-                                <video id="lightboxVideo" controls class="lightbox-media">
-                                    <source src="/@hinhAnhs[0]" type="video/@mainExt.Substring(1)">
-                                    Trình duyệt của bạn không hỗ trợ video.
-                                </video>
-                            }
-                            else
-                            {
-                                <img id="lightboxImage" src="/@hinhAnhs[0]" class="lightbox-media" alt="@Model.SanPham.TenSanPham" />
-                            }
-                        </div>
-                    </div>
+                    <!-- Image zoom lens -->
+                    <div id="imageLens" class="image-lens"></div>
                 </div>
 
-                <!-- Hình ảnh thu nhỏ -->
-                <div class="thumbnails-container-wrapper">
-                    <div class="thumbnails-container" id="thumbnailsContainer">
-                        @for (int i = 0; i < hinhAnhs.Length; i++)
-                        {
-                            var ext = System.IO.Path.GetExtension(hinhAnhs[i]).ToLower();
-                            <div class="thumbnail-wrapper @(i == 0 ? "active" : "")" data-index="@i">
-                                @if (ext == ".mp4" || ext == ".webm" || ext == ".ogg")
-                                {
-                                    <div class="video-thumbnail">
-                                        <video src="/@hinhAnhs[i]" 
-                                               class="thumbnail" 
-                                               style="background:#000;width:100%;height:100%" 
-                                               preload="metadata"
-                                               muted
-                                               playsinline>
-                                        </video>
-                                        <div class="video-overlay">
-                                            <i class="fas fa-play-circle"></i>
-                                        </div>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <img src="/@hinhAnhs[i]" asp-append-version="true" class="thumbnail" alt="@Model.SanPham.TenSanPham - @(i+1)" data-src="@hinhAnhs[i]" loading="lazy" />
-                                }
-                            </div>
-                        }
-                    </div>
-                </div>
+                <!-- Image zoom result -->
+                <div id="imageZoomResult" class="image-zoom-result"></div>
+
+
             }
             else
             {
                 <div class="no-image">
                     <i class="fas fa-image"></i>
-                    <p>Không có ảnh.</p>
+                    <p>Không có hình ảnh</p>
                 </div>
             }
         </div>
 
-        <!-- Thông tin sản phẩm -->
+        <!-- Product Info -->
         <div class="product-info">
             <div class="info-card">
-                <h1 class="product-name">@Model.SanPham.TenSanPham</h1>
+                <div class="card-content">
+                    <h1 class="product-name">@Model.SanPham.TenSanPham</h1>
 
-                <!-- Mã sản phẩm và danh mục -->
-                <div class="product-meta-top">
-                    <div class="product-code">
-                        <span class="meta-label">Mã sản phẩm:</span>
-                        <span class="meta-value">SP@(Model.SanPham.IdSanPham.ToString().Substring(0, 8).ToUpper().Replace("-", ""))</span>
-                    </div>
-                    @if (!string.IsNullOrEmpty(Model.SanPham.TheLoai))
-                    {
-                        <div class="product-category">
-                            <span class="meta-label">Danh mục:</span>
-                            <a href="/SanPhams?currentCategory=@Model.SanPham.TheLoai" class="meta-value category-link">@Model.SanPham.TheLoai</a>
+                    <!-- Product Meta -->
+                    <div class="product-meta-top">
+                        <div class="product-code">
+                            <span class="meta-label">Mã sản phẩm:</span>
+                            <span class="meta-value">SP@(Model.SanPham.IdSanPham.ToString().Substring(0, 8).ToUpper().Replace("-", ""))</span>
                         </div>
-                    }
-                </div>
+                        @if (!string.IsNullOrEmpty(Model.SanPham.TheLoai))
+                        {
+                            <div class="product-category">
+                                <span class="meta-label">Danh mục:</span>
+                                <a href="/SanPhams?category=@Model.SanPham.TheLoai" class="meta-value category-link">@Model.SanPham.TheLoai</a>
+                            </div>
+                        }
+                        <div class="product-sold">
+                            <span class="meta-label">Đã bán:</span>
+                            <span class="meta-value">@Model.SanPham.SoLuongDaBan sản phẩm</span>
+                        </div>
+                        <div class="product-created">
+                            <span class="meta-label">Ngày tạo:</span>
+                            <span class="meta-value">@Model.SanPham.NgayTao.ToString("dd/MM/yyyy")</span>
+                        </div>
+                    </div>
 
-                <!-- Đánh giá sản phẩm -->
-                <div class="product-rating-summary">
-                    @if (danhGias != null && danhGias.Any())
-                    {
+                    <!-- Rating -->
+                    <div class="product-rating-summary">
                         <div class="rating-stars">
                             @for (int i = 1; i <= 5; i++)
                             {
-                                <i class="fas fa-star @(i <= Math.Round(avgRatingAll) ? "filled" : "")"></i>
+                                <i class="fa-star @(i <= Math.Round(avgRating) ? "fas filled" : "far")" aria-hidden="true"></i>
                             }
                         </div>
-                        <span class="rating-count">@danhGias.Count() đánh giá</span>
-                    }
-                    else
-                    {
-                        <div class="rating-stars">
-                            @for (int i = 1; i <= 5; i++)
-                            {
-                                <i class="fas fa-star"></i>
-                            }
-                        </div>
-                        <span class="rating-count">Chưa có đánh giá</span>
-                    }
-                </div>
-
-                <!-- Giá sản phẩm -->
-                <div class="product-price">@Model.SanPham.Gia.ToString("N3")đ</div>
-
-                <!-- Nút hành động -->
-                <div class="action-buttons-container">
-                    <a href="@Url.Action("Create", "LienHes", new { idSanPham = Model.SanPham.IdSanPham })" class="contact-btn">
-                        <i class="fas fa-phone-alt"></i>
-                        <span>Liên hệ báo giá</span>
-                    </a>
-                    <button type="button" class="heart-btn" id="heartBtn" data-product-id="@Model.SanPham.IdSanPham">
-                        <i class="far fa-heart"></i>
-                        <span class="heart-count" id="heartCount">0</span>
-                    </button>
-                    <button type="button" class="share-btn" id="shareButton">
-                        <i class="fas fa-share-alt"></i>
-                    </button>
-                </div>
-
-                <!-- Thông tin vận chuyển -->
-                <div class="shipping-info">
-                    <div class="shipping-item">
-                        <i class="fas fa-truck"></i>
-                        <div class="shipping-text">
-                            <span class="shipping-title">Miễn phí vận chuyển</span>
-                            <span class="shipping-desc">Cho đơn hàng từ 500.000đ</span>
-                        </div>
+                        <span class="rating-count">@(allReviews.Count > 0 ? $"{allReviews.Count} đánh giá" : "Chưa có đánh giá")</span>
+                        @if (avgRating > 0)
+                        {
+                            <span class="rating-average">(@avgRating.ToString("0.0")/5)</span>
+                        }
                     </div>
-                    <div class="shipping-item">
-                        <i class="fas fa-check-circle"></i>
-                        <div class="shipping-text">
-                            <span class="shipping-title">Cam kết chất lượng</span>
-                            <span class="shipping-desc">Sản phẩm chất lượng cao</span>
-                        </div>
+
+                    <!-- Price -->
+                    <div class="product-price">@Model.SanPham.Gia.ToString("N2")đ</div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons-container">
+                        <button class="contact-btn" onclick="contactUs('@Model.SanPham.IdSanPham', '@Model.SanPham.TenSanPham')">
+                            <i class="fas fa-phone"></i>
+                            <span>Liên hệ báo giá</span>
+                        </button>
+                        <button id="heartBtn" class="heart-btn" data-product-id="@Model.SanPham.IdSanPham">
+                            <i class="far fa-heart"></i>
+                            <span id="heartCount" class="heart-count">0</span>
+                        </button>
+                        <button id="shareButton" class="share-btn">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
                     </div>
-                    <div class="shipping-item">
-                        <i class="fas fa-headset"></i>
-                        <div class="shipping-text">
-                            <span class="shipping-title">Hỗ trợ 24/7</span>
-                            <span class="shipping-desc">Tư vấn thiết kế miễn phí</span>
-                        </div>
-                    </div>
+
+
                 </div>
             </div>
 
-            <!-- Thông tin liên hệ -->
+            <!-- Contact Info -->
             <div class="info-card">
-                <h3 class="contact-title">Liên hệ đặt hàng</h3>
-                <div class="contact-methods">
-                    <div class="contact-method">
-                        <i class="fas fa-phone-alt"></i>
-                        <span>Hotline: <a href="tel:0977 344 567">0977 344 567</a></span>
-                    </div>
-                    <div class="contact-method">
-                        <i class="fas fa-envelope"></i>
-                        <span>Email: <a href="mailto:invinhphat6868@gmail.com">invinhphat6868@gmail.com</a></span>
-                    </div>
-                    <div class="contact-method">
-                        <i class="fab fa-facebook-messenger"></i>
-                        <span>Zalo: <a href="https://zalo.me/0977344567">0977 344 567</a></span>
+                <div class="card-content">
+                    <h3 class="contact-title">Thông tin liên hệ</h3>
+                    <div class="contact-methods">
+                        <div class="contact-method">
+                            <i class="fas fa-phone"></i>
+                            <span>Hotline: <a href="tel:0977344567">0977 344 567</a></span>
+                        </div>
+                        <div class="contact-method">
+                            <i class="fas fa-envelope"></i>
+                            <span>Email: <a href="mailto:invinhphat6868@gmail.com">invinhphat6868@gmail.com</a></span>
+                        </div>
+                        <div class="contact-method">
+                            <i class="fab fa-facebook-messenger"></i>
+                            <span>Zalo: <a href="https://zalo.me/0977344567">0977 344 567</a></span>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Nút quản trị -->
-            @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
-            {
-                <div class="admin-actions">
-                    <a asp-action="Edit" asp-route-id="@Model.SanPham.IdSanPham" class="btn-edit">
-                        <i class="fas fa-edit"></i>
-                        <span>Chỉnh sửa</span>
-                    </a>
-                    <a asp-action="Index" class="btn-back">
-                        <i class="fas fa-arrow-left"></i>
-                        <span>Quay lại danh sách</span>
-                    </a>
-                </div>
-            }
         </div>
     </div>
 
-    <!-- Tab thông tin sản phẩm -->
+    <!-- Shipping Info -->
+    <div class="shipping-info">
+        <div class="shipping-item">
+            <i class="fas fa-print"></i>
+            <div class="shipping-text">
+                <span class="shipping-title">Công Nghệ Hiện Đại</span>
+                <span class="shipping-desc">Công nghệ in Offset hiện đại, sản phẩm chất lượng, chuẩn màu, bền đẹp.</span>
+            </div>
+        </div>
+        <div class="shipping-item">
+            <i class="fas fa-shipping-fast"></i>
+            <div class="shipping-text">
+                <span class="shipping-title">In Nhanh Chóng</span>
+                <span class="shipping-desc">In nhanh đáp ứng nhu cầu cấp bách, xử lý đơn hàng nhanh chóng, hiệu quả.</span>
+            </div>
+        </div>
+        <div class="shipping-item">
+            <i class="fas fa-award"></i>
+            <div class="shipping-text">
+                <span class="shipping-title">Chất Lượng Cao</span>
+                <span class="shipping-desc">Cam kết sản phẩm chất lượng cao, sắc nét, chuẩn màu, bền bỉ.</span>
+            </div>
+        </div>
+        <div class="shipping-item">
+            <i class="fas fa-truck"></i>
+            <div class="shipping-text">
+                <span class="shipping-title">Giao Hàng Tận Nơi</span>
+                <span class="shipping-desc">Giao hàng tận nơi nhanh chóng, an toàn, đúng hẹn trong khu vực.</span>
+            </div>
+        </div>
+        <div class="shipping-item">
+            <i class="fas fa-headset"></i>
+            <div class="shipping-text">
+                <span class="shipping-title">Hỗ Trợ 24/7</span>
+                <span class="shipping-desc">Hỗ trợ tư vấn chuyên nghiệp 24/7, đảm bảo dịch vụ tốt nhất.</span>
+            </div>
+        </div>
+        <div class="shipping-item">
+            <i class="fas fa-palette"></i>
+            <div class="shipping-text">
+                <span class="shipping-title">Thiết Kế Chuyên Nghiệp</span>
+                <span class="shipping-desc">Thiết kế đồ họa chuyên nghiệp, sáng tạo, sản phẩm độc đáo, ấn tượng.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Info Tabs -->
     <div class="product-info-tabs">
         <div class="tabs-header">
             <button class="tab-button active" data-tab="description">Mô tả sản phẩm</button>
             <button class="tab-button" data-tab="specifications">Thông số kỹ thuật</button>
-            <button class="tab-button" data-tab="reviews">Đánh giá (@(ViewBag.TotalRatings ?? Model.SanPham.DanhGias?.Count() ?? 0))</button>
+            <button class="tab-button" data-tab="reviews">Đánh giá (@allReviews.Count)</button>
         </div>
 
         <div class="tabs-content">
-            <!-- Tab mô tả -->
-            <div class="tab-pane active" id="description-tab">
+            <!-- Description Tab -->
+            <div id="description-tab" class="tab-pane active">
                 <div class="product-description">
                     @Html.Raw(Model.SanPham.MoTa)
                 </div>
             </div>
 
-            <!-- Tab thông số kỹ thuật -->
-            <div class="tab-pane" id="specifications-tab">
+            <!-- Specifications Tab -->
+            <div id="specifications-tab" class="tab-pane">
                 <div class="product-specifications">
                     <table class="specifications-table">
                         <tbody>
+                            <tr>
+                                <th>Mã sản phẩm</th>
+                                <td>SP@(Model.SanPham.IdSanPham.ToString().Substring(0, 8).ToUpper().Replace("-", ""))</td>
+                            </tr>
+                            @if (!string.IsNullOrEmpty(Model.SanPham.TheLoai))
+                            {
+                                <tr>
+                                    <th>Danh mục</th>
+                                    <td>@Model.SanPham.TheLoai</td>
+                                </tr>
+                            }
+                            <tr>
+                                <th>Giá</th>
+                                <td>@Model.SanPham.Gia.ToString("N3")đ</td>
+                            </tr>
+                            <tr>
+                                <th>Ngày tạo</th>
+                                <td>@Model.SanPham.NgayTao.ToString("dd/MM/yyyy")</td>
+                            </tr>
                             @if (!string.IsNullOrEmpty(Model.SanPham.ChiTiet))
                             {
                                 <tr>
-                                    <th colspan="2" class="specs-detail-header">Chi tiết thêm</th>
+                                    <th colspan="2" class="specs-detail-header">Thông số chi tiết</th>
                                 </tr>
                                 <tr>
                                     <td colspan="2" class="specs-detail-content">
@@ -302,436 +272,345 @@
                 </div>
             </div>
 
-            <!-- Tab đánh giá -->
-            <div class="tab-pane" id="reviews-tab">
-                <!-- Phần đánh giá -->
+            <!-- Reviews Tab -->
+            <div id="reviews-tab" class="tab-pane">
                 <div class="reviews-inner-section">
-                    @if (ViewBag.DanhGias != null && ((List<quangcao.Models.DanhGia>)ViewBag.DanhGias).Any())
-                    {
-                        var danhGiasTrang = ViewBag.DanhGias as List<quangcao.Models.DanhGia>;
-                        
-                        <div class="reviews-summary">
-                            <div class="rating-overview">
-                                <div class="average-rating">
-                                    <span class="rating-number">@avgRatingAll.ToString("0.0")</span>
-                                    <span class="rating-scale">trên 5</span>
-                                </div>
-                                <div class="rating-stars">
-                                    @for (int i = 1; i <= 5; i++)
-                                    {
-                                        <i class="fas fa-star @(i <= Math.Round(avgRatingAll) ? "filled" : "")"></i>
-                                    }
-                                </div>
-                                <div class="total-reviews">
-                                    <span>@ViewBag.TotalRatings đánh giá</span>
-                                </div>
-                            </div>
-
-                            <!-- Phân bố đánh giá -->
-                            <div class="rating-distribution">
-                                @for (int i = 5; i >= 1; i--)
+                    <!-- Rating Overview -->
+                    <div class="rating-overview">
+                        <div class="average-rating">
+                            <span class="rating-number">@avgRating.ToString("0.0")</span>
+                            <div class="rating-stars">
+                                @for (int i = 1; i <= 5; i++)
                                 {
-                                    var percent = ViewBag.TotalRatings > 0
-                                        ? (int)Math.Round((double)ratingCounts[i - 1] / ViewBag.TotalRatings * 100)
-                                        : 0;
-
-                                    <div class="rating-bar">
-                                        <a href="@Url.Action("Details", new { id = Model.SanPham.IdSanPham, soSao = i })" 
-                                           class="rating-label @(ViewBag.SoSao == i ? "active" : "")" 
-                                           style="text-decoration: none; color: inherit;">
-                                            @i <i class="fas fa-star filled"></i>
-                                        </a>
-                                        <div class="rating-progress">
-                                            <div class="rating-progress-bar" style="width: @percent%;"></div>
-                                        </div>
-                                        <div class="rating-count">@ratingCounts[i - 1]</div>
-                                    </div>
+                                    <i class="fas fa-star @(i <= Math.Round(avgRating) ? "filled" : "")" aria-hidden="true"></i>
                                 }
                             </div>
-
-                            <!-- Bộ lọc đánh giá -->
-                            <div class="rating-filters">
-                                <a href="@Url.Action("Details", new { id = Model.SanPham.IdSanPham })" 
-                                   class="filter-btn @(ViewBag.SoSao == null ? "active" : "")">
-                                    Tất cả (@ViewBag.TotalRatings)
-                                </a>
-
-                                @for (int i = 5; i >= 1; i--)
-                                {
-                                    <a href="@Url.Action("Details", new { id = Model.SanPham.IdSanPham, soSao = i })" 
-                                       class="filter-btn @(ViewBag.SoSao == i ? "active" : "")">
-                                        @i <i class="fas fa-star"></i> (@ratingCounts[i - 1])
-                                    </a>
-                                }
-
-                                <button class="filter-btn">
-                                    Có Hình Ảnh (@(danhGias.Count(d => !string.IsNullOrEmpty(d.HinhAnh))))
-                                </button>
-                            </div>
+                            <span class="total-reviews">Dựa trên <span>@allReviews.Count</span> đánh giá</span>
                         </div>
-
-                        <!-- Danh sách đánh giá -->
-                        <div class="reviews-list">
-                            @foreach (var dg in danhGiasTrang)
+                        <div class="rating-bars">
+                            @for (int i = 5; i >= 1; i--)
                             {
-                                <div class="review-card" data-review-id="@dg.IdDanhGia">
+                                var count = allReviews.Count(r => r.SoSao == i);
+                                var percent = allReviews.Any() ? (count * 100) / allReviews.Count : 0;
+                                <div class="rating-bar-item">
+                                    <div class="rating-label">@i <i class="fas fa-star"></i></div>
+                                    <div class="rating-bar">
+                                        <div class="rating-bar-fill" style="width: @percent%"></div>
+                                    </div>
+                                    <div class="rating-count">@count</div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <!-- Reviews List Section -->
+                    <div class="reviews-list" data-product-id="@Model.SanPham.IdSanPham">
+                        @if (Model.DanhGiaHienTai != null && Model.DanhGiaHienTai.Any())
+                        {
+                            @foreach (var review in Model.DanhGiaHienTai)
+                            {
+                                <div class="review-card" data-review-id="@review.IdDanhGia">
                                     <div class="review-header">
                                         <div class="reviewer-avatar">
-                                            <img src="~/images/avatar-default.png" alt="User Avatar" />
+                                            <img src="/images/avatar-default.png" alt="User Avatar">
                                         </div>
                                         <div class="reviewer-info">
-                                            <div class="reviewer-name">@(dg.TenNguoiDung ?? "Khách hàng")</div>
-                                            <div class="star-rating" data-rating="@dg.SoSao">
+                                            <div class="reviewer-name">@(review.TenNguoiDung ?? "Khách hàng")</div>
+                                            <div class="star-rating" data-rating="@review.IdDanhGia">
                                                 @for (int i = 1; i <= 5; i++)
                                                 {
-                                                    <i class="fas fa-star @(i <= dg.SoSao ? "filled" : "")"></i>
+                                                    <i class="fa-star @(i <= review.SoSao ? "fas filled" : "far")" aria-hidden="true"></i>
                                                 }
                                             </div>
                                             <div class="review-meta">
-                                                <span class="review-date">@dg.NgayDanhGia.ToString("dd/MM/yyyy HH:mm")</span>
+                                                <span class="review-date">@review.NgayDanhGia.ToString("dd/MM/yyyy")</span>
+                                                @if (review.LuotHuuIch > 0)
+                                                {
+                                                    <span class="helpful-count"> • @review.LuotHuuIch người thấy hữu ích</span>
+                                                }
                                             </div>
                                         </div>
+                                        @if (User.IsInRole("Admin"))
+                                        {
+                                            <div class="review-admin-actions">
+                                                <button class="review-delete-btn" data-review-id="@review.IdDanhGia">
+                                                    <i class="far fa-trash-alt"></i> Xóa
+                                                </button>
+                                            </div>
+                                        }
                                     </div>
-                                    <div class="review-content">@dg.BinhLuan</div>
-
-                                    @if (!string.IsNullOrEmpty(dg.HinhAnh))
+                                    <div class="review-content">@review.BinhLuan</div>
+                                    @if (!string.IsNullOrEmpty(review.HinhAnh))
                                     {
-                                        <div class="review-media">
-                                            @foreach (var img in dg.HinhAnh.Split(';'))
-                                            {
-                                                if (!string.IsNullOrWhiteSpace(img))
+                                        var reviewMediaItems = review.HinhAnh.Split(';').Where(x => !string.IsNullOrEmpty(x)).ToList();
+                                        if (reviewMediaItems.Any())
+                                        {
+                                            var firstMedia = reviewMediaItems.First();
+                                            <div class="review-media-gallery" data-review-gallery-id="@review.IdDanhGia">
+                                                @if (reviewMediaItems.Count > 1)
                                                 {
-                                                    <div class="review-media-item">
-                                                        @if (img.EndsWith(".mp4"))
+                                                    <div class="review-media-thumbnails">
+                                                        @foreach (var mediaPath in reviewMediaItems)
                                                         {
-                                                            <video src="/@img" controls preload="metadata" class="review-video"></video>
-                                                        }
-                                                        else
-                                                        {
-                                                            <img src="/@img" class="review-image" alt="Hình ảnh đánh giá" />
+                                                            var isVideo = mediaPath.EndsWith(".mp4") || mediaPath.EndsWith(".webm") || mediaPath.EndsWith(".ogg");
+                                                            <div class="review-thumbnail-item @(isVideo ? "video-thumbnail" : "image-thumbnail") @(mediaPath == firstMedia ? "active" : "")"
+                                                                 data-src="/@mediaPath"
+                                                                 data-type="@(isVideo ? "video" : "image")"
+                                                                 role="button" tabindex="0" aria-label="Xem media">
+                                                                @if (isVideo)
+                                                                {
+                                                                    <video src="/@mediaPath#t=0.5" preload="metadata" muted playsinline></video>
+                                                                    <div class="video-icon-overlay"><i class="fas fa-play"></i></div>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <img src="/@mediaPath" alt="Review thumbnail" loading="lazy">
+                                                                }
+                                                            </div>
                                                         }
                                                     </div>
                                                 }
-                                            }
-                                        </div>
+                                                <div class="review-media-display-area" style="display: none;">
+                                                    @* Media will be loaded here by JavaScript *@
+                                                </div>
+                                            </div>
+                                        }
                                     }
-
                                     <div class="review-actions">
-                                        <button class="review-helpful-btn">
-                                            <i class="far fa-thumbs-up"></i> Hữu ích @(dg.LuotHuuIch > 0 ? $"({dg.LuotHuuIch})" : "")
-                                        </button>
-                                        <button class="review-report-btn @(dg.DaBaoCao ? "active disabled" : "")">
-                                            <i class="far fa-flag"></i> @(dg.DaBaoCao ? "Đã báo cáo" : "Báo cáo")
+                                        <button class="review-helpful-btn" data-review-id="@review.IdDanhGia" @(review.DaBaoCao ? "disabled" : "")>
+                                            <i class="far fa-thumbs-up"></i> Hữu ích (@review.LuotHuuIch)
                                         </button>
                                     </div>
                                 </div>
                             }
-                        </div>
-
-                        <!-- Phân trang đánh giá -->
-                        @if (ViewBag.TotalPages > 1)
-                        {
-                            <div class="reviews-pagination">
-                                <a class="pagination-btn prev @(ViewBag.CurrentPage == 1 ? "disabled" : "")"
-                                   href="@Url.Action("Details", new { id = Model.SanPham.IdSanPham, page = ViewBag.CurrentPage - 1, soSao = ViewBag.SoSao })">
-                                    <i class="fas fa-chevron-left"></i>
-                                    <span class="sr-only">Trang trước</span>
-                                </a>
-
-                                @for (int i = 1; i <= ViewBag.TotalPages; i++)
-                                {
-                                    <a class="pagination-btn @(ViewBag.CurrentPage == i ? "active" : "")"
-                                       href="@Url.Action("Details", new { id = Model.SanPham.IdSanPham, page = i, soSao = ViewBag.SoSao })"
-                                       aria-label="Trang @i">
-                                        @i
-                                    </a>
-                                }
-
-                                <a class="pagination-btn next @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")"
-                                   href="@Url.Action("Details", new { id = Model.SanPham.IdSanPham, page = ViewBag.CurrentPage + 1, soSao = ViewBag.SoSao })">
-                                    <i class="fas fa-chevron-right"></i>
-                                    <span class="sr-only">Trang sau</span>
-                                </a>
-                            </div>
                         }
-                    }
-                    else
+                        @* If Model.DanhGiaHienTai is empty or null, this div will be empty. JS will populate or show 'no reviews' placeholder after AJAX. *@
+                    </div>
+
+                    @if (ViewBag.TotalPages > 1 && Model.DanhGiaHienTai != null && Model.DanhGiaHienTai.Any())
                     {
+                        <div class="reviews-pagination">
+                            <a href="/SanPhams/Details/@Model.SanPham.IdSanPham?page=1" class="@(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                            <a href="/SanPhams/Details/@Model.SanPham.IdSanPham?page=@(ViewBag.CurrentPage - 1)" class="@(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                            @for (int pageNum = Math.Max(1, ViewBag.CurrentPage - 2); pageNum <= Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2); pageNum++)
+                            {
+                                <a href="/SanPhams/Details/@Model.SanPham.IdSanPham?page=@pageNum" class="@(pageNum == ViewBag.CurrentPage ? "active" : "")">@pageNum</a>
+                            }
+                            <a href="/SanPhams/Details/@Model.SanPham.IdSanPham?page=@(ViewBag.CurrentPage + 1)" class="@(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                            <a href="/SanPhams/Details/@Model.SanPham.IdSanPham?page=@ViewBag.TotalPages" class="@(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </div>
+                    }
+                    <div class="no-reviews-placeholder" @(Model.DanhGiaHienTai != null && Model.DanhGiaHienTai.Any() ? "style=display:none;" : "")>
                         <div class="no-reviews">
                             <i class="fas fa-comment-slash"></i>
-                            <p>Chưa có đánh giá nào.</p>
+                            <p>Chưa có đánh giá nào cho sản phẩm này.</p>
                         </div>
-                    }
-                </div>
-
-                <!-- Form đánh giá -->
-                <div class="review-form-container">
-                    <h4 class="form-title">Gửi đánh giá của bạn</h4>
-
-                    <form asp-action="GuiDanhGia" method="post" class="review-form" enctype="multipart/form-data">
-                        <input type="hidden" name="IdSanPham" value="@Model.SanPham.IdSanPham" />
-
-                        <div class="form-group">
-                            <label for="TenNguoiDung" class="form-label">Tên của bạn <span class="text-danger">*</span></label>
-                            <input type="text" id="TenNguoiDung" name="TenNguoiDung" class="form-control" required placeholder="Nhập tên của bạn" />
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Đánh giá của bạn <span class="text-danger">*</span></label>
-                            <div class="star-rating-input">
-                                @for (int i = 5; i >= 1; i--)
-                                {
-                                    <input type="radio" id="star@(i)" name="SoSao" value="@i" class="star-input" required />
-                                    <label for="star@(i)" class="star-label" title="@i sao">
-                                        <i class="fas fa-star"></i>
-                                    </label>
-                                }
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="BinhLuan" class="form-label">Nội dung đánh giá <span class="text-danger">*</span></label>
-                            <textarea name="BinhLuan" id="BinhLuan" class="form-textarea" rows="3" required 
-                                      placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm"></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Hình ảnh / Video</label>
-                            <div class="media-upload-container">
-                                <label for="mediaUpload" class="media-upload-btn">
-                                    <i class="fas fa-camera"></i>
-                                    <span>Thêm hình ảnh/video</span>
-                                </label>
-                                <input type="file" id="mediaUpload" name="MediaFiles" multiple accept="image/*,video/*" class="hidden" />
-                                <div id="mediaPreviewContainer" class="media-preview-container"></div>
-                                <small class="text-muted">Hỗ trợ: JPG, PNG, GIF, MP4 (tối đa 5 file)</small>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="submit-review-btn">
-                            <i class="fas fa-paper-plane"></i>
-                            <span>Gửi đánh giá</span>
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Thông báo toast -->
-                <div class="toast-notification" id="toastNotification">
-                    <div class="toast-content">
-                        <i class="fas fa-check-circle toast-icon"></i>
-                        <span class="toast-message">Đánh giá của bạn đã được gửi thành công!</span>
                     </div>
-                    <button class="toast-close" onclick="closeToast()">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    <!-- Review Form -->
+                    <div class="review-form-container">
+                        <h4 class="form-title">Gửi đánh giá của bạn</h4>
+                        @using (Html.BeginForm("GuiDanhGia", "SanPhams", FormMethod.Post, new { @class = "review-form", enctype = "multipart/form-data" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="IdSanPham" value="@Model.SanPham.IdSanPham" />
+
+                            <div class="form-group">
+                                <label for="TenNguoiDung" class="form-label">
+                                    Tên của bạn <span class="required">*</span>
+                                </label>
+                                <input type="text" id="TenNguoiDung" name="TenNguoiDung" class="form-input" placeholder="Nhập tên của bạn" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    Đánh giá của bạn <span class="required">*</span>
+                                </label>
+                                <div class="star-rating-input">
+                                    @for (int i = 5; i >= 1; i--)
+                                    {
+                                        <label class="star-label">
+                                            <input type="radio" name="SoSao" value="@i" class="star-input" required>
+                                            <i class="far fa-star"></i>
+                                        </label>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="BinhLuan" class="form-label">
+                                    Nội dung đánh giá <span class="required">*</span>
+                                </label>
+                                <textarea id="BinhLuan" name="BinhLuan" class="form-textarea" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này" rows="3" required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Hình ảnh / Video</label>
+                                <div class="media-upload-container">
+                                    <label for="mediaUpload" class="media-upload-btn">
+                                        <i class="fas fa-camera"></i>
+                                        <span>Thêm hình ảnh/video</span>
+                                    </label>
+                                    <input type="file" id="mediaUpload" name="MediaFiles" multiple accept="image/*,video/*" class="hidden">
+                                    <div id="mediaPreviewContainer" class="media-preview-container"></div>
+                                    <small class="text-gray-500">Hỗ trợ: JPG, PNG, GIF, MP4 (tối đa 5 file)</small>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="submit-review-btn">
+                                <i class="fas fa-paper-plane"></i>
+                                <span>Gửi đánh giá</span>
+                            </button>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Sản phẩm liên quan -->
-    @if (ViewBag.SanPhamTuongTu != null && ((IEnumerable<dynamic>)ViewBag.SanPhamTuongTu).Any())
+    <!-- Related Products -->
+    @if (relatedProducts.Any())
     {
         <div class="related-products-section">
-            <h3 class="section-title">Sản phẩm tương tự</h3>
+            <div class="section-header">
+                <h3 class="section-title">Sản phẩm liên quan</h3>
+            </div>
             <div class="related-products-grid">
-                @foreach (var sp in ViewBag.SanPhamTuongTu)
+                @foreach (var product in relatedProducts)
                 {
-                    string hinh = "images/default.png";
-                    if (sp.HinhAnh != null)
-                    {
-                        string[] hinhArray = sp.HinhAnh.ToString().Split(';');
-                        hinh = hinhArray.Length > 0 ? hinhArray[0] : "images/default.png";
-                    }
+                    var productImages = !string.IsNullOrEmpty(product.HinhAnh)
+                    ? product.HinhAnh.Split(';').ToList()
+                    : new List<string>();
+                    var mainImage = productImages.Any() ? productImages.First() : "images/default.png";
+                    var isVideo = productImages.Any() && new[] { "mp4", "webm", "ogg" }.Contains(mainImage.Split('.').Last().ToLower());
+
                     <div class="related-product-card">
-                        <a asp-action="Details" asp-route-id="@sp.IdSanPham">
+                        <a href="/SanPhams/Details/@product.IdSanPham">
                             <div class="related-product-img-container">
-                                @{
-                                    var ext = System.IO.Path.GetExtension(hinh).ToLower();
-                                }
-                                @if (ext == ".mp4" || ext == ".webm" || ext == ".ogg")
+                                @if (isVideo)
                                 {
                                     <div class="video-thumbnail">
-                                        <video src="/@hinh" 
-                                               class="related-product-img" 
-                                               style="background:#000;width:100%;height:100%" 
-                                               preload="metadata"
-                                               muted
-                                               playsinline>
+                                        <video src="/@mainImage" class="related-product-img" preload="metadata" muted>
+                                            <source src="/@mainImage" type="video/@mainImage.Split('.').Last()">
                                         </video>
                                         <div class="video-overlay">
-                                            <i class="fas fa-play-circle"></i>
+                                            <i class="fas fa-play"></i>
                                         </div>
                                     </div>
                                 }
                                 else
                                 {
-                                    <img src="/@hinh" alt="@sp.TenSanPham" class="related-product-img" loading="lazy" />
+                                    <img src="/@mainImage" alt="@product.TenSanPham" class="related-product-img" loading="lazy">
                                 }
                             </div>
                             <div class="related-product-info">
-                                <h4 class="related-product-name">@sp.TenSanPham</h4>
+                                <h4 class="related-product-name">@product.TenSanPham</h4>
+                                @if (!string.IsNullOrWhiteSpace(product.MoTa))
+                                {
+                                    // 1. Remove HTML tags to get plain text. Handle potential null MoTa.
+                                    var plainTextMoTa = string.IsNullOrWhiteSpace(product.MoTa) ? "" : System.Text.RegularExpressions.Regex.Replace(product.MoTa, "<.*?>", String.Empty);
+                                    // 2. Truncate by word count
+                                    string truncatedMoTa;
+                                    var words = plainTextMoTa.Split(new[] { ' ', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+                                    int wordLimit = 12; // Set the desired word limit
+
+                                    if (words.Length > wordLimit)
+                                    {
+                                        truncatedMoTa = string.Join(" ", words.Take(wordLimit)) + "...";
+                                    }
+                                    else
+                                    {
+                                        truncatedMoTa = plainTextMoTa; // Use the full plain text if it's within the limit
+                                    }
+                                    <p class="related-product-description">@truncatedMoTa</p>
+                                }
                                 <div class="related-product-price-container">
-                                    <p class="related-product-price">@sp.Gia.ToString("N3") VNĐ</p>
+                                    <p class="related-product-price">@product.Gia.ToString("N3")đ</p>
                                 </div>
+                                <!-- .related-product-meta and its content (sold count) removed -->
                             </div>
                         </a>
+                        <!-- quick-view-btn removed -->
                     </div>
                 }
+            </div>
+            <div class="view-all-news">
+                <a href="@Url.Action("Index", "SanPhams", new { currentCategory = Model.SanPham.TheLoai })" class="view-all-news-btn">
+                    Xem thêm sản phẩm <i class="fas fa-chevron-right"></i>
+                </a>
             </div>
         </div>
     }
 
-    <!-- Tin tức & Bài viết -->
-    <div class="news-section">
-        <h3 class="section-title">Tin tức & Bài viết</h3>
-        <div class="news-grid">
-            @foreach (var tin in Model.TinTucs)
-            {
-                <div class="news-card">
-                    <div class="news-img-container">
-                        <img src="~/@tin.HinhAnh" alt="@tin.TieuDe" class="news-img" loading="lazy" />
-                    </div>
-                    <div class="news-content">
-                        <div class="news-date">
-                            <i class="far fa-calendar-alt"></i>
-                            <span>@tin.NgayDang.ToString("dd/MM/yyyy")</span>
+    <!-- News Section -->
+    @if (Model.TinTucs != null && Model.TinTucs.Any())
+    {
+        <div class="news-section">
+            <div class="section-header">
+                <h3 class="section-title">Tin tức & Bài viết</h3>
+            </div>
+            <div class="news-grid">
+                @foreach (var news in Model.TinTucs)    
+                {
+                    <div class="news-card">
+                        <div class="news-img-container">
+                            <img src="/@news.HinhAnh" alt="@news.TieuDe" class="news-img" loading="lazy">
                         </div>
-                        <h4 class="news-title">@tin.TieuDe</h4>
-                        <p class="news-excerpt">@(tin.NoiDung ?? (tin.NoiDung.Length > 150 ? tin.NoiDung.Substring(0, 150) + "..." : tin.NoiDung))</p>
-                        <a href="/TinTuc/Details/@tin.IdTinTuc" class="news-link">
-                            <span>Đọc thêm</span>
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
+                        <div class="news-content">
+                            <div class="news-date">
+                                <i class="far fa-calendar-alt"></i>
+                                <span>@news.NgayDang.ToString("dd/MM/yyyy")</span>
+                            </div>
+                            <h4 class="news-title">@news.TieuDe</h4>
+                            <p class="news-excerpt">
+                                @{
+                                    // 1. Remove HTML tags to get plain text. Handle potential null NoiDung.
+                                    var plainTextNoiDung = string.IsNullOrWhiteSpace(news.NoiDung) ? "" : System.Text.RegularExpressions.Regex.Replace(news.NoiDung, "<.*?>", String.Empty);
+                                    // 2. Truncate by word count
+                                    string truncatedNoiDung;
+                                    var wordsArray = plainTextNoiDung.Split(new[] { ' ', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+                                    int newsWordLimit = 12; // Set the desired word limit for news excerpts
+
+                                    if (wordsArray.Length > newsWordLimit)
+                                    {
+                                        truncatedNoiDung = string.Join(" ", wordsArray.Take(newsWordLimit)) + "...";
+                                    }
+                                    else
+                                    {
+                                        truncatedNoiDung = plainTextNoiDung; // Use the full plain text if it's within the limit
+                                    }
+                                }
+                                @truncatedNoiDung
+                            </p>
+                            <a href="/TinTucs/Details/@news.IdTinTuc" class="news-link">
+                                <span>Xem thêm</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
+            <div class="view-all-news">
+                <a href="/TinTucs" class="view-all-news-btn">
+                    <span>Xem tất cả tin tức</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
         </div>
-        <div class="view-all-news">
-            <a href="/TinTuc" class="view-all-news-btn">
-                <span>Xem tất cả tin tức</span>
-                <i class="fas fa-arrow-right"></i>
-            </a>
-        </div>
-    </div>
-</div>
-<div id="shareModal" class="share-modal">
-    <div class="share-modal-content">
-        <span class="share-modal-close">&times;</span>
-        <h3 class="share-modal-title">Chia sẻ sản phẩm</h3>
-        <div class="share-options">
-            <a href="https://www.facebook.com/sharer/sharer.php?u=@(Context.Request.Scheme)://@(Context.Request.Host)@(Context.Request.Path)" target="_blank" class="share-option facebook">
-                <i class="fab fa-facebook-f"></i>
-                <span>Facebook</span>
-            </a>
-            <a href="https://twitter.com/intent/tweet?url=@(Context.Request.Scheme)://@(Context.Request.Host)@(Context.Request.Path)&text=@Model.SanPham.TenSanPham" target="_blank" class="share-option twitter">
-                <i class="fab fa-twitter"></i>
-                <span>Twitter</span>
-            </a>
-            <a href="https://pinterest.com/pin/create/button/?url=@(Context.Request.Scheme)://@(Context.Request.Host)@(Context.Request.Path)&media=@(Context.Request.Scheme)://@(Context.Request.Host)/@(hinhAnhs.Length > 0 ? hinhAnhs[0] : "images/default.png")&description=@Model.SanPham.TenSanPham" target="_blank" class="share-option pinterest">
-                <i class="fab fa-pinterest-p"></i>
-                <span>Pinterest</span>
-            </a>
-            <button class="share-option copy-link" id="copyLinkBtn" data-url="@(Context.Request.Scheme)://@(Context.Request.Host)@(Context.Request.Path)">
-                <i class="fas fa-link"></i>
-                <span>Sao chép liên kết</span>
-            </button>
-        </div>
-    </div>
+    }
 </div>
 
-<link href="~/css/sanphamchitiet.css" rel="stylesheet" />
-
+<!-- Lightbox -->
+<div id="imageLightbox" class="lightbox">
+    <div class="lightbox-content"></div>
+</div>
 
 @section Scripts {
     <script src="~/js/chitietsanpham.js"></script>
-    <script>
-        function openLightbox() {
-            document.getElementById('imageLightbox').style.display = 'flex';
-            const mainVideo = document.getElementById('mainImage');
-            const lightboxVideo = document.getElementById('lightboxVideo');
-            
-            // Nếu là video, copy thời gian hiện tại sang lightbox video
-            if (mainVideo && mainVideo.tagName === 'VIDEO' && lightboxVideo) {
-                lightboxVideo.currentTime = mainVideo.currentTime;
-                if (!mainVideo.paused) {
-                    lightboxVideo.play();
-                }
-            }
-        }
-
-        function closeLightbox() {
-            document.getElementById('imageLightbox').style.display = 'none';
-            const lightboxVideo = document.getElementById('lightboxVideo');
-            if (lightboxVideo) {
-                lightboxVideo.pause();
-            }
-        }
-
-        // Đóng lightbox khi click ra ngoài
-        document.getElementById('imageLightbox').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeLightbox();
-            }
-        });
-    </script>
 }
-
-<style>
-    .lightbox {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.9);
-        z-index: 9999;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .lightbox-content {
-        position: relative;
-        max-width: 90%;
-        max-height: 90vh;
-    }
-
-    .lightbox-media {
-        max-width: 100%;
-        max-height: 90vh;
-        object-fit: contain;
-    }
-
-    .lightbox-close {
-        position: absolute;
-        top: -40px;
-        right: 0;
-        color: white;
-        font-size: 30px;
-        cursor: pointer;
-        z-index: 10000;
-    }
-
-    .fullscreen-button {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        background-color: rgba(255, 255, 255, 0.8);
-        border: none;
-        border-radius: 50%;
-        width: 36px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 3;
-        transition: all 0.3s ease;
-    }
-
-    .fullscreen-button:hover {
-        background-color: rgba(255, 255, 255, 0.9);
-        transform: scale(1.1);
-    }
-</style>

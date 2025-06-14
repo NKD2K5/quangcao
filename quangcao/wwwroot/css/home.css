@@ -1,4 +1,4 @@
-﻿:root {
+:root {
     --primary-color: #2563EB;
     --primary-light: #3b82f6;
     --primary-dark: #1d4ed8;
@@ -449,6 +449,64 @@ section::before {
     display: flex;
     flex-direction: column;
     height: 100%;
+    position: relative;
+}
+
+.accordion-toggle {
+    background: var(--primary-light);
+    color: var(--white);
+    border: none;
+    outline: none;
+    width: 100%;
+    text-align: left;
+    padding: 18px 24px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.2s;
+    margin-bottom: 0.5rem;
+}
+
+.accordion-toggle:hover, .accordion-toggle[aria-expanded="true"] {
+    background: var(--primary-dark);
+}
+
+.accordion-title {
+    flex: 1;
+}
+
+.accordion-icon {
+    margin-left: 1rem;
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s;
+}
+
+.accordion-toggle[aria-expanded="true"] .accordion-icon {
+    transform: rotate(180deg);
+}
+
+.accordion-content {
+    overflow: hidden;
+    background: #fff;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: 24px 18px 18px 18px;
+    transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+    margin-bottom: 1rem;
+    opacity: 1;
+}
+
+.accordion-content[style*="display:none"] {
+    max-height: 0 !important;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .about-content h2 {

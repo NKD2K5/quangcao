@@ -1,42 +1,55 @@
-﻿@model List<quangcao.Models.BaoGia>
+@model List<quangcao.Models.BaoGia>
 
-<div class="baogia-page">
-    <ul class="baogia-list-group">
-        @foreach (var baoGia in Model)
-        {
-            <li class="baogia-list-group-item">
-                <a asp-action="Details" asp-controller="BaoGia" asp-route-id="@baoGia.IdBaoGia">
-                    <span class="baogia-title">@baoGia.TieuDe</span>
-                </a>
-            </li>
-        }
-    </ul>
-</div>
+@foreach (var baoGia in Model)
+{
+    <li class="baogia-grid-item">
+        <a asp-action="Details" asp-controller="BaoGia" asp-route-id="@baoGia.IdBaoGia">
+            <span class="baogia-title">@baoGia.TieuDe</span>
+        </a>
+    </li>
+}
 
 <script>
+    // It's better to ensure this script runs after the main _Layout.cshtml script 
+    // or is scoped correctly if _Layout.cshtml also has a DOMContentLoaded listener.
+    // For now, we assume it's fine or will be adjusted if conflicts arise.
     document.addEventListener("DOMContentLoaded", () => {
-        // Thêm hiệu ứng hover cho các mục báo giá
-        const listItems = document.querySelectorAll('.baogia-list-group-item');
-        
-        listItems.forEach(item => {
-            const link = item.querySelector('a');
+        // Update selector to target new class within the specific mega menu
+        const megaMenuBaoGia = document.querySelector('.nav-item.has-mega-menu .mega-menu .baogia-grid-list');
+        if (megaMenuBaoGia) {
+            const listItems = megaMenuBaoGia.querySelectorAll('.baogia-grid-item');
             
-            // Thêm hiệu ứng hover
-            item.addEventListener('mouseenter', () => {
-                link.style.transform = 'translateX(8px)';
+            listItems.forEach(item => {
+                const link = item.querySelector('a');
+                if (!link) return; // Skip if no link found
+
+                // Thêm hiệu ứng hover
+                item.addEventListener('mouseenter', () => {
+                    link.style.transform = 'translateX(5px)'; // Adjusted for potentially smaller items
+                    link.style.color = 'var(--primary-color)'; // Example hover color
+                });
+                
+                item.addEventListener('mouseleave', () => {
+                    link.style.transform = 'translateX(0)';
+                    link.style.color = ''; // Reset color
+                });
+                
+                // Thêm hiệu ứng click
+                link.addEventListener('click', (e) => {
+                    // Check if the target is the link itself or its child (span)
+                    let targetElement = e.target;
+                    if (targetElement.tagName === 'SPAN' && targetElement.classList.contains('baogia-title')) {
+                        targetElement = targetElement.parentElement; // Get the 'a' tag
+                    }
+
+                    if (targetElement.tagName === 'A') {
+                        targetElement.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            targetElement.style.transform = 'scale(1)';
+                        }, 100);
+                    }
+                });
             });
-            
-            item.addEventListener('mouseleave', () => {
-                link.style.transform = 'translateX(0)';
-            });
-            
-            // Thêm hiệu ứng click
-            link.addEventListener('click', (e) => {
-                e.target.style.transform = 'scale(0.98)';
-                setTimeout(() => {
-                    e.target.style.transform = 'scale(1)';
-                }, 100);
-            });
-        });
+        }
     });
 </script>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;                                                                               
 using System.Collections.Generic;
 using System.Drawing.Printing;
 using System.IO;
@@ -108,93 +108,121 @@ namespace quangcao.Controllers
 
         public async Task<IActionResult> GuiDanhGia(Guid IdSanPham, int SoSao, string BinhLuan, string TenNguoiDung, List<IFormFile> MediaFiles)
         {
-            // Kiểm tra IdSanPham có hợp lệ không
-            if (IdSanPham == Guid.Empty)
+            try
             {
-                TempData["Error"] = "Id sản phẩm không hợp lệ.";
-                return RedirectToAction("Details", new { id = IdSanPham });
-            }
-
-            // Tạo đối tượng danh gia
-            var danhGia = new DanhGia
-            {
-                IdSanPham = IdSanPham,
-                TenNguoiDung = TenNguoiDung, // Lưu tên người dùng nhập vào
-                SoSao = SoSao,
-                BinhLuan = BinhLuan,
-                HinhAnh = null, // Sẽ cập nhật sau nếu có hình ảnh
-                NgayDanhGia = DateTime.Now
-            };
-
-            _context.DanhGias.Add(danhGia);
-            await _context.SaveChangesAsync();
-
-            // Đường dẫn thư mục để lưu file
-            var uploadsFolderPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "danhgia");
-
-            // Kiểm tra nếu thư mục không tồn tại thì tạo mới
-            if (!Directory.Exists(uploadsFolderPath))
-            {
-                Directory.CreateDirectory(uploadsFolderPath);
-            }
-
-            // Lưu các file media (ảnh/video)
-            if (MediaFiles != null && MediaFiles.Any())
-            {
-                List<string> filePaths = new List<string>();
-                foreach (var file in MediaFiles)
+                // Validate input
+                if (IdSanPham == Guid.Empty)
                 {
-                    if (file.Length > 0)
-                    {
-                        var fileName = Path.GetFileName(file.FileName);
-                        // Tạo tên file duy nhất để tránh trùng lặp
-                        var uniqueFileName = $"{Guid.NewGuid()}_{fileName}";
-                        var filePath = Path.Combine(uploadsFolderPath, uniqueFileName);
+                    return RedirectToAction("Details", new { id = IdSanPham });
+                }
 
-                        using (var stream = new FileStream(filePath, FileMode.Create))
+                if (string.IsNullOrWhiteSpace(TenNguoiDung))
+                {
+                    return RedirectToAction("Details", new { id = IdSanPham });
+                }
+
+                if (SoSao < 1 || SoSao > 5)
+                {
+                    return RedirectToAction("Details", new { id = IdSanPham });
+                }
+
+                if (string.IsNullOrWhiteSpace(BinhLuan))
+                {
+                    return RedirectToAction("Details", new { id = IdSanPham });
+                }
+
+                // Validate files
+                if (MediaFiles != null && MediaFiles.Any())
+                {
+                    if (MediaFiles.Count > 5)
+                    {
+                        return RedirectToAction("Details", new { id = IdSanPham });
+                    }
+
+                    foreach (var file in MediaFiles)
+                    {
+                        if (file.Length > 10 * 1024 * 1024) // 10MB
                         {
-                            await file.CopyToAsync(stream);
+                            return RedirectToAction("Details", new { id = IdSanPham });
                         }
 
-                        filePaths.Add($"uploads/danhgia/{uniqueFileName}");
+                        var extension = Path.GetExtension(file.FileName).ToLower();
+                        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".mp4", ".webm", ".ogg" };
+                        if (!allowedExtensions.Contains(extension))
+                        {
+                            return RedirectToAction("Details", new { id = IdSanPham });
+                        }
                     }
                 }
 
-                // Cập nhật đường dẫn hình ảnh vào đánh giá
-                if (filePaths.Any())
+                // Create review
+                var danhGia = new DanhGia
                 {
-                    danhGia.HinhAnh = string.Join(";", filePaths);
-                    await _context.SaveChangesAsync();
+                    IdDanhGia = Guid.NewGuid(),
+                    IdSanPham = IdSanPham,
+                    TenNguoiDung = TenNguoiDung,
+                    SoSao = SoSao,
+                    BinhLuan = BinhLuan,
+                    NgayDanhGia = DateTime.Now,
+                    LuotHuuIch = 0,
+                    DaBaoCao = false
+                };
+
+                // Save files if any
+                if (MediaFiles != null && MediaFiles.Any())
+                {
+                    var uploadsFolderPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "danhgia");
+                    Directory.CreateDirectory(uploadsFolderPath);
+
+                    List<string> filePaths = new List<string>();
+                    foreach (var file in MediaFiles)
+                    {
+                        if (file.Length > 0)
+                        {
+                            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+                            var filePath = Path.Combine(uploadsFolderPath, fileName);
+
+                            using (var stream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await file.CopyToAsync(stream);
+                            }
+
+                            filePaths.Add($"uploads/danhgia/{fileName}");
+                        }
+                    }
+
+                    if (filePaths.Any())
+                    {
+                        danhGia.HinhAnh = string.Join(";", filePaths);
+                    }
                 }
-            }
 
-            // Trả về JSON response cho AJAX request
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                _context.DanhGias.Add(danhGia);
+                await _context.SaveChangesAsync();
+
+                // Add success message
+                TempData["SuccessMessage"] = "Đánh giá của bạn đã được gửi thành công!";
+
+                // Redirect back to Details page
+                return RedirectToAction("Details", new { id = IdSanPham });
+            }
+            catch (Exception ex)
             {
-                return Json(new { success = true });
+                return RedirectToAction("Details", new { id = IdSanPham });
             }
-
-            // Trả về trang chi tiết sản phẩm
-            return RedirectToAction("Details", new { id = IdSanPham });
         }
 
-        public IActionResult Details(Guid id, int? soSao, int page = 1)
+        public async Task<IActionResult> Details(Guid id, int? soSao, int page = 1)
         {
             var product = _context.SanPhams.FirstOrDefault(p => p.IdSanPham == id);
             if (product == null) return NotFound();
+
 
             // Lấy 3 tin tức mới nhất
             var tinTucs = _context.TinTucs
                 .OrderByDescending(t => t.NgayDang)
                 .Take(3)
                 .ToList();
-
-            // Tạo ViewModel để truyền dữ liệu sang view
-            var viewModel = new sanphamChiTietViewModel
-            {
-                SanPham = product,
-                TinTucs = tinTucs
-            };
 
             // Xử lý sản phẩm đã xem gần đây
             var recentlyViewed = HttpContext.Session.GetObjectFromJson<List<SanPham>>("RecentlyViewed") ?? new List<SanPham>();
@@ -205,12 +233,11 @@ namespace quangcao.Controllers
             HttpContext.Session.SetObjectAsJson("RecentlyViewed", recentlyViewed);
 
             // Lấy toàn bộ đánh giá của sản phẩm để tính thống kê
-            var tatCaDanhGias = _context.DanhGias
+            var tatCaDanhGias = await _context.DanhGias
                 .Where(d => d.IdSanPham == product.IdSanPham)
-                .ToList();
-            ViewBag.TatCaDanhGias = tatCaDanhGias;
+                .ToListAsync(); // Sử dụng async
 
-            // Lọc đánh giá theo số sao (nếu có)
+            // Lọc đánh giá theo số sao (nếu có) và phân trang
             var danhGiasQuery = _context.DanhGias
                 .Where(d => d.IdSanPham == product.IdSanPham);
 
@@ -219,43 +246,51 @@ namespace quangcao.Controllers
                 danhGiasQuery = danhGiasQuery.Where(d => d.SoSao == soSao.Value);
             }
 
-            // Sắp xếp sau khi đã lọc xong
             danhGiasQuery = danhGiasQuery.OrderByDescending(d => d.NgayDanhGia);
 
             var pageSize = 3;
-            var totalRatings = danhGiasQuery.Count();
+            var totalRatings = await danhGiasQuery.CountAsync(); // Sử dụng async
             var totalPages = (int)Math.Ceiling((double)totalRatings / pageSize);
             
-            // Đảm bảo page không vượt quá totalPages
-            page = Math.Max(1, Math.Min(page, totalPages));
+            // Đảm bảo page không vượt quá totalPages, và hợp lệ nếu totalPages là 0
+            page = Math.Max(1, Math.Min(page, totalPages == 0 ? 1 : totalPages));
 
+            List<DanhGia> danhGiasHienTai;
             if (totalRatings == 0)
             {
-                ViewBag.DanhGias = new List<DanhGia>();
+                danhGiasHienTai = new List<DanhGia>();
                 ViewBag.TotalRatings = 0;
-                ViewBag.TotalPages = 0;
+                ViewBag.TotalPages = 0; 
                 ViewBag.CurrentPage = 1;
             }
             else
             {
-                var danhGias = danhGiasQuery
+                danhGiasHienTai = await danhGiasQuery // Sử dụng async
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
-                    .ToList();
+                    .ToListAsync(); // Sử dụng async
 
-                ViewBag.DanhGias = danhGias;
                 ViewBag.TotalRatings = totalRatings;
                 ViewBag.TotalPages = totalPages;
                 ViewBag.CurrentPage = page;
                 ViewBag.SoSao = soSao;
             }
 
+            // Tạo ViewModel để truyền dữ liệu sang view
+            var viewModel = new sanphamChiTietViewModel
+            {
+                SanPham = product,
+                TinTucs = tinTucs,
+                TatCaDanhGia = tatCaDanhGias,       // Gán TatCaDanhGia vào ViewModel
+                DanhGiaHienTai = danhGiasHienTai  // Gán DanhGiaHienTai (đã phân trang) vào ViewModel
+            };
+
             // Sản phẩm tương tự
             var sanPhamTuongTu = _context.SanPhams
                 .Where(s => s.TheLoai == product.TheLoai && s.IdSanPham != product.IdSanPham)
-                .Take(4)
+                .Take(9)
                 .ToList();
-            ViewBag.SanPhamTuongTu = sanPhamTuongTu;
+            ViewBag.relatedProducts = sanPhamTuongTu;
 
             return View(viewModel);
         }
@@ -281,17 +316,90 @@ namespace quangcao.Controllers
         [HttpPost]
         public async Task<IActionResult> BaoCaoDanhGia(Guid idDanhGia)
         {
-            var danhGia = await _context.DanhGias.FindAsync(idDanhGia);
-            if (danhGia == null)
+            try
             {
-                return Json(new { success = false, message = "Không tìm thấy đánh giá" });
+                var danhGia = await _context.DanhGias.FindAsync(idDanhGia);
+                if (danhGia == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy đánh giá" });
+                }
+
+                // Kiểm tra đăng nhập
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return Json(new { success = false, requireLogin = true });
+                }
+
+                danhGia.DaBaoCao = true;
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true });
             }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> XoaDanhGia(Guid idDanhGia)
+        {
+            try
+            {
+                // Kiểm tra đăng nhập và quyền
+                if (!User.Identity.IsAuthenticated || !(User.IsInRole("Admin") || User.IsInRole("Moderator")))
+                {
+                    return Json(new { success = false, message = "Bạn không có quyền xóa bình luận này" });
+                }
 
-            // Đánh dấu đánh giá đã bị báo cáo
-            danhGia.DaBaoCao = true;
-            await _context.SaveChangesAsync();
+                var danhGia = await _context.DanhGias.FindAsync(idDanhGia);
+                if (danhGia == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy bình luận" });
+                }
 
-            return Json(new { success = true });
+                // Lưu lại IdSanPham trước khi xóa bình luận
+                var idSanPham = danhGia.IdSanPham;
+
+                // Xóa các file media nếu có
+                if (!string.IsNullOrEmpty(danhGia.HinhAnh))
+                {
+                    var filePaths = danhGia.HinhAnh.Split(';');
+                    foreach (var filePath in filePaths)
+                    {
+                        if (!string.IsNullOrWhiteSpace(filePath))
+                        {
+                            var fullPath = Path.Combine(_webHostEnvironment.WebRootPath, filePath.TrimStart('/'));
+                            if (System.IO.File.Exists(fullPath))
+                            {
+                                System.IO.File.Delete(fullPath);
+                            }
+                        }
+                    }
+                }
+
+                // Xóa bình luận từ database
+                _context.DanhGias.Remove(danhGia);
+                await _context.SaveChangesAsync();
+
+                // Trả về thông tin cần thiết cho client
+                var remainingReviews = await _context.DanhGias.Where(d => d.IdSanPham == idSanPham).CountAsync();
+                var avgRating = await _context.DanhGias
+                    .Where(d => d.IdSanPham == idSanPham)
+                    .Select(d => (double)d.SoSao)
+                    .DefaultIfEmpty(0)
+                    .AverageAsync();
+
+                return Json(new { 
+                    success = true, 
+                    remainingCount = remainingReviews,
+                    averageRating = Math.Round(avgRating, 1)
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
         public IActionResult Create()
         {
@@ -317,14 +425,12 @@ namespace quangcao.Controllers
             }
             else
             {
-                // Xóa lỗi cũ của NewCategory nếu có
                 ModelState.Remove("NewCategory");
             }
 
             if (!ModelState.IsValid)
             {
                 ViewBag.ExistingCategories = DefaultCategories;
-
                 return View(sanPham);
             }
 
@@ -335,13 +441,39 @@ namespace quangcao.Controllers
 
             if (hinhAnhFiles != null && hinhAnhFiles.Any())
             {
-                var imagePaths = new List<string>();
+                var mediaPaths = new List<string>();
                 var folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "img/sanpham");
 
                 if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
 
                 foreach (var file in hinhAnhFiles)
                 {
+                    // Kiểm tra kích thước file dựa vào loại
+                    if (file.ContentType.StartsWith("image/"))
+                    {
+                        if (file.Length > 5 * 1024 * 1024) // 5MB cho ảnh
+                        {
+                            ModelState.AddModelError("", "Kích thước ảnh không được vượt quá 5MB");
+                            ViewBag.ExistingCategories = DefaultCategories;
+                            return View(sanPham);
+                        }
+                    }
+                    else if (file.ContentType.StartsWith("video/"))
+                    {
+                        if (file.Length > 50 * 1024 * 1024) // 50MB cho video
+                        {
+                            ModelState.AddModelError("", "Kích thước video không được vượt quá 50MB");
+                            ViewBag.ExistingCategories = DefaultCategories;
+                            return View(sanPham);
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Chỉ chấp nhận tập tin ảnh (jpg, png, gif) hoặc video (mp4, webm)");
+                        ViewBag.ExistingCategories = DefaultCategories;
+                        return View(sanPham);
+                    }
+
                     var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
                     var filePath = Path.Combine(folderPath, fileName);
 
@@ -350,10 +482,10 @@ namespace quangcao.Controllers
                         await file.CopyToAsync(stream);
                     }
 
-                    imagePaths.Add($"img/sanpham/{fileName}");
+                    mediaPaths.Add($"img/sanpham/{fileName}");
                 }
 
-                sanPham.HinhAnh = string.Join(";", imagePaths);
+                sanPham.HinhAnh = string.Join(";", mediaPaths);
             }
 
             sanPham.NgayTao = DateTime.Now;
@@ -363,90 +495,172 @@ namespace quangcao.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: SanPhams/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null) return NotFound();
+
             var sanPham = await _context.SanPhams.FindAsync(id);
             if (sanPham == null) return NotFound();
+
             ViewBag.ExistingCategories = DefaultCategories;
             return View(sanPham);
         }
+
+        // POST: SanPhams/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("IdSanPham,TenSanPham,Gia,SoLuongDaBan,MoTa,HinhAnh,NgayTao,TheLoai")] SanPham sanPham, IFormFile imageFile)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("IdSanPham,TenSanPham,Gia,SoLuongDaBan,MoTa,ChiTiet,NgayTao,TheLoai,HinhAnh")] SanPham sanPham,
+            List<IFormFile> hinhAnhFiles,
+            List<string> AnhCuGiuLai)
         {
             if (id != sanPham.IdSanPham) return NotFound();
 
-            if (ModelState.IsValid)
+            try
             {
+                if (!ModelState.IsValid)
+                {
+                    ViewBag.ExistingCategories = DefaultCategories;
+                    return View(sanPham);
+                }
+
+                var existingProduct = await _context.SanPhams.FindAsync(id);
+                if (existingProduct == null) return NotFound();
+
                 try
                 {
-                    // Xử lý upload hình ảnh mới nếu có
-                    if (imageFile != null && imageFile.Length > 0)
+                    // Đảm bảo AnhCuGiuLai không null
+                    AnhCuGiuLai = AnhCuGiuLai ?? new List<string>();
+
+                    // Danh sách media cũ
+                    var oldFiles = existingProduct.HinhAnh?.Split(';', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
+
+                    // Xác định và xóa file không còn được giữ lại
+                    var filesToDelete = oldFiles.Where(f => !AnhCuGiuLai.Contains(f)).ToList();
+
+                    foreach (var file in filesToDelete)
                     {
-                        // Xóa ảnh cũ nếu có
-                        if (!string.IsNullOrEmpty(sanPham.HinhAnh))
+                        var oldFilePath = Path.Combine(_webHostEnvironment.WebRootPath, file.TrimStart('/'));
+                        if (System.IO.File.Exists(oldFilePath))
                         {
-                            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, sanPham.HinhAnh.TrimStart('/'));
-                            if (System.IO.File.Exists(oldImagePath))
+                            try
                             {
-                                System.IO.File.Delete(oldImagePath);
+                                System.IO.File.Delete(oldFilePath);
+                                Console.WriteLine($"Đã xóa file thành công: {oldFilePath}");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Lỗi khi xóa file {oldFilePath}: {ex.Message}");
                             }
                         }
-
-                        // Lưu ảnh mới
-                        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
-                        var folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "img", "sanpham");
-                        
-                        if (!Directory.Exists(folderPath))
-                        {
-                            Directory.CreateDirectory(folderPath);
-                        }
-
-                        var filePath = Path.Combine(folderPath, fileName);
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await imageFile.CopyToAsync(stream);
-                        }
-
-                        sanPham.HinhAnh = $"/img/sanpham/{fileName}";
                     }
 
-                    // Cập nhật sản phẩm
-                    var existingProduct = await _context.SanPhams.FindAsync(id);
-                    if (existingProduct != null)
+                    // Thư mục lưu file mới
+                    var uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "img", "sanpham");
+                    if (!Directory.Exists(uploadFolder))
                     {
-                        existingProduct.TenSanPham = sanPham.TenSanPham;
-                        existingProduct.Gia = sanPham.Gia;
-                        existingProduct.SoLuongDaBan = sanPham.SoLuongDaBan;
-                        existingProduct.MoTa = sanPham.MoTa;
-                        existingProduct.TheLoai = sanPham.TheLoai;
-                        
-                        if (imageFile != null && imageFile.Length > 0)
-                        {
-                            existingProduct.HinhAnh = sanPham.HinhAnh;
-                        }
-
-                        await _context.SaveChangesAsync();
+                        Directory.CreateDirectory(uploadFolder);
+                        Console.WriteLine($"Đã tạo thư mục: {uploadFolder}");
                     }
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SanPhamExists(sanPham.IdSanPham))
+
+                    // Upload và thêm file mới
+                    if (hinhAnhFiles != null && hinhAnhFiles.Any())
                     {
-                        return NotFound();
+                        foreach (var file in hinhAnhFiles)
+                        {
+                            if (file.Length > 0)
+                            {
+                                Console.WriteLine($"Đang xử lý file: {file.FileName}, Loại: {file.ContentType}, Kích thước: {file.Length / 1024.0 / 1024.0:F2}MB");
+
+                                // Kiểm tra kích thước file dựa vào loại
+                                if (file.ContentType.StartsWith("image/"))
+                                {
+                                    if (file.Length > 5 * 1024 * 1024) // 5MB cho ảnh
+                                    {
+                                        ModelState.AddModelError("", "Kích thước ảnh không được vượt quá 5MB");
+                                        ViewBag.ExistingCategories = DefaultCategories;
+                                        return View(sanPham);
+                                    }
+                                }
+                                else if (file.ContentType.StartsWith("video/"))
+                                {
+                                    if (file.Length > 50 * 1024 * 1024) // 50MB cho video
+                                    {
+                                        ModelState.AddModelError("", "Kích thước video không được vượt quá 50MB");
+                                        ViewBag.ExistingCategories = DefaultCategories;
+                                        return View(sanPham);
+                                    }
+                                }
+                                else
+                                {
+                                    ModelState.AddModelError("", "Chỉ chấp nhận tập tin ảnh (jpg, png, gif) hoặc video (mp4, webm)");
+                                    ViewBag.ExistingCategories = DefaultCategories;
+                                    return View(sanPham);
+                                }
+
+                                var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+                                var fileName = $"{Guid.NewGuid()}{extension}";
+                                var filePath = Path.Combine(uploadFolder, fileName);
+
+                                try
+                                {
+                                    using (var stream = new FileStream(filePath, FileMode.Create))
+                                    {
+                                        await file.CopyToAsync(stream);
+                                    }
+                                    var relativePath = $"img/sanpham/{fileName}";
+                                    AnhCuGiuLai.Add(relativePath);
+                                    Console.WriteLine($"Đã lưu file thành công: {relativePath}");
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"Lỗi khi lưu file {filePath}: {ex.Message}");
+                                    ModelState.AddModelError("", $"Lỗi khi lưu file {file.FileName}: {ex.Message}");
+                                    ViewBag.ExistingCategories = DefaultCategories;
+                                    return View(sanPham);
+                                }
+                            }
+                        }
+                    }
+
+                    // Cập nhật thông tin sản phẩm
+                    existingProduct.TenSanPham = sanPham.TenSanPham;
+                    existingProduct.Gia = sanPham.Gia;
+                    existingProduct.SoLuongDaBan = sanPham.SoLuongDaBan;
+                    existingProduct.MoTa = sanPham.MoTa;
+                    existingProduct.ChiTiet = sanPham.ChiTiet;
+                    existingProduct.TheLoai = sanPham.TheLoai;
+                    
+                    // Đảm bảo không lưu chuỗi rỗng vào HinhAnh
+                    if (AnhCuGiuLai.Any())
+                    {
+                        existingProduct.HinhAnh = string.Join(";", AnhCuGiuLai);
+                        Console.WriteLine($"Danh sách media được lưu: {existingProduct.HinhAnh}");
                     }
                     else
                     {
-                        throw;
+                        existingProduct.HinhAnh = null;
+                        Console.WriteLine("Không có media nào được lưu");
                     }
+
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Cập nhật sản phẩm thành công!";
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Lỗi trong quá trình xử lý: {ex.Message}");
+                    ModelState.AddModelError("", $"Lỗi khi lưu sản phẩm: {ex.Message}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi ngoại: {ex.Message}");
+                ModelState.AddModelError("", $"Lỗi: {ex.Message}");
             }
 
-            // Nếu có lỗi, load lại danh sách thể loại
             ViewBag.ExistingCategories = DefaultCategories;
-                
             return View(sanPham);
         }
 
@@ -467,17 +681,105 @@ namespace quangcao.Controllers
             var sanPham = await _context.SanPhams.FindAsync(id);
             if (sanPham != null)
             {
+                // XÓA ảnh vật lý trong thư mục wwwroot nếu có
+                if (!string.IsNullOrEmpty(sanPham.HinhAnh))
+                {
+                    var imagePaths = sanPham.HinhAnh
+                        .Split(';', StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (var imagePath in imagePaths)
+                    {
+                        var fullPath = Path.Combine(_webHostEnvironment.WebRootPath, imagePath.TrimStart('/'));
+                        if (System.IO.File.Exists(fullPath))
+                        {
+                            System.IO.File.Delete(fullPath);
+                        }
+                    }
+                }
+
                 _context.SanPhams.Remove(sanPham);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+
 
         private bool SanPhamExists(Guid id)
         {
             return _context.SanPhams.Any(e => e.IdSanPham == id);
         }
+        
+        [HttpPost]
+        public async Task<IActionResult> DeleteDirect(Guid id)
+        {
+            try
+            {
+                // Kiểm tra đăng nhập và quyền
+                if (!User.Identity.IsAuthenticated || !(User.IsInRole("Admin") || User.IsInRole("Moderator")))
+                {
+                    return Json(new { success = false, message = "Bạn không có quyền xóa sản phẩm này" });
+                }
+                
+                var sanPham = await _context.SanPhams.FindAsync(id);
+                if (sanPham == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy sản phẩm" });
+                }
+
+                // Xóa ảnh vật lý trong thư mục wwwroot nếu có
+                if (!string.IsNullOrEmpty(sanPham.HinhAnh))
+                {
+                    var imagePaths = sanPham.HinhAnh
+                        .Split(';', StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (var imagePath in imagePaths)
+                    {
+                        var fullPath = Path.Combine(_webHostEnvironment.WebRootPath, imagePath.TrimStart('/'));
+                        if (System.IO.File.Exists(fullPath))
+                        {
+                            System.IO.File.Delete(fullPath);
+                        }
+                    }
+                }
+
+                // Xóa các đánh giá liên quan đến sản phẩm
+                var danhGias = await _context.DanhGias.Where(d => d.IdSanPham == id).ToListAsync();
+                foreach (var danhGia in danhGias)
+                {
+                    // Xóa các file media của đánh giá nếu có
+                    if (!string.IsNullOrEmpty(danhGia.HinhAnh))
+                    {
+                        var filePaths = danhGia.HinhAnh.Split(';');
+                        foreach (var filePath in filePaths)
+                        {
+                            if (!string.IsNullOrWhiteSpace(filePath))
+                            {
+                                var fullPath = Path.Combine(_webHostEnvironment.WebRootPath, filePath.TrimStart('/'));
+                                if (System.IO.File.Exists(fullPath))
+                                {
+                                    System.IO.File.Delete(fullPath);
+                                }
+                            }
+                        }
+                    }
+                    
+                    _context.DanhGias.Remove(danhGia);
+                }
+
+                // Xóa sản phẩm
+                _context.SanPhams.Remove(sanPham);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Sản phẩm đã được xóa thành công" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> QuickView(Guid id)
         {
@@ -494,3 +796,4 @@ namespace quangcao.Controllers
         }
     }
 }
+

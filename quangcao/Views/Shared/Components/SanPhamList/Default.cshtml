@@ -1,0 +1,16 @@
+@model IEnumerable<quangcao.ViewComponents.SanPhamListViewComponent.SanPhamCategoryGroup>
+
+@foreach (var group in Model)
+{
+    <div class="mobile-mega-category">
+        <button class="mobile-mega-title mobile-accordion-toggle" type="button" aria-expanded="false">
+            @group.GroupName <span class="mobile-accordion-icon"><i class="fas fa-chevron-down"></i></span>
+        </button>
+        <div class="mobile-mega-list" style="display:none;">
+            @foreach (var category in group.Categories)
+            {
+                <a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="@category">@category</a>
+            }
+        </div>
+    </div>
+}

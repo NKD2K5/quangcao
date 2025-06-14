@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -17,6 +17,7 @@
     <link href="~/css/search.css" rel="stylesheet" />
     <link href="~/css/AdminControls.css" rel="stylesheet" />
     <link href="~/css/baogia.css" rel="stylesheet" />
+    <link href="~/js/site.js" rel="stylesheet" />
     <!-- Styles Section (Optional) -->
     @await RenderSectionAsync("Styles", required: false)
 </head>
@@ -48,10 +49,10 @@
                         <div class="social-links">
                             <a href="https://facebook.com/profile.php?id=61575271242570" target="_blank" rel="noopener noreferrer" class="social-icon">
                                 <i class="fab fa-facebook-f"></i>
-                            </a>
+                              </a>
                             <a href="mailto:invinhphat6868@gmail.com" class="social-icon">
                                 <i class="fas fa-envelope"></i>
-                            </a>
+                              </a>
                         </div>
                     </div>
                 </div>
@@ -65,17 +66,18 @@
                     <div class="logo">
                         <a asp-controller="Home" asp-action="Index">
                             <span class="logo-text">IN VINH PHÁT</span>
-                        </a>
+                          </a>
                     </div>
+
 
                     <!-- Replace your current dropdown in the nav-links section with this mega menu -->
                     <div class="nav-links" id="navLinks">
-                        <a asp-controller="Home" asp-action="Index" class="nav-item">Trang Chủ</a>
-                        <a asp-controller="Home" asp-action="Privacy" class="nav-item">Giới Thiệu</a>
+                        <a asp-controller="Home" asp-action="Index" class="nav-item">Trang Chủ  </a>
+                        <a asp-controller="Home" asp-action="Privacy" class="nav-item">Giới Thiệu  </a>
 
                         <!-- Mega Menu -->
                         <div class="nav-item has-mega-menu">
-                            <a asp-controller="SanPhams" asp-action="Index" class="nav-link">Sản Phẩm</a>
+                            <a asp-controller="SanPhams" asp-action="Index" class="nav-link">Sản Phẩm  </a>
 
                             <!-- Mega Menu Content -->
                             <div class="mega-menu">
@@ -84,76 +86,77 @@
                                         <div class="mega-menu-column">
                                             <h3 class="mega-menu-title">In Ấn Văn Phòng</h3>
                                             <ul class="mega-menu-list">
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Danh Thiếp">Danh Thiếp</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Giấy Tiêu Đề">Giấy Tiêu Đề</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Hóa Đơn Bán Lẻ">Hóa Đơn Bán Lẻ</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Catalogue">In Catalogue</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Chứng Chỉ-Giấy Khen">In Chứng Chỉ-Giấy Khen</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Kẹp File-Folder">In Kẹp File-Folder</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Phong Bì-Envelope">In Phong Bì-Envelope</a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Danh Thiếp">Danh Thiếp  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Giấy Tiêu Đề">Giấy Tiêu Đề  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Hóa Đơn Bán Lẻ">Hóa Đơn Bán Lẻ  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Catalogue">In Catalogue  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Chứng Chỉ-Giấy Khen">In Chứng Chỉ-Giấy Khen  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Kẹp File-Folder">In Kẹp File-Folder  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Phong Bì-Envelope">In Phong Bì-Envelope  </a></li>
                                             </ul>
                                         </div>
 
                                         <div class="mega-menu-column">
                                             <h3 class="mega-menu-title">Ấn Phẩm Tiếp Thị</h3>
                                             <ul class="mega-menu-list">
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Menu-Thực Đơn">In Menu-Thực Đơn</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Tờ Rơi-Tờ Gấp">In Tờ Rơi-Tờ Gấp</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Phiếu Quà Tặng">Phiếu Quà Tặng</a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Menu-Thực Đơn">In Menu-Thực Đơn  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Tờ Rơi-Tờ Gấp">In Tờ Rơi-Tờ Gấp  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Phiếu Quà Tặng">Phiếu Quà Tặng  </a></li>
                                             </ul>
                                         </div>
 
                                         <div class="mega-menu-column">
                                             <h3 class="mega-menu-title">In Bao Bì & Nhãn Mác</h3>
                                             <ul class="mega-menu-list">
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Hộp Giấy">In Hộp Giấy</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Túi Giấy">In Túi Giấy</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Nhãn Mác Sản Phẩm">In Nhãn Mác Sản Phẩm</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Tem Nhãn">In Tem Nhãn</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Phiếu Bảo Hành">In Phiếu Bảo Hành</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Decal">In Decal</a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Hộp Giấy">In Hộp Giấy  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Túi Giấy">In Túi Giấy  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Nhãn Mác Sản Phẩm">In Nhãn Mác Sản Phẩm  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Tem Nhãn">In Tem Nhãn  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Phiếu Bảo Hành">In Phiếu Bảo Hành  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Decal">In Decal  </a></li>
                                             </ul>
                                         </div>
 
                                         <div class="mega-menu-column">
                                             <h3 class="mega-menu-title">Quà Tặng</h3>
                                             <ul class="mega-menu-list">
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Bao Lì Xì">Bao Lì Xì</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Lịch Tết">In Lịch Tết</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Sổ Bìa Da">Sổ Bìa Da</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Sổ Lò Xo">Sổ Lò Xo</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Sổ Note">Sổ Note</a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Bao Lì Xì">Bao Lì Xì  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="In Lịch Tết">In Lịch Tết  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Sổ Bìa Da">Sổ Bìa Da  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Sổ Lò Xo">Sổ Lò Xo  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Sổ Note">Sổ Note  </a></li>
                                             </ul>
                                         </div>
 
                                         <div class="mega-menu-column">
                                             <h3 class="mega-menu-title">Ấn Phẩm Khác</h3>
                                             <ul class="mega-menu-list">
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Thiệp Chúc Mừng">Thiệp Chúc Mừng</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Thiệp Cưới">Thiệp Cưới</a></li>
-                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Vở Học Sinh">Vở Học Sinh</a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Thiệp Chúc Mừng">Thiệp Chúc Mừng  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Thiệp Cưới">Thiệp Cưới  </a></li>
+                                                <li><a asp-controller="SanPhams" asp-action="Index" asp-route-currentCategory="Vở Học Sinh">Vở Học Sinh  </a></li>
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        
                         <div class="nav-item has-mega-menu">
-                            <a class="nav-link">Báo Giá</a>
+                            <a class="nav-link">Báo Giá  </a>
                             <div class="mega-menu">
                                 <div class="container">
                                     <div class="mega-menu-content">
                                         <div class="mega-menu-column">
-                                            <ul class="mega-menu-list">
-                                    @await Component.InvokeAsync("BaoGiaList")
+                                            <ul class="mega-menu-list baogia-grid-list">
+                                                @await Component.InvokeAsync("BaoGiaList")
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <a asp-controller="TinTucs" asp-action="Index" class="nav-item">Tin Tức</a>
-                        <a asp-controller="LienHes" asp-action="Create" class="nav-item">Liên Hệ</a>
+                        <a asp-controller="TinTucs" asp-action="Index" class="nav-item">Tin Tức  </a>
+                        <a asp-controller="LienHes" asp-action="Create" class="nav-item">Liên Hệ  </a>
                     </div>
 
                     <div class="nav-right">
@@ -186,19 +189,19 @@
                                         <div class="admin-menu">
                                             <a asp-controller="SanPhams" asp-action="Quan-li-san-pham" class="account-menu-item">
                                                 <i class="fas fa-cogs"></i> Quản lý sản phẩm
-                                            </a>
+                                              </a>
                                             <a asp-controller="TinTucs" asp-action="Quan-li-tin-tuc" class="account-menu-item">
                                                 <i class="fas fa-box"></i> Quản Lý Tin Tức
-                                            </a>
+                                              </a>
                                             <a asp-controller="LienHes" asp-action="Index" class="account-menu-item">
                                                 <i class="fas fa-users"></i> Quản lý liên hệ
-                                            </a>
+                                              </a>
                                             <a asp-controller="Home" asp-action="CapNhatGioiThieu" class="account-menu-item">
                                                 <i class="fas fa-info-circle"></i> Quản lý giới thiệu
-                                            </a>
+                                              </a>
                                             <a asp-controller="Home" asp-action="CapNhatNhanVien" class="account-menu-item">
                                                 <i class="fas fa-user-friends"></i> Quản lý đội ngũ
-                                            </a>
+                                              </a>
                                         </div>
                                     }
                                     <div class="menu-divider"></div>
@@ -206,12 +209,14 @@
                                         @Html.AntiForgeryToken()
                                         <a href="javascript:document.getElementById('logoutForm').submit()" class="account-menu-item logout-item">
                                             <i class="fas fa-sign-out-alt"></i> Đăng xuất
-                                        </a>
+                                          </a>
                                     </form>
                                 </div>
                             }
                         </div>
-                        <button class="menu-toggle" id="menuToggle">
+
+                        <!-- Mobile menu toggle is placed here, inside nav-right -->
+                        <button class="menu-toggle" id="menuToggle" aria-label="Mở menu điều hướng">
                             <i class="fas fa-bars"></i>
                         </button>
                     </div>
@@ -222,63 +227,75 @@
         <!-- Mobile Navigation -->
         <div class="mobile-nav" id="mobileNav">
             <div class="mobile-links">
-                <a asp-controller="Home" asp-action="Index">Trang Chủ</a>
-                <a asp-controller="Home" asp-action="Privacy">Giới Thiệu</a>
-
-                <div class="mobile-dropdown">
-                    <div class="mobile-dropdown-header">
-                        <a asp-controller="SanPhams" asp-action="Index">Sản Phẩm</a>
-                        <i class="fas fa-chevron-down mobile-dropdown-toggle"></i>
-                    </div>
-                    <div class="mobile-mega-menu">
-                        <div class="mobile-mega-category">
-                            <div class="mobile-mega-title">In Ấn Kỹ Thuật Số</div>
-                            <div class="mobile-mega-list">
-                                <a href="/san-pham/to-roi">In tờ rơi</a>
-                                <a href="/san-pham/catalogue">In catalogue</a>
-                                <a href="/san-pham/poster">In poster</a>
-                                <a href="/san-pham/banner">In banner, backdrop</a>
-                            </div>
-                        </div>
-
-                        <div class="mobile-mega-category">
-                            <div class="mobile-mega-title">Thiết Kế Đồ Họa</div>
-                            <div class="mobile-mega-list">
-                                <a href="/san-pham/thiet-ke-logo">Thiết kế logo</a>
-                                <a href="/san-pham/thiet-ke-brochure">Thiết kế brochure</a>
-                                <a href="/san-pham/thiet-ke-bao-bi">Thiết kế bao bì</a>
-                            </div>
-                        </div>
-
-                        <div class="mobile-mega-category">
-                            <div class="mobile-mega-title">In Ấn Văn Phòng</div>
-                            <div class="mobile-mega-list">
-                                <a href="/san-pham/name-card">In name card</a>
-                                <a href="/san-pham/phong-bi">In phong bì</a>
-                                <a href="/san-pham/hoa-don">In hóa đơn, biểu mẫu</a>
-                            </div>
-                        </div>
-
-                        <div class="mobile-mega-category">
-                            <div class="mobile-mega-title">In Bao Bì & Nhãn Mác</div>
-                            <div class="mobile-mega-list">
-                                <a href="/SanPhams/Index?currentCategory=Cốc">In hộp giấy</a>
-                                <a href="/san-pham/tui-giay">In túi giấy</a>
-                                <a href="/san-pham/nhan-mac">In nhãn mác sản phẩm</a>
-                            </div>
-                        </div>
+                <a asp-controller="Home" asp-action="Index" class="mobile-link-title">Trang Chủ</a>
+                <a asp-controller="Home" asp-action="Privacy" class="mobile-link-title">Giới Thiệu</a>
+                <div class="mobile-mega-category">
+                    <button class="mobile-link-title mobile-accordion-toggle" type="button" aria-expanded="false">
+                        Sản Phẩm
+                        <span class="mobile-accordion-icon"><i class="fas fa-chevron-down"></i></span>
+                    </button>
+                    <div class="mobile-mega-list" style="display:none;">
+                        @await Component.InvokeAsync("SanPhamList")
                     </div>
                 </div>
-                <div class="sidebar">
-                    <h5>Báo giá</h5>
-                    @await Component.InvokeAsync("BaoGiaList")
+                <div class="mobile-mega-category">
+                    <button class="mobile-link-title mobile-accordion-toggle" type="button" aria-expanded="false">
+                        Báo Giá
+                        <span class="mobile-accordion-icon"><i class="fas fa-chevron-down"></i></span>
+                    </button>
+                    <div class="mobile-mega-list" style="display: none;">
+                        @await Component.InvokeAsync("BaoGiaList")
+                    </div>
                 </div>
-                <a asp-controller="TinTucs" asp-action="Index">Tin Tức</a>
-                <a asp-controller="LienHes" asp-action="Create">Liên Hệ</a>
+                <a asp-controller="TinTucs" asp-action="Index" class="mobile-link-title">Tin Tức</a>
+                <a asp-controller="LienHes" asp-action="Create" class="mobile-link-title">Liên Hệ</a>
+                </div>
             </div>
         </div>
-        </div>
     </header>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        function isMobile() {
+          return window.innerWidth <= 768;
+        }
+        function setupMobileAccordion() {
+          if (!isMobile()) return;
+          document.querySelectorAll('.mobile-mega-category').forEach(function (cat) {
+            var btn = cat.querySelector('.mobile-accordion-toggle');
+            var list = cat.querySelector('.mobile-mega-list');
+            if (!btn || !list) return;
+            btn.addEventListener('click', function () {
+              var expanded = btn.getAttribute('aria-expanded') === 'true';
+              btn.setAttribute('aria-expanded', !expanded);
+              if (expanded) {
+                list.style.display = 'none';
+              } else {
+                list.style.display = 'block';
+              }
+            });
+            // Mặc định mở
+            btn.setAttribute('aria-expanded', 'true');
+            list.style.display = 'block';
+          });
+        }
+        setupMobileAccordion();
+        window.addEventListener('resize', function () {
+          // Reset lại khi resize qua lại giữa mobile/desktop
+          document.querySelectorAll('.mobile-mega-category').forEach(function (cat) {
+            var btn = cat.querySelector('.mobile-accordion-toggle');
+            var list = cat.querySelector('.mobile-mega-list');
+            if (!btn || !list) return;
+            if (isMobile()) {
+              btn.setAttribute('aria-expanded', 'true');
+              list.style.display = 'block';
+            } else {
+              list.style.display = '';
+            }
+          });
+        });
+      });
+    </script>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -298,22 +315,22 @@
                         <div class="footer-social">
                             <a href="https://facebook.com/profile.php?id=61575271242570" target="_blank" rel="noopener noreferrer">
                                 <i class="fab fa-facebook-f"></i>
-                            </a>
+                              </a>
                             <a href="#" target="_blank" rel="noopener noreferrer">
                                 <i class="fab fa-youtube"></i>
-                            </a>
+                              </a>
                             <a href="#" target="_blank" rel="noopener noreferrer">
                                 <i class="fab fa-instagram"></i>
-                            </a>
+                              </a>
                         </div>
                     </div>
                     <div class="footer-services">
                         <h3>Dịch vụ</h3>
                         <ul>
-                            <li><a href="/san-pham/to-roi">In tờ rơi</a></li>
-                            <li><a href="/san-pham/name-card">In name card</a></li>
-                            <li><a href="/san-pham/tui-giay">In túi giấy</a></li>
-                            <li><a href="/san-pham/banner">In banner</a></li>
+                            <li><a href="/san-pham/to-roi">In tờ rơi  </a></li>
+                            <li><a href="/san-pham/name-card">In name card  </a></li>
+                            <li><a href="/san-pham/tui-giay">In túi giấy  </a></li>
+                            <li><a href="/san-pham/banner">In banner  </a></li>
                         </ul>
                     </div>
                     <div class="footer-contact">
@@ -324,11 +341,11 @@
                         </div>
                         <div class="contact-item">
                             <i class="fas fa-envelope"></i>
-                            <p><a href="mailto:invinhphat6868@gmail.com">invinhphat6868@gmail.com</a></p>
+                            <p><a href="mailto:invinhphat6868@gmail.com">invinhphat6868@gmail.com  </a></p>
                         </div>
                         <div class="contact-item">
                             <i class="fas fa-phone"></i>
-                            <p><a href="tel:0977344567">Hotline: 0977 344 567</a></p>
+                            <p><a href="tel:0977344567">Hotline: 0977 344 567  </a></p>
                         </div>
                     </div>
                 </div>
@@ -365,39 +382,6 @@
             const mobileNav = document.getElementById("mobileNav");
             const accountDropdown = document.getElementById("accountDropdown");
             const accountTrigger = accountDropdown?.querySelector(".account-trigger");
-            let lastScrollTop = 0;
-            let isScrolling = false;
-
-            // Xử lý sự kiện cuộn
-            function handleScroll() {
-                if (!isScrolling) {
-                    isScrolling = true;
-
-                    window.requestAnimationFrame(() => {
-                        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-                        // Thu gọn header khi cuộn xuống
-                        if (scrollTop > 100) {
-                            header.classList.add("header-compact");
-
-                            // Thêm hiệu ứng ẩn/hiện header khi cuộn lên/xuống
-                            if (scrollTop > lastScrollTop && scrollTop > 300) {
-                                // Cuộn xuống - ẩn header
-                                header.classList.add("header-hidden");
-                            } else {
-                                // Cuộn lên - hiện header
-                                header.classList.remove("header-hidden");
-                            }
-                        } else {
-                            // Trở lại bình thường khi ở đầu trang
-                            header.classList.remove("header-compact", "header-hidden");
-                        }
-
-                        lastScrollTop = scrollTop;
-                        isScrolling = false;
-                    });
-                }
-            }
 
             // Xử lý nút menu trên mobile
             if (menuToggle && mobileNav) {
@@ -603,7 +587,6 @@
 
             // Thêm các event listener
             window.addEventListener("resize", setActiveNavLinks);
-            window.addEventListener("scroll", handleScroll);
         });
     </script>
 </body>

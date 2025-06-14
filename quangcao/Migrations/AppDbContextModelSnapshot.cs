@@ -365,7 +365,8 @@ namespace quangcao.Migrations
 
                     b.Property<string>("BinhLuan")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<bool>("DaBaoCao")
                         .HasColumnType("bit");
@@ -387,7 +388,8 @@ namespace quangcao.Migrations
 
                     b.Property<string>("TenNguoiDung")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("IdDanhGia");
 
@@ -554,6 +556,9 @@ namespace quangcao.Migrations
 
                     b.Property<bool>("IsRecentlyViewed")
                         .HasColumnType("bit");
+
+                    b.Property<int>("LuotXem")
+                        .HasColumnType("int");
 
                     b.Property<string>("MoTa")
                         .HasColumnType("nvarchar(max)");

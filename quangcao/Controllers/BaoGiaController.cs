@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -10,7 +10,6 @@ using quangcao.Models;
 
 namespace quangcao.Controllers
 {
-    [Authorize]
     public class BaoGiaController : Controller
     {
         private readonly AppDbContext _context;
@@ -25,6 +24,7 @@ namespace quangcao.Controllers
         }
 
         // GET: BaoGia
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             // Truy vấn báo giá, Include luôn User
@@ -59,6 +59,7 @@ namespace quangcao.Controllers
         // POST: Tạo báo giá mới
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create(BaoGia model)
         {
             // Lấy UserId từ người đăng nhập
@@ -100,6 +101,7 @@ namespace quangcao.Controllers
 
 
         // GET: BaoGias/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -123,6 +125,7 @@ namespace quangcao.Controllers
         // POST: BaoGias/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(Guid id, [Bind("IdBaoGia,TieuDe,NoiDung,NgayTao,UserId")] BaoGia baoGia)
         {
             if (id != baoGia.IdBaoGia)
@@ -156,6 +159,7 @@ namespace quangcao.Controllers
         }
 
         // GET: BaoGias/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -179,6 +183,7 @@ namespace quangcao.Controllers
         // POST: BaoGias/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var baoGia = await _context.BaoGias.FindAsync(id);

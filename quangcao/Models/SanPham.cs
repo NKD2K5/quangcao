@@ -12,7 +12,6 @@ namespace quangcao.Models
 
         [Range(0, int.MaxValue)]
         public int? SoLuongDaBan { get; set; }
-
         public string? MoTa { get; set; }
         public string? ChiTiet { get; set; }
 
