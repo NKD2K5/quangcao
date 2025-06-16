@@ -33,11 +33,11 @@
         <h1 class="hero-title">Công Ty TNHH Sản Xuất<br>Thương Mại In Huy Chức</h1>
         <p class="hero-subtitle">Đơn vị tiên phong trong lĩnh vực in nhanh kỹ thuật số tại TP Hải Dương</p>
             <div class="hero-buttons">
-            <a href="/SanPhams" class="hero-button primary">
+            <a href="/SanPhams" class="btn btn-primary">
                 <i class="fas fa-box-open"></i>
                 Xem Sản Phẩm
                 </a>
-            <a href="/LienHes/Create" class="hero-button secondary">
+            <a href="/LienHes/Create" class="btn btn-outline">
                 <i class="fas fa-phone"></i>
                 Liên Hệ Ngay
                 </a>
@@ -52,56 +52,56 @@
         <p class="section-description">Chúng tôi cung cấp đa dạng các sản phẩm in ấn chất lượng cao, đáp ứng mọi nhu cầu của khách hàng</p>
 
         <div class="category-grid">
-            <a href="/san-pham/to-roi" class="category-card">
+            <a asp-controller="SanPhams" asp-action="Index" asp-route-categorySlug="to-roi" class="category-card">
                 <div class="category-icon">
                     <i class="fas fa-file-alt"></i>
                 </div>
                 <h3>In tờ rơi, tờ gấp</h3>
             </a>
 
-            <a href="/san-pham/tui-giay" class="category-card">
+            <a asp-controller="SanPhams" asp-action="Index" asp-route-categorySlug="tui-giay" class="category-card">
                 <div class="category-icon">
                     <i class="fas fa-shopping-bag"></i>
                 </div>
                 <h3>In túi giấy</h3>
             </a>
 
-            <a href="/san-pham/name-card" class="category-card">
+            <a asp-controller="SanPhams" asp-action="Index" asp-route-categorySlug="name-card" class="category-card">
                 <div class="category-icon">
                     <i class="fas fa-id-card"></i>
                 </div>
                 <h3>In name card</h3>
             </a>
 
-            <a href="/san-pham/hop-giay" class="category-card">
+            <a asp-controller="SanPhams" asp-action="Index" asp-route-categorySlug="hop-giay" class="category-card">
                 <div class="category-icon">
                     <i class="fas fa-box"></i>
                 </div>
                 <h3>In hộp giấy</h3>
             </a>
 
-            <a href="/san-pham/catalogue" class="category-card">
+            <a asp-controller="SanPhams" asp-action="Index" asp-route-categorySlug="catalogue" class="category-card">
                 <div class="category-icon">
                     <i class="fas fa-book"></i>
                 </div>
                 <h3>In catalogue</h3>
             </a>
 
-            <a href="/san-pham/tem-nhan" class="category-card">
+            <a asp-controller="SanPhams" asp-action="Index" asp-route-categorySlug="tem-nhan" class="category-card">
                 <div class="category-icon">
                     <i class="fas fa-tag"></i>
                 </div>
                 <h3>In tem nhãn mác</h3>
             </a>
 
-            <a href="/san-pham/thiep-cuoi" class="category-card">
+            <a asp-controller="SanPhams" asp-action="Index" asp-route-categorySlug="thiep-cuoi" class="category-card">
                 <div class="category-icon">
                     <i class="fas fa-heart"></i>
                 </div>
                 <h3>In thiệp cưới</h3>
             </a>
 
-            <a href="/san-pham/all" class="category-card">
+            <a asp-controller="SanPhams" asp-action="Index" class="category-card">
                 <div class="category-icon">
                     <i class="fas fa-th"></i>
                 </div>
@@ -127,29 +127,14 @@
                 }
             </div>
             <div class="about-content">
-                <button class="accordion-toggle" type="button" aria-expanded="false">
-                    <span class="accordion-title">In Ấn Kỹ Thuật Số (Giới Thiệu)</span>
-                    <span class="accordion-icon"><i class="fas fa-chevron-down"></i></span>
-                </button>
-                <div class="accordion-content" style="display:none;">
-                @if (Model?.GioiThieu != null)
-                {
-                    <h2 class="animate-in">@Model.GioiThieu.TieuDe</h2>
-                    <div class="lead">
-                        @Html.Raw(Model.GioiThieu.NoiDung)
-                    </div>
-                }
-                else {
-                    <h2 class="animate-in">Giới Thiệu Về Công Ty Chúng Tôi</h2>
-                    <div class="lead">
-                        <p>Công ty TNHH Sản xuất Thương mại In Huy Chúc tự hào là đơn vị tiên phong trong lĩnh vực in nhanh kỹ thuật số tại TP Hải Dương. In Huy Chúc không ngừng mở rộng và đầu tư đồng bộ hệ thống con người, máy móc để có thể đáp ứng tốt nhất mọi nhu cầu của khách hàng.</p>
-                        <p>Trong tình hình kinh tế hiện nay, hầu như ai cũng muốn mình có được những sản phẩm giá rẻ, nhưng chỉ rẻ không thôi thì chưa đủ. Công ty in Huy Chúc không cam kết sẽ tạo ra những sản phẩm in ấn có giá rẻ nhất nhưng chúng tôi đảm bảo rằng quý khách sẽ có được những sản phẩm chất lượng tốt nhất với giá cả hợp lý nhất.</p>
-                    </div>
-                }
+                <h2 class="animate-in">Giới Thiệu Về Công Ty Chúng Tôi</h2>
+                <div class="lead">
+                    <p>Công ty TNHH Sản xuất Thương mại In Huy Chúc tự hào là đơn vị tiên phong trong lĩnh vực in nhanh kỹ thuật số tại TP Hải Dương. In Huy Chúc không ngừng mở rộng và đầu tư đồng bộ hệ thống con người, máy móc để có thể đáp ứng tốt nhất mọi nhu cầu của khách hàng.</p>
+                    <p>Trong tình hình kinh tế hiện nay, hầu như ai cũng muốn mình có được những sản phẩm giá rẻ, nhưng chỉ rẻ không thôi thì chưa đủ. Công ty in Huy Chúc không cam kết sẽ tạo ra những sản phẩm in ấn có giá rẻ nhất nhưng chúng tôi đảm bảo rằng quý khách sẽ có được những sản phẩm chất lượng tốt nhất với giá cả hợp lý nhất.</p>
+                </div>
                 <a asp-controller="Home" asp-action="Privacy" class="btn btn-primary">
                     <i class="fas fa-info-circle"></i> Xem Thêm
                 </a>
-                </div>
             </div>
         </div>
     </div>
@@ -161,20 +146,7 @@
     }
 </section>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var toggleBtn = document.querySelector('.about-content .accordion-toggle');
-        var content = document.querySelector('.about-content .accordion-content');
-        var icon = toggleBtn.querySelector('.accordion-icon i');
-        toggleBtn.addEventListener('click', function () {
-            var isOpen = content.style.display === 'block';
-            content.style.display = isOpen ? 'none' : 'block';
-            toggleBtn.setAttribute('aria-expanded', !isOpen);
-            icon.classList.toggle('fa-chevron-down', isOpen);
-            icon.classList.toggle('fa-chevron-up', !isOpen);
-        });
-    });
-</script>
+
 
 <!-- Services Section -->
 <section class="services">
@@ -452,59 +424,6 @@
             });
         });
 
-    // Initialize Swiper with fixed height settings
-    document.addEventListener('DOMContentLoaded', function() {
-        if (document.getElementById('newsSlider')) {
-            const swiper = new Swiper('#newsSlider', {
-            slidesPerView: 1,
-            spaceBetween: 30,
-            loop: true,
-                speed: 800,
-                autoHeight: false, // Disable auto height
-            autoplay: {
-                delay: 5000,
-                disableOnInteraction: false,
-            },
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-                    dynamicBullets: true,
-            },
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            breakpoints: {
-                768: {
-                    slidesPerView: 2,
-                },
-                1024: {
-                    slidesPerView: 3,
-                }
-                },
-                on: {
-                    init: function() {
-                        // Force equal heights
-                        document.querySelectorAll('.news-slide').forEach(slide => {
-                            slide.style.height = '450px';
-                        });
-                        
-                        // Ensure "Xem Tất Cả Tin Tức" button is visible
-                        setTimeout(function() {
-                            const btnAllNews = document.querySelector('.text-center.mt-4');
-                            if (btnAllNews) {
-                                btnAllNews.style.position = 'relative';
-                                btnAllNews.style.zIndex = '10';
-                                btnAllNews.style.marginTop = '50px';
-                                btnAllNews.style.clear = 'both';
-                            }
-                        }, 100);
-                }
-            }
-        });
-    }
-    });
-
     // Add loading animation for images
     document.querySelectorAll('img').forEach(img => {
         img.addEventListener('load', function() {
@@ -522,150 +441,13 @@
         const scrolled = (window.scrollY / windowHeight) * 100;
         scrollProgress.style.width = `${scrolled}%`;
     });
-
-    // Initialize Testimonials Slideshow
-    document.addEventListener('DOMContentLoaded', function() {
-        const testimonialCards = document.querySelectorAll('.testimonial-card');
-        let currentSlide = 0;
-        const totalSlides = testimonialCards.length;
-        
-        // Tạo các dot điều hướng
-        const sliderDots = document.querySelector('.slider-dots');
-        if (sliderDots && testimonialCards.length > 0) {
-            for (let i = 0; i < totalSlides; i++) {
-                const dot = document.createElement('span');
-                dot.classList.add('slider-dot');
-                if (i === 0) dot.classList.add('active');
-                dot.addEventListener('click', () => {
-                    goToSlide(i);
-                });
-                sliderDots.appendChild(dot);
-            }
-        }
-        
-        // Hàm chuyển đến slide cụ thể
-        function goToSlide(index) {
-            // Ẩn slide hiện tại
-            testimonialCards[currentSlide].classList.remove('active');
-            document.querySelectorAll('.slider-dot')[currentSlide]?.classList.remove('active');
-            
-            // Hiển thị slide mới
-            currentSlide = index;
-            testimonialCards[currentSlide].classList.add('active');
-            document.querySelectorAll('.slider-dot')[currentSlide]?.classList.add('active');
-        }
-        
-        // Hàm chuyển đến slide tiếp theo
-        function nextSlide() {
-            let nextIndex = (currentSlide + 1) % totalSlides;
-            goToSlide(nextIndex);
-        }
-        
-        // Tự động chuyển slide mỗi 5 giây
-        setInterval(nextSlide, 5000);
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Khởi tạo Swiper cho slideshow
-        var newsSwiper = new Swiper('#newsSlider', {
-            slidesPerView: 1,
-            spaceBetween: 30,
-            loop: true,
-            lazy: true,
-            autoplay: {
-                delay: 5000,
-                disableOnInteraction: false,
-            },
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            breakpoints: {
-                640: {
-                    slidesPerView: 1,
-                },
-                768: {
-                    slidesPerView: 2,
-                },
-                1024: {
-                    slidesPerView: 3,
-                },
-            },
-        });
-
-        // Hiệu ứng cho section-title-gradient
-        const titleObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    // Tìm gradient line gần nhất
-                    const gradientLine = entry.target.nextElementSibling;
-                    if (gradientLine && gradientLine.classList.contains('section-title-gradient')) {
-                        setTimeout(() => {
-                            gradientLine.classList.add('animated');
-                        }, 200);
-                    }
-                    
-                    titleObserver.unobserve(entry.target);
-                }
-            });
-        }, {
-            threshold: 0.2,
-            rootMargin: '-50px 0px'
-        });
-
-        // Quan sát các tiêu đề section
-        document.querySelectorAll('.section-title').forEach(el => {
-            titleObserver.observe(el);
-        });
-
-        // Scroll to top functionality
-        const scrollTopButton = document.querySelector('.scroll-to-top');
-        if (scrollTopButton) {
-            window.addEventListener('scroll', () => {
-                if (window.pageYOffset > 300) {
-                    scrollTopButton.classList.add('visible');
-                } else {
-                    scrollTopButton.classList.remove('visible');
-                }
-            });
-
-            scrollTopButton.addEventListener('click', () => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            });
-        }
-    });
-
-    @* Hàm StripHtml để xử lý nội dung tin tức *@
-    @functions {
-        public string StripHtml(string input)
-        {
-            if (string.IsNullOrEmpty(input)) return string.Empty;
-            
-            // Loại bỏ HTML tags
-            var text = System.Text.RegularExpressions.Regex.Replace(input, "<.*?>", string.Empty);
-            
-            // Decode HTML entities
-            text = System.Net.WebUtility.HtmlDecode(text);
-            
-            // Loại bỏ khoảng trắng thừa
-            text = System.Text.RegularExpressions.Regex.Replace(text, @"\s+", " ");
-            
-            return text.Trim();
-        }
-    }
 </script>
 
 @section Scripts {
-    <script src="~/js/home.js"></script>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <!-- Swiper JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+
+    <script src="~/js/home.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 }

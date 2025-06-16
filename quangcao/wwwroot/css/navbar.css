@@ -777,7 +777,6 @@ MOBILE NAVIGATION & RESPONSIVE STYLES
     visibility: hidden;
     transition: all 0.2s ease;
     z-index: 1000;
-    margin-top: 0.5rem;
     min-width: 200px;
 }
 
